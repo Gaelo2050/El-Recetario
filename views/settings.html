@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configuración - El Recetario®</title>
+  <link rel="shortcut icon" href="../Imagenes/Logo/favicon.ico">
+  <link href="../css/output.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <script src="/js/userSession.js"></script>
+</head>
+
+<body class="font-sans bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <script src="/js/loadHeader.js" defer></script>
+  <div id="headerContainer"></div>
+  <!-- Breadcrumbs -->
+  <nav class="bg-white border-b border-gray-200">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center gap-2 text-sm text-gray-500">
+      <ol class="flex items-center gap-2">
+        <li><a href="/inicio" class="hover:text-purple-600">Inicio</a></li>
+        <li class="text-gray-400">/</li>
+        <li><a href="/perfil" class="hover:text-purple-600">Perfil</a></li>
+        <li class="text-gray-400">/</li>
+        <li class="text-gray-700 font-medium">Configuración</li>
+      </ol>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <main class="max-w-5xl mx-auto px-4 pt-6 pb-10 space-y-6 flex-1">
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
+      <!-- Sidebar -->
+      <aside class="lg:col-span-1">
+        <div class="rounded-3xl bg-white shadow-lg p-4 space-y-2" role="tablist">
+          <div class="px-2 pb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Panel de control</div>
+          <button
+            class="menu-btn w-full text-left px-4 py-3 rounded-2xl hover:bg-purple-50 text-gray-600 flex items-center justify-between transition"
+            data-target="general">
+            <span class="flex items-center gap-2"><span class="material-symbols-outlined text-base">tune</span>
+              Preferencias</span>
+            <span class="material-symbols-outlined text-sm text-gray-400">chevron_right</span>
+          </button>
+          <button
+            class="menu-btn w-full text-left px-4 py-3 rounded-2xl hover:bg-purple-50 text-gray-600 flex items-center justify-between transition"
+            data-target="notificaciones">
+            <span class="flex items-center gap-2"><span class="material-symbols-outlined text-base">notifications</span>
+              Alertas</span>
+            <span class="material-symbols-outlined text-sm text-gray-400">chevron_right</span>
+          </button>
+          <button
+            class="menu-btn w-full text-left px-4 py-3 rounded-2xl hover:bg-purple-50 text-gray-600 flex items-center justify-between transition"
+            data-target="privacidad">
+            <span class="flex items-center gap-2"><span class="material-symbols-outlined text-base">shield_person</span>
+              Privacidad</span>
+            <span class="material-symbols-outlined text-sm text-gray-400">chevron_right</span>
+          </button>
+          <button
+            class="menu-btn w-full text-left px-4 py-3 rounded-2xl hover:bg-purple-50 text-gray-600 flex items-center justify-between transition"
+            data-target="facturacion">
+            <span class="flex items-center gap-2"><span class="material-symbols-outlined text-base">payments</span>
+              Facturación</span>
+            <span class="material-symbols-outlined text-sm text-gray-400">chevron_right</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Panels -->
+      <div class="lg:col-span-3 space-y-6">
+        <section id="general" class="panel bg-white rounded-3xl shadow-lg p-6">
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <h2 class="text-xl font-semibold text-gray-900">Preferencias generales</h2>
+              <p class="text-sm text-gray-500">Configura cómo quieres que se presente el contenido mientras exploras
+                recetas.</p>
+            </div>
+            <button class="inline-flex items-center gap-2 text-sm text-purple-600 hover:text-purple-700 transition">
+              <span class="material-symbols-outlined text-base">refresh</span>
+              Personalización
+            </button>
+          </div>
+          <div class="mt-6 grid gap-4">
+            <label
+              class="flex items-center justify-between gap-4 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3">
+              <div>
+                <span class="block text-sm font-semibold text-gray-800">Modo vegetariano inteligente</span>
+                <p class="text-xs text-gray-500">Prioriza recetas basadas en vegetales y oculta opciones con carne.</p>
+              </div>
+              <input type="checkbox" class="h-5 w-5 text-purple-600">
+            </label>
+            <label
+              class="flex items-center justify-between gap-4 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3">
+              <div>
+                <span class="block text-sm font-semibold text-gray-800">Filtrar alérgenos</span>
+                <p class="text-xs text-gray-500">Oculta recetas con ingredientes marcados como alérgenos en tu perfil.
+                </p>
+              </div>
+              <input type="checkbox" class="h-5 w-5 text-purple-600">
+            </label>
+            <label
+              class="flex items-center justify-between gap-4 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3">
+              <div>
+                <span class="block text-sm font-semibold text-gray-800">Idioma preferido</span>
+                <p class="text-xs text-gray-500">Selecciona el idioma principal para recetas y mensajes.</p>
+              </div>
+              <select
+                class="rounded-lg border-gray-200 text-sm text-gray-700 focus:border-purple-500 focus:ring-purple-500">
+                <option>Español</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section id="notificaciones" class="panel hidden bg-white rounded-3xl shadow-lg p-6">
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <h2 class="text-xl font-semibold text-gray-900">Alertas y notificaciones</h2>
+              <p class="text-sm text-gray-500">Decide cómo quieres recibir recordatorios, sugerencias y novedades.</p>
+            </div>
+            <button class="inline-flex items-center gap-2 text-sm text-purple-600 hover:text-purple-700 transition">
+              <span class="material-symbols-outlined text-base">mail</span>
+              Gestionar correos
+            </button>
+          </div>
+          <div class="mt-6 space-y-4">
+            <label
+              class="flex items-center justify-between gap-4 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3">
+              <div>
+                <span class="block text-sm font-semibold text-gray-800">Nuevos seguidores</span>
+                <p class="text-xs text-gray-500">Recibe un correo cuando alguien empiece a seguir tus recetas.</p>
+              </div>
+              <input type="checkbox" class="h-5 w-5 text-purple-600" checked>
+            </label>
+            <label
+              class="flex items-center justify-between gap-4 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3">
+              <div>
+                <span class="block text-sm font-semibold text-gray-800">Comentarios y reseñas</span>
+                <p class="text-xs text-gray-500">Mantente al tanto de lo que opinan sobre tus creaciones.</p>
+              </div>
+              <input type="checkbox" class="h-5 w-5 text-purple-600" checked>
+            </label>
+            <label
+              class="flex items-center justify-between gap-4 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3">
+              <div>
+                <span class="block text-sm font-semibold text-gray-800">Boletín semanal</span>
+                <p class="text-xs text-gray-500">Ideas, tips y recetas seleccionadas por nuestros chefs.</p>
+              </div>
+              <input type="checkbox" class="h-5 w-5 text-purple-600">
+            </label>
+            <label
+              class="flex items-center justify-between gap-4 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3">
+              <div>
+                <span class="block text-sm font-semibold text-gray-800">Ofertas y promociones</span>
+                <p class="text-xs text-gray-500">Descuentos exclusivos en planes y colaboraciones gastronómicas.</p>
+              </div>
+              <input type="checkbox" class="h-5 w-5 text-purple-600">
+            </label>
+          </div>
+        </section>
+
+        <section id="privacidad" class="panel hidden bg-white rounded-3xl shadow-lg p-6">
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <h2 class="text-xl font-semibold text-gray-900">Privacidad del perfil</h2>
+              <p class="text-sm text-gray-500">Controla la visibilidad de tu información personal y de tus recetas.</p>
+            </div>
+            <button class="inline-flex items-center gap-2 text-sm text-purple-600 hover:text-purple-700 transition">
+              <span class="material-symbols-outlined text-base">security</span>
+              Configuración avanzada
+            </button>
+          </div>
+          <div class="mt-6 space-y-6">
+            <label
+              class="flex items-center justify-between gap-4 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3">
+              <div>
+                <span class="block text-sm font-semibold text-gray-800">Perfil público</span>
+                <p class="text-xs text-gray-500">Cualquier persona puede encontrar tu perfil y ver tus recetas
+                  destacadas</p>
+              </div>
+              <input type="radio" name="profile-visibility" class="h-5 w-5 text-purple-600" checked>
+            </label>
+
+            <label
+              class="flex items-center justify-between gap-4 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3">
+              <div>
+                <span class="block text-sm font-semibold text-gray-800">Mostrar recetas guardadas</span>
+                <p class="text-xs text-gray-500">Comparte tu colección con tus seguidores y amigos.</p>
+              </div>
+              <input type="radio" name="show-saved-recipes" class="h-5 w-5 text-purple-600" checked>
+            </label>
+
+            <label
+              class="flex items-center justify-between gap-4 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3">
+              <div>
+                <span class="block text-sm font-semibold text-gray-800">Actividad reciente</span>
+                <p class="text-xs text-gray-500">Muestra tus últimas recetas publicadas y logros desbloqueados.</p>
+              </div>
+              <input type="radio" name="recent-activity" class="h-5 w-5 text-purple-600" checked>
+            </label>
+          </div>
+        </section>
+        <section id="facturacion" class="panel hidden bg-white rounded-3xl shadow-lg p-6">
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <h2 class="text-xl font-semibold text-gray-900">Facturación y suscripción</h2>
+              <p class="text-sm text-gray-500">Administra tus métodos de pago, facturas y beneficios de tu plan.</p>
+            </div>
+
+            <a href="/suscripcion"
+              class="inline-flex items-center gap-2 text-sm text-purple-600 hover:text-purple-700 transition">
+              <span class="material-symbols-outlined text-base">workspace_premium</span>
+              Gestionar suscripción
+            </a>
+          </div>
+          <button
+            class="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-5 py-2 rounded-lg hover:opacity-90 transition shadow-md">
+            Ver detalles
+          </button>
+        </section>
+
+
+        <!-- Zona de guardado al final del contenido principal, antes del footer -->
+        <div id="saveZone"
+          class="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-3xl border border-gray-200 bg-white px-6 py-4 shadow-lg max-w-5xl mx-auto mt-8 mb-4">
+          <div>
+            <h3 class="text-base font-semibold text-gray-900">¿Todo listo?</h3>
+            <p class="text-sm text-gray-500">Guarda tus cambios para que se apliquen en todas tus sesiones.</p>
+          </div>
+          <div class="flex flex-row gap-3 items-center">  
+            <form id="saveForm" class="m-0">
+              <button id="saveSettingsBtn" type="button"
+                class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-2 text-sm font-semibold text-white shadow-lg hover:opacity-90 transition">
+                <span class="material-symbols-outlined text-sm">save</span>
+                Guardar cambios
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/js/loadFooter.js" defer></script>
+  <div id="footerContainer" class="mt-auto"></div>
+
+  <!-- Modal de confirmación de logout (in-page) - movido inmediatamente después del header -->
+  <div id="saveModal" role="dialog" aria-modal="true" aria-labelledby="logoutTitle"
+    style="position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;">
+    <!-- Overlay gris semitransparente que cubre toda la página -->
+    <div id="saveOverlay" style="position:absolute;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(2px);">
+    </div>
+
+    <!-- Cuadro centrado destacado -->
+    <div id="saveDialog"
+      style="position:relative;z-index:10000;background:#ffffff;border-radius:12px;max-width:480px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.35);overflow:hidden;margin:0 16px;">
+      <div style="padding:24px;">
+        <h3 id="saveTitle" style="font-size:18px;font-weight:600;margin-bottom:8px;">Confirmar gurdado de cambios</h3>
+        <p style="color:#6b7280;margin-bottom:18px;">¿Estás seguro de que quieres guarda los cambios?</p>
+        <div style="display:flex;justify-content:flex-end;gap:12px;">
+          <button id="cancelSaveBtn"
+            style="padding:8px 14px;border-radius:8px;background:#f3f4f6;border:0;cursor:pointer;">Cancelar</button>
+          <button id="confirmSaveBtn"
+            style="padding:8px 14px;border-radius:8px;background:#12db2d;color:#fff;border:0;cursor:pointer;">Guardar
+            cambios</button>
+        </div>
+      </div>
+    </div>
+  </div>
+    <script>
+      const mobileNavToggle = document.querySelector('[data-mobile-nav-toggle]');
+      const mobileNav = document.getElementById('mobileNav');
+
+      const closeMobileNav = () => {
+        if (!mobileNav) return;
+        mobileNav.classList.add('hidden');
+        if (mobileNavToggle) mobileNavToggle.setAttribute('aria-expanded', 'false');
+      };
+
+      const openMobileNav = () => {
+        if (!mobileNav) return;
+        mobileNav.classList.remove('hidden');
+        if (mobileNavToggle) mobileNavToggle.setAttribute('aria-expanded', 'true');
+      };
+
+      if (mobileNavToggle && mobileNav) {
+        mobileNavToggle.addEventListener('click', () => {
+          const isHidden = mobileNav.classList.contains('hidden');
+          if (isHidden) {
+            openMobileNav();
+          } else {
+            closeMobileNav();
+          }
+        });
+
+        mobileNav.querySelectorAll('a').forEach((link) => {
+          link.addEventListener('click', () => {
+            if (window.innerWidth < 768) closeMobileNav();
+          });
+        });
+      }
+
+      window.addEventListener('resize', () => {
+        if (window.innerWidth >= 768) closeMobileNav();
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && window.innerWidth < 768) {
+          closeMobileNav();
+        }
+      });
+
+      const buttons = document.querySelectorAll('.menu-btn');
+      const panels = document.querySelectorAll('.panel');
+
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          buttons.forEach((b) => b.classList.remove('bg-purple-50', 'text-purple-600', 'active'));
+          btn.classList.add('bg-purple-50', 'text-purple-600', 'active');
+
+          panels.forEach((p) => {
+            p.classList.add('hidden');
+            p.classList.remove('animate-fadeIn');
+          });
+
+          const target = document.getElementById(btn.dataset.target);
+          if (target) {
+            target.classList.remove('hidden');
+            target.classList.add('animate-fadeIn');
+          }
+        });
+      });
+
+      if (buttons.length) {
+        buttons[0].click();
+      }
+    </script>
+    <script>
+      // Script para el modal de logout
+      document.addEventListener('DOMContentLoaded', () => {
+        const logoutBtn = document.getElementById('logoutBtn');
+        const logoutForm = document.getElementById('logoutForm');
+        const logoutModal = document.getElementById('logoutModal');
+        const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+        const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
+        const logoutOverlay = document.getElementById('logoutOverlay');
+        const logoutDialog = document.getElementById('logoutDialog');
+
+        if (!logoutBtn || !logoutForm || !logoutModal || !confirmLogoutBtn || !cancelLogoutBtn || !logoutOverlay) return;
+
+        const openLogoutModal = () => {
+          logoutModal.style.display = 'flex';
+          confirmLogoutBtn.focus();
+        };
+        const closeLogoutModal = () => {
+          logoutModal.style.display = 'none';
+        };
+
+        logoutBtn.addEventListener('click', openLogoutModal);
+        cancelLogoutBtn.addEventListener('click', (e) => { e.preventDefault(); closeLogoutModal(); });
+        confirmLogoutBtn.addEventListener('click', (e) => { e.preventDefault(); logoutForm.submit(); });
+
+        window.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && logoutModal.style.display === 'flex') closeLogoutModal();
+        });
+
+        logoutOverlay.addEventListener('click', closeLogoutModal);
+        if (logoutDialog) logoutDialog.addEventListener('click', (e) => e.stopPropagation());
+      });
+
+    </script>
+    <script>
+      // Script para el modal de guardar cambios
+      document.addEventListener('DOMContentLoaded', () => {
+        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+        const saveForm = document.getElementById('saveForm');
+        const saveModal = document.getElementById('saveModal');
+        const confirmSaveBtn = document.getElementById('confirmSaveBtn');
+        const cancelSaveBtn = document.getElementById('cancelSaveBtn');
+        const saveOverlay = document.getElementById('saveOverlay');
+        const saveDialog = document.getElementById('saveDialog');
+
+        if (!saveSettingsBtn || !saveForm || !saveModal || !confirmSaveBtn || !cancelSaveBtn || !saveOverlay) return;
+
+        const openSaveModal = () => {
+          saveModal.style.display = 'flex';
+          confirmSaveBtn.focus();
+        };
+        const closeSaveModal = () => {
+          saveModal.style.display = 'none';
+        };
+
+        saveSettingsBtn.addEventListener('click', openSaveModal);
+        cancelSaveBtn.addEventListener('click', (e) => { e.preventDefault(); closeSaveModal(); });
+        confirmSaveBtn.addEventListener('click', (e) => { e.preventDefault(); saveForm.submit(); });
+
+        window.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && saveModal.style.display === 'flex') closeSaveModal();
+        });
+
+        saveOverlay.addEventListener('click', closeSaveModal);
+        if (saveDialog) saveDialog.addEventListener('click', (e) => e.stopPropagation());
+      });
+
+    </script>
+</body>
+
+</html>

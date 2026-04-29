@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Recetas - El Recetario®</title>
+    <link rel="shortcut icon" href="../Imagenes/Logo/favicon.ico">
+    <link href="./css/output.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <script src="/js/userSession.js"></script>
+    <script src="/js/confirmDialog.js"></script>
+</head>
+
+<body class="font-sans bg-gray-50 text-gray-800">
+    <script src="/js/loadHeader.js" defer></script>
+    <div id="headerContainer"></div>
+
+    <nav class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 py-3 text-sm">
+            <ol class="flex items-center gap-2 text-gray-500">
+                <li><a href="/inicio" class="hover:text-purple-600">Inicio</a></li>
+                <li class="text-gray-400">/</li>
+                <li><a href="/perfil" class="hover:text-purple-600">Perfil</a></li>
+                <li class="text-gray-400">/</li>
+                <li class="text-gray-700 font-medium">Mis Recetas</li>
+            </ol>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 py-10 space-y-8">
+        <header class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 bg-white rounded-3xl p-6 shadow">
+            <div>
+                <p class="text-sm uppercase tracking-wide text-orange-500 font-semibold">Panel personal</p>
+                <h1 class="text-3xl font-bold text-slate-900 mt-1">Mis Recetas</h1>
+                <p class="text-slate-500 mt-2">Administra tus recetas publicadas, revisa su desempeño y crea nuevas propuestas para la comunidad.</p>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                <a href="/crear-receta"
+                    class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-orange-500 text-white font-semibold shadow hover:bg-orange-600 transition">
+                    <span class="material-symbols-outlined">add</span>
+                    Nueva receta
+                </a>
+                <button id="myRecipesRefresh" type="button"
+                    class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl border border-slate-200 text-slate-700 font-semibold bg-white hover:bg-slate-50 transition">
+                    <span class="material-symbols-outlined text-base">refresh</span>
+                    Actualizar
+                </button>
+            </div>
+        </header>
+
+        <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <article class="bg-gradient-to-br from-slate-900 to-slate-700 text-white rounded-3xl p-5 shadow">
+                <p class="text-sm text-white/70">Recetas publicadas</p>
+                <p id="myRecipesTotal" class="text-4xl font-bold mt-2">0</p>
+                <p class="text-xs text-white/70 mt-1">Total histórico</p>
+            </article>
+            <article class="bg-gradient-to-br from-purple-600 to-indigo-500 text-white rounded-3xl p-5 shadow">
+                <p class="text-sm text-white/70">Este mes</p>
+                <p id="myRecipesMonth" class="text-4xl font-bold mt-2">0</p>
+                <p class="text-xs text-white/70 mt-1">Publicadas en el mes actual</p>
+            </article>
+            <article class="bg-gradient-to-br from-rose-500 to-orange-500 text-white rounded-3xl p-5 shadow">
+                <p class="text-sm text-white/70">Favoritos acumulados</p>
+                <p id="myRecipesFavorites" class="text-4xl font-bold mt-2">0</p>
+                <p class="text-xs text-white/70 mt-1">Veces que guardaron tus recetas</p>
+            </article>
+        </section>
+
+        <section class="bg-white rounded-3xl shadow p-6 space-y-4">
+            <div class="flex flex-col lg:flex-row lg:items-end gap-4">
+                <label class="flex-1">
+                    <span class="text-sm font-medium text-slate-600">Buscar receta</span>
+                    <div class="mt-1 relative">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+                        <input id="myRecipesSearch" type="search" placeholder="Nombre o descripción" autocomplete="off"
+                            class="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-slate-200 focus:ring-2 focus:ring-orange-400 focus:outline-none">
+                    </div>
+                </label>
+                <label class="w-full lg:w-60">
+                    <span class="text-sm font-medium text-slate-600">Categoría</span>
+                    <select id="myRecipesCategory" class="mt-1 w-full rounded-2xl border border-slate-200 px-4 py-2.5 focus:ring-2 focus:ring-orange-400">
+                        <option value="">Todas las categorías</option>
+                    </select>
+                </label>
+                <label class="w-full lg:w-60">
+                    <span class="text-sm font-medium text-slate-600">Ordenar por</span>
+                    <select id="myRecipesSort" class="mt-1 w-full rounded-2xl border border-slate-200 px-4 py-2.5 focus:ring-2 focus:ring-orange-400">
+                        <option value="recent">Más recientes</option>
+                        <option value="oldest">Más antiguas</option>
+                        <option value="name">Nombre (A-Z)</option>
+                        <option value="rating">Mejor calificadas</option>
+                        <option value="favorites">Más guardadas</option>
+                    </select>
+                </label>
+                <button id="myRecipesClearFilters" type="button"
+                    class="w-full lg:w-auto px-4 py-2.5 rounded-2xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50">Limpiar filtros</button>
+            </div>
+        </section>
+
+        <section class="bg-white rounded-3xl shadow p-6">
+            <div id="myRecipesList" class="space-y-4">
+                <div class="text-center text-slate-400 py-10">Cargando tus recetas...</div>
+            </div>
+        </section>
+    </main>
+
+    <script src="/js/loadFooter.js" defer></script>
+    <div id="footerContainer"></div>
+
+    <script>
+        (() => {
+            const selectors = {};
+            let debounceId = null;
+            let lastCategoryPayload = null;
+
+            const assignSelectors = () => {
+                selectors.list = document.getElementById('myRecipesList');
+                selectors.search = document.getElementById('myRecipesSearch');
+                selectors.category = document.getElementById('myRecipesCategory');
+                selectors.sort = document.getElementById('myRecipesSort');
+                selectors.refresh = document.getElementById('myRecipesRefresh');
+                selectors.clear = document.getElementById('myRecipesClearFilters');
+                selectors.total = document.getElementById('myRecipesTotal');
+                selectors.month = document.getElementById('myRecipesMonth');
+                selectors.recent = document.getElementById('myRecipesRecent');
+                selectors.favorites = document.getElementById('myRecipesFavorites');
+            };
+
+            const formatDate = (value) => {
+                if (!value) return 'Fecha no disponible';
+                const date = new Date(value);
+                if (Number.isNaN(date.getTime())) return 'Fecha no disponible';
+                return new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium' }).format(date);
+            };
+
+            const formatTime = (value) => {
+                if (!value) return '—';
+                const parts = value.split(':');
+                if (parts.length < 2) return value;
+                const hours = Number(parts[0]);
+                const mins = Number(parts[1]);
+                const chunks = [];
+                if (hours > 0) chunks.push(`${hours} h`);
+                if (mins > 0) chunks.push(`${mins} min`);
+                return chunks.length ? chunks.join(' ') : '—';
+            };
+
+            const formatNumber = (value) => {
+                const numeric = Number(value) || 0;
+                if (numeric >= 1_000_000) return `${(numeric / 1_000_000).toFixed(1)}M`;
+                if (numeric >= 1_000) return `${(numeric / 1_000).toFixed(1)}K`;
+                return numeric.toLocaleString('es-MX');
+            };
+
+            const buildQuery = () => {
+                const params = new URLSearchParams();
+                const searchValue = selectors.search && selectors.search.value.trim();
+                const categoryValue = selectors.category && selectors.category.value;
+                const sortValue = selectors.sort && selectors.sort.value;
+                if (searchValue) params.set('search', searchValue);
+                if (categoryValue) params.set('category', categoryValue);
+                if (sortValue && sortValue !== 'recent') params.set('sort', sortValue);
+                const query = params.toString();
+                return query ? `?${query}` : '';
+            };
+
+            const setLoading = () => {
+                if (!selectors.list) return;
+                selectors.list.innerHTML = `
+                    <div class="space-y-4">
+                        ${Array.from({ length: 3 }).map(() => `
+                            <article class="flex gap-4 p-4 border border-slate-100 rounded-2xl animate-pulse">
+                                <div class="w-28 h-28 bg-slate-100 rounded-2xl"></div>
+                                <div class="flex-1 space-y-3">
+                                    <div class="h-5 bg-slate-100 rounded"></div>
+                                    <div class="h-4 bg-slate-100 rounded w-2/3"></div>
+                                    <div class="h-4 bg-slate-100 rounded w-1/3"></div>
+                                </div>
+                            </article>`).join('')}
+                    </div>`;
+            };
+
+            const renderStats = (stats = {}) => {
+                if (selectors.total) selectors.total.textContent = formatNumber(stats.total || 0);
+                if (selectors.month) selectors.month.textContent = formatNumber(stats.publishedThisMonth || 0);
+                if (selectors.recent) selectors.recent.textContent = formatNumber(stats.recent || 0);
+                if (selectors.favorites) selectors.favorites.textContent = formatNumber(stats.totalFavorites || 0);
+            };
+
+            const populateCategories = (categories = []) => {
+                if (!selectors.category || !Array.isArray(categories)) return;
+                const serialized = JSON.stringify(categories.map((cat) => `${cat.id}-${cat.name}`));
+                if (serialized === lastCategoryPayload) return;
+                lastCategoryPayload = serialized;
+                const current = selectors.category.value;
+                selectors.category.innerHTML = '<option value="">Todas las categorías</option>' +
+                    categories.map((cat) => `<option value="${cat.id}">${cat.name}</option>`).join('');
+                if (current) selectors.category.value = current;
+            };
+
+            const gotoRecipeEditor = (recipeId) => {
+                if (!Number.isFinite(recipeId)) return;
+                window.location.href = `/perfil/recetas/${recipeId}`;
+            };
+
+            const deleteRecipe = async (recipeId, button) => {
+                if (!Number.isFinite(recipeId)) return;
+                const confirmed = await showPopupConfirm('¿Seguro que deseas eliminar esta receta? Esta acción no se puede deshacer.', {
+                    title: 'Eliminar receta',
+                    subtitle: 'Mis recetas',
+                    confirmText: 'Eliminar',
+                    cancelText: 'Cancelar'
+                });
+                if (!confirmed) return;
+
+                let originalContent = null;
+                if (button) {
+                    originalContent = button.innerHTML;
+                    button.disabled = true;
+                    button.classList.add('opacity-70', 'cursor-not-allowed');
+                    button.innerHTML = '<span class="material-symbols-outlined text-base animate-spin">progress_activity</span>Eliminando...';
+                }
+
+                try {
+                    const response = await fetch(`/api/yo/mis-recetas/${recipeId}`, {
+                        method: 'DELETE',
+                        credentials: 'include',
+                    });
+                    if (response.status === 401) {
+                        window.location.href = '/iniciar-sesion';
+                        return;
+                    }
+                    if (!response.ok) {
+                        const body = await response.json().catch(() => ({}));
+                        const message = body && body.error ? body.error : 'No se pudo eliminar la receta.';
+                        window.alert(message);
+                        return;
+                    }
+                    await fetchData();
+                } catch (err) {
+                    console.error('Error al eliminar receta', err);
+                    window.alert('No se pudo eliminar la receta. Intenta de nuevo.');
+                } finally {
+                    if (button) {
+                        button.disabled = false;
+                        button.classList.remove('opacity-70', 'cursor-not-allowed');
+                        button.innerHTML = originalContent;
+                    }
+                }
+            };
+
+            const attachRecipeActions = () => {
+                if (!selectors.list) return;
+                const buttons = selectors.list.querySelectorAll('button[data-recipe-action]');
+                buttons.forEach((button) => {
+                    const action = button.dataset.recipeAction;
+                    const recipeId = Number(button.dataset.recipeId);
+                    if (action === 'edit') {
+                        button.addEventListener('click', () => gotoRecipeEditor(recipeId));
+                    } else if (action === 'delete') {
+                        button.addEventListener('click', () => deleteRecipe(recipeId, button));
+                    }
+                });
+            };
+
+            const renderRecipes = (recipes = []) => {
+                if (!selectors.list) return;
+                if (!Array.isArray(recipes) || recipes.length === 0) {
+                    selectors.list.innerHTML = `
+                        <div class="text-center py-12">
+                            <p class="text-lg font-semibold text-slate-800">Aún no has publicado recetas.</p>
+                            <p class="text-slate-500 mt-2">Comparte tus mejores platillos para inspirar a la comunidad.</p>
+                            <a href="/crear-receta" class="inline-flex items-center gap-2 mt-4 px-5 py-3 rounded-2xl bg-orange-500 text-white font-semibold">
+                                <span class="material-symbols-outlined">add</span>Crear mi primera receta
+                            </a>
+                        </div>`;
+                    return;
+                }
+
+                selectors.list.innerHTML = recipes.map((recipe) => {
+                    const rating = recipe.avgRating != null ? Number(recipe.avgRating).toFixed(1) : '—';
+                    return `
+                        <article class="p-4 border border-slate-100 rounded-3xl hover:border-orange-200 hover:shadow-lg transition">
+                            <a href="/receta/${recipe.id}" class="flex flex-col md:flex-row gap-4">
+                                <img src="${recipe.imageUrl}" alt="${recipe.name}" class="w-full md:w-44 h-44 object-cover rounded-2xl">
+                                <div class="flex-1 flex flex-col">
+                                    <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-3">
+                                        <div>
+                                            <h3 class="text-xl font-semibold text-slate-900">${recipe.name}</h3>
+                                            <p class="text-sm text-slate-500 mt-1 line-clamp-2">${recipe.description || 'Sin descripción disponible.'}</p>
+                                        </div>
+                                        <span class="inline-flex items-center gap-1 text-sm font-semibold text-orange-600 bg-orange-50 px-3 py-1 rounded-full self-start">
+                                            <span class="material-symbols-outlined text-base">star</span>${rating}
+                                        </span>
+                                    </div>
+                                    <dl class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm text-slate-600 mt-4">
+                                        <div><dt class="font-semibold text-slate-800">Publicado</dt><dd>${formatDate(recipe.publishedAt)}</dd></div>
+                                        <div><dt class="font-semibold text-slate-800">Tiempo</dt><dd>${formatTime(recipe.prepTime)}</dd></div>
+                                        <div><dt class="font-semibold text-slate-800">Dificultad</dt><dd>${recipe.difficulty ?? '—'}</dd></div>
+                                        <div><dt class="font-semibold text-slate-800">Favoritos</dt><dd>${formatNumber(recipe.totalFavorites)}</dd></div>
+                                    </dl>
+                                    <div class="flex flex-wrap gap-2 mt-4 text-xs text-slate-500">
+                                        ${recipe.categoryName ? `<span class="px-3 py-1 rounded-full bg-slate-100">${recipe.categoryName}</span>` : ''}
+                                        ${recipe.typeName ? `<span class="px-3 py-1 rounded-full bg-slate-100">${recipe.typeName}</span>` : ''}
+                                    </div>
+                                </div>
+                            </a>
+                            <div class="flex flex-wrap gap-3 mt-4">
+                                <button type="button" class="inline-flex items-center gap-2 px-4 py-2 rounded-2xl border border-slate-200 text-slate-700 text-sm font-semibold hover:bg-slate-50 transition" data-recipe-action="edit" data-recipe-id="${recipe.id}">
+                                    <span class="material-symbols-outlined text-base">edit</span>Editar
+                                </button>
+                                <button type="button" class="inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-sm font-semibold bg-rose-50 text-rose-600 hover:bg-rose-100 transition" data-recipe-action="delete" data-recipe-id="${recipe.id}">
+                                    <span class="material-symbols-outlined text-base">delete</span>Eliminar
+                                </button>
+                            </div>
+                        </article>`;
+                }).join('');
+
+                attachRecipeActions();
+            };
+
+            const fetchData = async () => {
+                setLoading();
+                try {
+                    const response = await fetch(`/api/yo/mis-recetas${buildQuery()}`, { credentials: 'include' });
+                    if (response.status === 401) {
+                        window.location.href = '/iniciar-sesion';
+                        return;
+                    }
+                    if (!response.ok) throw new Error(`status_${response.status}`);
+                    const payload = await response.json();
+                    populateCategories(payload.categories || []);
+                    renderStats(payload.stats || {});
+                    renderRecipes(payload.recipes || []);
+                } catch (error) {
+                    console.error('[my-recipes] Error al cargar datos:', error);
+                    if (selectors.list) {
+                        selectors.list.innerHTML = '<div class="text-center text-rose-500 py-10">No pudimos cargar tus recetas. Intenta de nuevo.</div>';
+                    }
+                }
+            };
+
+            const scheduleFetch = () => {
+                if (debounceId) window.clearTimeout(debounceId);
+                debounceId = window.setTimeout(fetchData, 350);
+            };
+
+            const bindEvents = () => {
+                if (selectors.search) selectors.search.addEventListener('input', scheduleFetch);
+                if (selectors.category) selectors.category.addEventListener('change', fetchData);
+                if (selectors.sort) selectors.sort.addEventListener('change', fetchData);
+                if (selectors.refresh) selectors.refresh.addEventListener('click', fetchData);
+                if (selectors.clear) selectors.clear.addEventListener('click', () => {
+                    if (selectors.search) selectors.search.value = '';
+                    if (selectors.category) selectors.category.value = '';
+                    if (selectors.sort) selectors.sort.value = 'recent';
+                    fetchData();
+                });
+            };
+
+            document.addEventListener('DOMContentLoaded', () => {
+                assignSelectors();
+                bindEvents();
+                fetchData();
+            });
+        })();
+    </script>
+</body>
+
+</html>

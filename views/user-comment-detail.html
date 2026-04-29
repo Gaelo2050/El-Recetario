@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Administración | Detalle del comentario</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link rel="shortcut icon" href="/Imagenes/Logo/favicon.ico" />
+    <link rel="stylesheet" href="/css/output.css" />
+    <script src="/js/userSession.js" defer></script>
+    <script src="/js/confirmDialog.js" defer></script>
+  </head>
+  <body class="bg-slate-50 text-slate-800 min-h-screen">
+    <div class="max-w-6xl mx-auto px-4 py-10">
+      <header class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 class="text-3xl font-semibold text-slate-900">Detalle del comentario</h1>
+          <p id="pageSubtitle" class="text-sm text-slate-500">Preparando la información...</p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <button id="backToAdmin" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50">
+            <span class="material-symbols-outlined text-base" aria-hidden="true">arrow_back</span>
+            Regresar al panel
+          </button>
+          <button id="refreshComment" class="inline-flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 transition hover:bg-indigo-100">
+            <span class="material-symbols-outlined text-base" aria-hidden="true">refresh</span>
+            Recargar datos
+          </button>
+        </div>
+      </header>
+
+      <div id="statusToast" class="fixed left-1/2 top-6 z-50 hidden -translate-x-1/2 rounded-xl border px-5 py-3 text-sm font-medium shadow-lg"></div>
+
+      <div id="loadingState" class="mt-10 rounded-2xl border border-dashed border-slate-200 bg-white/70 p-10 text-center text-slate-500">
+        Cargando comentario...
+      </div>
+
+      <div id="commentDetailContent" class="mt-10 hidden space-y-8">
+        <section class="rounded-2xl border border-slate-200 bg-white/95 p-6 shadow-sm">
+          <div class="flex flex-wrap items-center gap-3">
+            <span id="commentIdBadge" class="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-indigo-600">Comentario</span>
+            <span id="commentRecipeLink" class="text-sm text-slate-500"></span>
+          </div>
+          <p id="commentText" class="mt-4 whitespace-pre-wrap text-lg text-slate-800"></p>
+          <div class="mt-6 grid gap-4 md:grid-cols-3">
+            <div class="rounded-xl border border-slate-100 bg-slate-50/70 p-4">
+              <p class="text-xs uppercase tracking-wide text-slate-400">Autor del comentario</p>
+              <p id="commentUserLabel" class="text-sm font-semibold text-slate-800">-</p>
+            </div>
+            <div class="rounded-xl border border-slate-100 bg-slate-50/70 p-4">
+              <p class="text-xs uppercase tracking-wide text-slate-400">Receta relacionada</p>
+              <p id="commentRecipeLabel" class="text-sm font-semibold text-slate-800">-</p>
+            </div>
+            <div class="rounded-xl border border-slate-100 bg-slate-50/70 p-4">
+              <p class="text-xs uppercase tracking-wide text-slate-400">Calificaciones y actividad</p>
+              <p id="commentMetaExtras" class="text-sm font-semibold text-slate-800">-</p>
+            </div>
+          </div>
+          <div class="mt-6 flex flex-wrap gap-3">
+            <a id="viewRecipeBtn" href="#" class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700" target="_blank" rel="noopener">
+              <span class="material-symbols-outlined text-base" aria-hidden="true">restaurant</span>
+              Ver receta
+            </a>
+            <a id="viewUserBtn" href="#" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50" target="_blank" rel="noopener">
+              <span class="material-symbols-outlined text-base" aria-hidden="true">person</span>
+              Ver usuario
+            </a>
+            <button id="copyCommentIdBtn" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+              <span class="material-symbols-outlined text-base" aria-hidden="true">content_copy</span>
+              Copiar ID
+            </button>
+            <button id="deleteCommentBtn" class="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700">
+              <span class="material-symbols-outlined text-base" aria-hidden="true">delete</span>
+              Eliminar comentario
+            </button>
+          </div>
+        </section>
+
+        <section class="grid gap-6 lg:grid-cols-2">
+          <article class="rounded-2xl border border-slate-200 bg-white/95 p-6 shadow-sm">
+            <div class="flex items-center gap-4">
+              <img id="userAvatar" src="/Imagenes/Usuarios/0.png" alt="Avatar del usuario" class="h-20 w-20 rounded-2xl border border-slate-100 object-cover" />
+              <div>
+                <p class="text-sm uppercase tracking-wide text-slate-400">Perfil del usuario</p>
+                <h2 id="userName" class="text-xl font-semibold text-slate-900">-</h2>
+                <p id="userAlias" class="text-sm text-slate-500">-</p>
+              </div>
+            </div>
+            <dl class="mt-6 grid gap-4 sm:grid-cols-2">
+              <div class="rounded-xl bg-slate-50/80 p-4">
+                <dt class="text-xs uppercase text-slate-400">Correo</dt>
+                <dd id="userEmail" class="text-sm font-medium text-slate-800 break-all">-</dd>
+              </div>
+              <div class="rounded-xl bg-slate-50/80 p-4">
+                <dt class="text-xs uppercase text-slate-400">Tipo de cuenta</dt>
+                <dd id="userRole" class="text-sm font-medium text-slate-800">-</dd>
+              </div>
+              <div class="rounded-xl bg-slate-50/80 p-4">
+                <dt class="text-xs uppercase text-slate-400">Recetas publicadas</dt>
+                <dd id="userRecipesCount" class="text-2xl font-semibold text-slate-900">-</dd>
+              </div>
+              <div class="rounded-xl bg-slate-50/80 p-4">
+                <dt class="text-xs uppercase text-slate-400">Comentarios realizados</dt>
+                <dd id="userCommentsCount" class="text-2xl font-semibold text-slate-900">-</dd>
+              </div>
+              <div class="rounded-xl bg-slate-50/80 p-4">
+                <dt class="text-xs uppercase text-slate-400">Estado</dt>
+                <dd id="userStatus" class="text-sm font-medium">-</dd>
+              </div>
+              <div class="rounded-xl bg-slate-50/80 p-4">
+                <dt class="text-xs uppercase text-slate-400">Registro</dt>
+                <dd id="userRegisteredAt" class="text-sm font-medium text-slate-800">-</dd>
+              </div>
+            </dl>
+          </article>
+
+          <article class="rounded-2xl border border-slate-200 bg-white/95 p-6 shadow-sm">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+              <img id="recipeImage" src="/Imagenes/Recetas/0.png" alt="Imagen de la receta" class="h-24 w-24 rounded-2xl border border-slate-100 object-cover" />
+              <div>
+                <p class="text-sm uppercase tracking-wide text-slate-400">Resumen de la receta</p>
+                <h2 id="recipeTitle" class="text-xl font-semibold text-slate-900">-</h2>
+                <p id="recipeMeta" class="text-sm text-slate-500">-</p>
+              </div>
+            </div>
+            <dl class="mt-6 grid gap-4 sm:grid-cols-2">
+              <div class="rounded-xl bg-slate-50/80 p-4">
+                <dt class="text-xs uppercase text-slate-400">Categoría</dt>
+                <dd id="recipeCategory" class="text-sm font-medium text-slate-800">-</dd>
+              </div>
+              <div class="rounded-xl bg-slate-50/80 p-4">
+                <dt class="text-xs uppercase text-slate-400">Tipo</dt>
+                <dd id="recipeType" class="text-sm font-medium text-slate-800">-</dd>
+              </div>
+              <div class="rounded-xl bg-slate-50/80 p-4">
+                <dt class="text-xs uppercase text-slate-400">Dificultad</dt>
+                <dd id="recipeDifficulty" class="text-2xl font-semibold text-slate-900">-</dd>
+              </div>
+              <div class="rounded-xl bg-slate-50/80 p-4">
+                <dt class="text-xs uppercase text-slate-400">Tiempo de preparación</dt>
+                <dd id="recipePrepTime" class="text-lg font-semibold text-slate-900">-</dd>
+              </div>
+              <div class="rounded-xl bg-slate-50/80 p-4">
+                <dt class="text-xs uppercase text-slate-400">Promedio de calificación</dt>
+                <dd id="recipeRating" class="text-lg font-semibold text-slate-900">-</dd>
+              </div>
+              <div class="rounded-xl bg-slate-50/80 p-4">
+                <dt class="text-xs uppercase text-slate-400">Comentarios totales</dt>
+                <dd id="recipeCommentsCount" class="text-2xl font-semibold text-slate-900">-</dd>
+              </div>
+            </dl>
+          </article>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      const backToAdminBtn = document.getElementById('backToAdmin');
+      const refreshBtn = document.getElementById('refreshComment');
+      const deleteBtn = document.getElementById('deleteCommentBtn');
+      const viewRecipeBtn = document.getElementById('viewRecipeBtn');
+      const viewUserBtn = document.getElementById('viewUserBtn');
+      const copyIdBtn = document.getElementById('copyCommentIdBtn');
+      const statusToast = document.getElementById('statusToast');
+      const loadingState = document.getElementById('loadingState');
+      const contentContainer = document.getElementById('commentDetailContent');
+      const subtitle = document.getElementById('pageSubtitle');
+      const commentIdBadge = document.getElementById('commentIdBadge');
+      const commentTextEl = document.getElementById('commentText');
+      const commentRecipeLink = document.getElementById('commentRecipeLink');
+      const commentUserLabel = document.getElementById('commentUserLabel');
+      const commentRecipeLabel = document.getElementById('commentRecipeLabel');
+      const commentMetaExtras = document.getElementById('commentMetaExtras');
+      const userAvatar = document.getElementById('userAvatar');
+      const userNameEl = document.getElementById('userName');
+      const userAliasEl = document.getElementById('userAlias');
+      const userEmailEl = document.getElementById('userEmail');
+      const userRoleEl = document.getElementById('userRole');
+      const userRecipesCount = document.getElementById('userRecipesCount');
+      const userCommentsCount = document.getElementById('userCommentsCount');
+      const userStatusEl = document.getElementById('userStatus');
+      const userRegisteredAt = document.getElementById('userRegisteredAt');
+      const recipeImage = document.getElementById('recipeImage');
+      const recipeTitleEl = document.getElementById('recipeTitle');
+      const recipeMetaEl = document.getElementById('recipeMeta');
+      const recipeCategoryEl = document.getElementById('recipeCategory');
+      const recipeTypeEl = document.getElementById('recipeType');
+      const recipeDifficultyEl = document.getElementById('recipeDifficulty');
+      const recipePrepTimeEl = document.getElementById('recipePrepTime');
+      const recipeRatingEl = document.getElementById('recipeRating');
+      const recipeCommentsCount = document.getElementById('recipeCommentsCount');
+
+      const DEFAULT_USER_AVATAR = '/Imagenes/Usuarios/0.png';
+      const DEFAULT_RECIPE_IMAGE = '/Imagenes/Recetas/0.png';
+      const pathSegments = window.location.pathname.split('/').filter(Boolean);
+      const commentId = Number(pathSegments[pathSegments.length - 1]);
+
+      const showToast = (message, type = 'info', duration = 3200) => {
+        const palette = {
+          info: 'bg-slate-900/90 text-white border-slate-900/80',
+          success: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+          error: 'bg-red-50 text-red-700 border-red-200'
+        };
+        statusToast.textContent = message;
+        statusToast.className = `fixed left-1/2 top-6 z-50 -translate-x-1/2 rounded-xl border px-5 py-3 text-sm font-medium shadow-lg ${palette[type] || palette.info}`;
+        statusToast.classList.remove('hidden');
+        clearTimeout(showToast.timer);
+        showToast.timer = setTimeout(() => {
+          statusToast.classList.add('hidden');
+        }, duration);
+      };
+
+      const formatDateTime = (value) => {
+        if (!value) return 'Sin registro';
+        const normalized = typeof value === 'string' ? value.replace(' ', 'T') : value;
+        const date = new Date(normalized);
+        if (Number.isNaN(date.getTime())) return 'Sin registro';
+        return date.toLocaleString('es-MX', {
+          year: 'numeric',
+          month: 'short',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      };
+
+      const formatTime = (value) => {
+        if (!value) return 'N/D';
+        const parts = value.split(':');
+        if (parts.length < 2) return value;
+        const hours = Number(parts[0]);
+        const minutes = Number(parts[1]);
+        if (Number.isFinite(hours) && Number.isFinite(minutes)) {
+          if (!hours) return `${minutes} min`;
+          if (!minutes) return `${hours} h`;
+          return `${hours} h ${minutes} min`;
+        }
+        return value;
+      };
+
+      const formatDifficulty = (value) => {
+        const parsed = Number(value);
+        if (!Number.isFinite(parsed)) return 'N/D';
+        return parsed.toString();
+      };
+
+      const ensureImage = (value, fallback) => {
+        if (typeof value !== 'string' || !value.trim()) return fallback;
+        if (value.startsWith('http://') || value.startsWith('https://')) return value;
+        const sanitized = value.replace(/^[./]+/, '');
+        return `/${sanitized}`;
+      };
+
+      const handleAuthErrors = (response) => {
+        if (response.status === 401) {
+          window.location.href = '/iniciar-sesion';
+          return true;
+        }
+        if (response.status === 403) {
+          showToast('No tienes permisos para acceder a este recurso.', 'error');
+          return true;
+        }
+        return false;
+      };
+
+      const loadDetail = async () => {
+        if (!Number.isFinite(commentId) || commentId <= 0) {
+          loadingState.textContent = 'El identificador del comentario no es válido.';
+          return null;
+        }
+
+        const response = await fetch(`/api/administracion/comentarios/${encodeURIComponent(commentId)}`, {
+          credentials: 'include'
+        });
+        if (handleAuthErrors(response)) {
+          return null;
+        }
+        if (response.status === 404) {
+          loadingState.textContent = 'El comentario indicado no existe o ya fue eliminado.';
+          return null;
+        }
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}`);
+        }
+        return response.json();
+      };
+
+      const renderDetail = (detail) => {
+        if (!detail || !detail.comment) {
+          loadingState.textContent = 'No se pudo cargar el comentario.';
+          return;
+        }
+        loadingState.classList.add('hidden');
+        contentContainer.classList.remove('hidden');
+
+        const { comment, user, recipe } = detail;
+        subtitle.textContent = `Comentario ${comment.id} — Receta #${recipe?.id ?? 'N/D'}`;
+        commentIdBadge.textContent = `ID #${comment.id}`;
+        commentTextEl.textContent = comment.texto || 'Sin contenido';
+        commentUserLabel.textContent = user?.nombre ? `${user.nombre} (${user.alias || 'Sin alias'})` : 'Sin usuario';
+        commentRecipeLabel.textContent = recipe?.titulo || 'Sin receta';
+        commentRecipeLink.textContent = recipe?.titulo ? `Receta • ${recipe.titulo}` : '';
+        const avgLabel = recipe?.promedioCalificacion != null
+          ? Number(recipe.promedioCalificacion).toFixed(1)
+          : 'N/D';
+        commentMetaExtras.textContent = recipe?.totalCalificaciones
+          ? `${recipe.totalCalificaciones} calificación(es) • ${avgLabel} promedio`
+          : 'Sin métricas registradas';
+
+        if (recipe?.id) {
+          viewRecipeBtn.href = `/administracion/recetas/${encodeURIComponent(recipe.id)}`;
+          commentRecipeLink.textContent = `Receta #${recipe.id}`;
+        } else {
+          viewRecipeBtn.classList.add('pointer-events-none', 'opacity-60');
+        }
+
+        if (user?.id) {
+          viewUserBtn.href = `/administracion/usuarios/${encodeURIComponent(user.id)}`;
+        } else {
+          viewUserBtn.classList.add('pointer-events-none', 'opacity-60');
+        }
+
+        userAvatar.src = ensureImage(user?.foto, DEFAULT_USER_AVATAR);
+        userAvatar.onerror = () => { userAvatar.src = DEFAULT_USER_AVATAR; };
+        userNameEl.textContent = user?.nombre || 'Sin nombre';
+        userAliasEl.textContent = user?.alias ? `@${user.alias}` : 'Sin alias';
+        userEmailEl.textContent = user?.email || 'Sin correo';
+        userRoleEl.textContent = user?.tipoNombre || 'Sin rol';
+        userRecipesCount.textContent = user?.totalRecetas != null ? user.totalRecetas.toLocaleString('es-MX') : '0';
+        userCommentsCount.textContent = user?.totalComentarios != null ? user.totalComentarios.toLocaleString('es-MX') : '0';
+        userStatusEl.textContent = user?.activo ? 'Activo' : 'Inactivo';
+        userStatusEl.className = `text-sm font-medium ${user?.activo ? 'text-emerald-600' : 'text-red-600'}`;
+        userRegisteredAt.textContent = formatDateTime(user?.fechaRegistro);
+
+        recipeImage.src = ensureImage(recipe?.imagenPrincipal, DEFAULT_RECIPE_IMAGE);
+        recipeImage.onerror = () => { recipeImage.src = DEFAULT_RECIPE_IMAGE; };
+        recipeTitleEl.textContent = recipe?.titulo || 'Sin título';
+        recipeMetaEl.textContent = recipe?.autorNombre
+          ? `Autor: ${recipe.autorNombre}${recipe.autorAlias ? ` (@${recipe.autorAlias})` : ''}`
+          : 'Autor desconocido';
+        recipeCategoryEl.textContent = recipe?.categoriaNombre || 'Sin categoría';
+        recipeTypeEl.textContent = recipe?.tipoNombre || 'Sin tipo';
+        recipeDifficultyEl.textContent = formatDifficulty(recipe?.dificultad);
+        recipePrepTimeEl.textContent = formatTime(recipe?.tiempoPrep);
+        recipeRatingEl.textContent = recipe?.promedioCalificacion != null
+          ? `${Number(recipe.promedioCalificacion).toFixed(1)} (${recipe.totalCalificaciones || 0})`
+          : 'Sin calificaciones';
+        recipeCommentsCount.textContent = recipe?.totalComentarios != null ? recipe.totalComentarios.toLocaleString('es-MX') : '0';
+      };
+
+      const handleDelete = async () => {
+        if (!Number.isFinite(commentId)) return;
+        const confirmation = await showPopupConfirm('¿Seguro que deseas eliminar este comentario? Esta acción es permanente.', {
+          title: 'Eliminar comentario',
+          subtitle: 'Moderación',
+          confirmText: 'Eliminar',
+          cancelText: 'Cancelar'
+        });
+        if (!confirmation) return;
+        deleteBtn.disabled = true;
+        deleteBtn.classList.add('opacity-60');
+        try {
+          const response = await fetch(`/api/administracion/comentarios/${encodeURIComponent(commentId)}`, {
+            method: 'DELETE',
+            credentials: 'include'
+          });
+          if (handleAuthErrors(response)) {
+            deleteBtn.disabled = false;
+            deleteBtn.classList.remove('opacity-60');
+            return;
+          }
+          if (response.status === 404) {
+            showToast('El comentario ya no existe.', 'error');
+            return;
+          }
+          if (!response.ok) {
+            throw new Error(`Error ${response.status}`);
+          }
+          showToast('Comentario eliminado. Redirigiendo...', 'success');
+          setTimeout(() => {
+            window.location.href = '/administracion';
+          }, 1500);
+        } catch (error) {
+          console.error('Error al eliminar el comentario:', error);
+          showToast('No se pudo eliminar el comentario. Intenta más tarde.', 'error');
+          deleteBtn.disabled = false;
+          deleteBtn.classList.remove('opacity-60');
+        }
+      };
+
+      const copyCommentId = async () => {
+        if (!Number.isFinite(commentId)) return;
+        try {
+          await navigator.clipboard.writeText(String(commentId));
+          showToast('ID copiado al portapapeles.', 'success');
+        } catch (err) {
+          showToast('No se pudo copiar el ID.', 'error');
+        }
+      };
+
+      const init = async () => {
+        if (!Number.isFinite(commentId) || commentId <= 0) {
+          loadingState.textContent = 'Identificador no válido.';
+          refreshBtn.disabled = true;
+          deleteBtn.disabled = true;
+          return;
+        }
+        try {
+          const detail = await loadDetail();
+          if (!detail) return;
+          renderDetail(detail);
+        } catch (error) {
+          console.error('Error al cargar el comentario:', error);
+          loadingState.textContent = 'Ocurrió un problema al cargar la información.';
+        }
+      };
+
+      backToAdminBtn.addEventListener('click', () => {
+        if (document.referrer && document.referrer.includes('/administracion')) {
+          window.history.back();
+        } else {
+          window.location.href = '/administracion';
+        }
+      });
+
+      refreshBtn.addEventListener('click', () => {
+        loadingState.classList.remove('hidden');
+        loadingState.textContent = 'Actualizando datos...';
+        contentContainer.classList.add('hidden');
+        init();
+      });
+
+      deleteBtn.addEventListener('click', handleDelete);
+      copyIdBtn.addEventListener('click', copyCommentId);
+
+      init();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suscripción Premium - El Recetario</title>
+  <link rel="shortcut icon" href="../Imagenes/Logo/favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <link href="./css/output.css" rel="stylesheet">
+  <script src="/js/userSession.js"></script>
+</head>
+
+<body class="font-sans bg-gray-50 text-gray-800">
+  <!-- Header -->
+  <script src="/js/loadHeader.js" defer></script>
+  <div id="headerContainer"></div>
+
+  <!-- Breadcrumbs -->
+  <nav class="bg-white border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 py-3 text-sm">
+      <ol class="flex items-center gap-2 text-gray-500">
+        <li><a href="/inicio" class="hover:text-purple-600">Inicio</a></li>
+        <li class="text-gray-400">/</li>
+        <li class="text-gray-700 font-medium">Suscripción Premium</li>
+      </ol>
+    </div>
+  </nav>
+
+  <main class="bg-slate-950 text-gray-100">
+    <!-- Hero -->
+    <section class="relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-orange-500/20 via-purple-600/10 to-slate-900"></div>
+      <div class="relative max-w-6xl mx-auto px-4 py-20 grid lg:grid-cols-[1.1fr,0.9fr] gap-10 items-center">
+        <div class="space-y-6">
+          <span
+            class="inline-flex items-center gap-2 bg-orange-500/20 text-orange-200 px-3 py-1 rounded-full text-sm font-medium">
+            <span class="material-symbols-outlined text-base">auto_stories</span>
+            Tu comunidad culinaria sin límites
+          </span>
+          <h1 class="text-4xl sm:text-5xl font-extrabold text-white leading-tight">
+            Comparte tus recetas, descubre nuevas preparaciones y conecta con cocineros como tú.<br>
+            Todo en un solo lugar.
+          </h1>
+          <p class="text-lg text-slate-200 max-w-xl">
+            El Recetario Premium potencia la experiencia de la plataforma: crea y publica tus platillos sin límites,
+            construye tu recetario personal, busca por ingredientes y sigue a los cocineros que te inspiran.
+          </p>
+          <ul class="grid gap-3 sm:grid-cols-2">
+            <li class="flex items-start gap-3"><span
+                class="material-symbols-outlined text-orange-400">check_small</span>Publica recetas ilimitadas con
+              galerías, historias y tips personales.</li>
+            <li class="flex items-start gap-3"><span
+                class="material-symbols-outlined text-orange-400">check_small</span>Descubre preparaciones según tus
+              ingredientes, gustos y nivel de dificultad.</li>
+            <li class="flex items-start gap-3"><span
+                class="material-symbols-outlined text-orange-400">check_small</span>Guarda tus favoritas en colecciones
+              privadas y compártelas con tu familia.</li>
+            <li class="flex items-start gap-3"><span
+                class="material-symbols-outlined text-orange-400">check_small</span>Participa en retos culinarios,
+              eventos en vivo y una comunidad activa de creadores.</li>
+          </ul>
+          <div class="flex flex-wrap gap-4">
+            <a href="#planes"
+              class="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-5 py-3 rounded-lg font-semibold shadow hover:opacity-90 transition">
+              <span class="material-symbols-outlined text-base">shopping_cart</span>
+              Ver planes disponibles
+            </a>
+            <a href="#comparativa"
+              class="inline-flex items-center gap-2 border border-orange-400/40 px-5 py-3 rounded-lg text-orange-200 font-semibold hover:border-orange-200 hover:text-white transition">
+              <span class="material-symbols-outlined text-base">bar_chart_4_bars</span>
+              Comparar con plan gratuito
+            </a>
+          </div>
+        </div>
+        <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold text-white">Impacto en la comunidad</h2>
+            <span class="text-sm text-slate-400">Actualizado hoy</span>
+          </div>
+          <dl class="grid gap-6">
+            <div class="bg-slate-800/80 rounded-2xl p-4">
+              <dt class="text-sm text-slate-300">Recetas compartidas</dt>
+              <dd class="text-3xl font-bold text-white">15,000+</dd>
+              <p class="text-xs text-emerald-300 mt-1 flex items-center gap-1">
+                <span class="material-symbols-outlined text-base">trending_up</span>
+                Miles de ideas nuevas cada mes
+              </p>
+            </div>
+            <div class="bg-slate-800/80 rounded-2xl p-4">
+              <dt class="text-sm text-slate-300">Colecciones guardadas</dt>
+              <dd class="text-3xl font-bold text-white">48,000</dd>
+              <p class="text-xs text-slate-400 mt-1">Los usuarios organizan su recetario personal y lo comparten con su
+                círculo.</p>
+            </div>
+            <div class="bg-slate-800/80 rounded-2xl p-4">
+              <dt class="text-sm text-slate-300">Conexiones creadas</dt>
+              <dd class="text-3xl font-bold text-white">120k</dd>
+              <p class="text-xs text-slate-400 mt-1">Seguimientos, comentarios y colaboraciones dentro de la comunidad.
+              </p>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <!-- Beneficios clave -->
+    <section class="py-16 border-t border-slate-800 bg-slate-950/60">
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="text-center max-w-3xl mx-auto space-y-4 mb-12">
+          <span class="text-sm font-semibold tracking-widest text-orange-300 uppercase">Por qué elegir Premium</span>
+          <h2 class="text-3xl sm:text-4xl font-bold text-white">Hecho para quienes quieren resultados reales en su
+            cocina</h2>
+          <p class="text-slate-300">Transforma tu forma de cocinar con herramientas profesionales, contenido exclusivo y
+            acompañamiento permanente.</p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+          <article class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 space-y-4">
+            <span class="material-symbols-outlined text-3xl text-orange-400">menu_book</span>
+            <h3 class="text-xl font-semibold text-white">Tu recetario sin límites</h3>
+            <p class="text-sm text-slate-300">Publica recetas paso a paso con fotos, notas personales y clasificaciones
+              para que la comunidad las descubra fácilmente.</p>
+          </article>
+          <article class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 space-y-4">
+            <span class="material-symbols-outlined text-3xl text-orange-400">search</span>
+            <h3 class="text-xl font-semibold text-white">Descubrimiento inteligente</h3>
+            <p class="text-sm text-slate-300">Encuentra recetas según ingredientes, tiempos de preparación y estilos
+              culinarios con filtros avanzados y recomendaciones personalizadas.</p>
+          </article>
+          <article class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 space-y-4">
+            <span class="material-symbols-outlined text-3xl text-orange-400">groups</span>
+            <h3 class="text-xl font-semibold text-white">Comunidad activa</h3>
+            <p class="text-sm text-slate-300">Sigue a otros apasionados, comenta, intercambia tips y participa en retos
+              culinarios exclusivos para suscriptores.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Planes -->
+    <section id="planes" class="py-20">
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="max-w-3xl mx-auto text-center space-y-4 mb-12">
+          <span class="text-sm font-semibold tracking-widest text-orange-300 uppercase">Elige tu plan</span>
+          <h2 class="text-3xl sm:text-4xl font-bold text-white">Planes flexibles para cada tipo de cocinero</h2>
+          <p class="text-slate-300">Paga solo por lo que necesitas, con libertad para cambiar o cancelar en cualquier
+            momento.</p>
+        </div>
+        <div class="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
+          <!-- Plan Básico Premium -->
+          <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-8 flex flex-col shadow-lg">
+            <span class="inline-flex items-center gap-2 text-sm font-semibold text-slate-300 mb-3">
+              <span class="material-symbols-outlined text-base">sparkles</span>
+              Ideal para exploradores
+            </span>
+            <h3 class="text-2xl font-bold text-white">Plan Mensual</h3>
+            <p class="text-4xl font-extrabold text-white mt-2">$200 <span
+                class="text-base font-medium text-slate-400">MXN/mes</span></p>
+            <p class="text-sm text-slate-300 mt-4 flex-1">Explora todo el contenido premium con facturación mensual y
+              cancela cuando quieras.</p>
+            <ul class="mt-6 space-y-3 text-sm text-slate-200">
+              <li class="flex items-start gap-3"><span
+                  class="material-symbols-outlined text-orange-400 text-base">check_small</span>Publicación ilimitada de
+                recetas con galerías y etiquetas personalizadas.</li>
+              <li class="flex items-start gap-3"><span
+                  class="material-symbols-outlined text-orange-400 text-base">check_small</span>Búsqueda avanzada por
+                ingredientes y sugerencias según tus preferencias.</li>
+              <li class="flex items-start gap-3"><span
+                  class="material-symbols-outlined text-orange-400 text-base">check_small</span>Guardado de favoritas,
+                colecciones privadas y seguimiento de creadores.</li>
+            </ul>
+            <form class="lookup-form mt-8" method="POST" action="/crear-sesion-pago">
+              <input type="hidden" name="lookup_key" value="Plan_Mensual_-fd32f04">
+              <button type="submit"
+                class="w-full inline-flex justify-center items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-sm font-semibold py-3 rounded-lg shadow hover:opacity-90 transition">
+                <span class="material-symbols-outlined text-base">bolt</span>
+                Comenzar plan mensual
+              </button>
+            </form>
+          </div>
+
+          <!-- Plan recomendado -->
+          <div
+            class="relative bg-gradient-to-br from-orange-500 to-pink-500 text-white rounded-3xl p-8 flex flex-col shadow-2xl border border-orange-400/40">
+            <span
+              class="absolute -top-4 left-6 bg-white text-orange-500 text-xs font-bold uppercase px-3 py-1 rounded-full shadow">Más
+              popular</span>
+            <span class="inline-flex items-center gap-2 text-sm font-semibold text-white/80 mb-3">
+              <span class="material-symbols-outlined text-base">workspace_premium</span>
+              Para familias y creadores activos
+            </span>
+            <h3 class="text-2xl font-bold">Plan Anual</h3>
+            <p class="text-4xl font-extrabold mt-2">$2,000 <span
+                class="text-base font-medium text-white/80">MXN/año</span></p>
+            <p class="text-sm text-white/90 mt-4 flex-1">Ahorra 17% frente al plan mensual y desbloquea beneficios
+              exclusivos para tu familia.</p>
+            <ul class="mt-6 space-y-3 text-sm text-white">
+              <li class="flex items-start gap-3"><span
+                  class="material-symbols-outlined text-base">check_small</span>Acceso anticipado a colecciones
+                destacadas y talleres en vivo.</li>
+              <li class="flex items-start gap-3"><span
+                  class="material-symbols-outlined text-base">check_small</span>Hasta 4 perfiles familiares para
+                compartir favoritos y listas de recetas.</li>
+              <li class="flex items-start gap-3"><span
+                  class="material-symbols-outlined text-base">check_small</span>Eventos especiales, retos con
+                recompensas y badges exclusivos.</li>
+              <li class="flex items-start gap-3"><span
+                  class="material-symbols-outlined text-base">check_small</span>Acompañamiento personalizado para lanzar
+                tu colección o newsletter culinaria.</li>
+            </ul>
+            <form class="lookup-form mt-8" method="POST" action="/crear-sesion-pago">
+              <input type="hidden" name="lookup_key" value="Plan_Anual-e6ed0b8">
+              <button type="submit"
+                class="w-full inline-flex justify-center items-center gap-2 bg-white text-orange-600 text-sm font-semibold py-3 rounded-lg shadow-lg hover:bg-orange-50 transition">
+                <span class="material-symbols-outlined text-base">rocket_launch</span>
+                Elegir plan anual
+              </button>
+            </form>
+          </div>
+        </div>
+        <p class="text-xs text-slate-500 mt-6 text-center">Precios en MXN. Incluyen IVA. Puedes cancelar la renovación
+          automática en cualquier momento desde tu perfil.</p>
+      </div>
+    </section>
+
+    <!-- Comparativa -->
+    <section id="comparativa" class="py-16 bg-slate-950/70 border-y border-slate-800">
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="text-center max-w-3xl mx-auto space-y-4 mb-10">
+          <span class="text-sm font-semibold tracking-widest text-orange-300 uppercase">¿Qué incluye cada plan?</span>
+          <h2 class="text-3xl sm:text-4xl font-bold text-white">Premium desbloquea todo el potencial de El Recetario
+          </h2>
+        </div>
+        <div class="overflow-x-auto">
+          <table
+            class="min-w-full text-left text-sm text-slate-200 border border-slate-800/80 rounded-2xl overflow-hidden">
+            <thead class="bg-slate-900/80 text-slate-300 text-xs uppercase tracking-wider">
+              <tr>
+                <th class="px-6 py-4">Características</th>
+                <th class="px-6 py-4">Plan gratuito</th>
+                <th class="px-6 py-4">Premium</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/70">
+              <tr>
+                <td class="px-6 py-4">Recetas que puedes publicar</td>
+                <td class="px-6 py-4 text-slate-400">Hasta 20 al mes</td>
+                <td class="px-6 py-4 text-orange-200">Ilimitadas, con galerías y tips detallados</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4">Búsqueda por ingredientes</td>
+                <td class="px-6 py-4 text-slate-400">Filtros básicos</td>
+                <td class="px-6 py-4 text-orange-200">Filtros avanzados, recomendaciones automáticas y favoritos
+                  compartidos</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4">Colecciones personales</td>
+                <td class="px-6 py-4 text-slate-400">Hasta 5 colecciones simples</td>
+                <td class="px-6 py-4 text-orange-200">Colecciones ilimitadas con notas, etiquetas y colaboración</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4">Interacción social</td>
+                <td class="px-6 py-4 text-slate-400">Comentarios públicos</td>
+                <td class="px-6 py-4 text-orange-200">Mensajes directos, clubes privados y retos de temporada</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4">Soporte</td>
+                <td class="px-6 py-4 text-slate-400">Email en 48 h</td>
+                <td class="px-6 py-4 text-orange-200">Atención prioritaria y acompañamiento creativo</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4">Visibilidad en la comunidad</td>
+                <td class="px-6 py-4 text-slate-400">Ranking general</td>
+                <td class="px-6 py-4 text-orange-200">Destacados semanales, badges y newsletter de la comunidad</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonios -->
+    <section class="py-20">
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="text-center max-w-3xl mx-auto space-y-4 mb-12">
+          <span class="text-sm font-semibold tracking-widest text-orange-300 uppercase">Historias reales</span>
+          <h2 class="text-3xl sm:text-4xl font-bold text-white">Nuestra comunidad cocina mejor con Premium</h2>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+          <article class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 space-y-4 shadow-lg">
+            <div class="flex items-center gap-3">
+              <img src="https://ui-avatars.com/api/?name=Laura+Contreras" alt="Laura" class="w-12 h-12 rounded-full">
+              <div>
+                <h3 class="font-semibold text-white">Laura Contreras</h3>
+                <p class="text-xs text-slate-400">Chef creativa • CDMX</p>
+              </div>
+            </div>
+            <p class="text-sm text-slate-200">“Con Premium publico mis recetas paso a paso, recibo comentarios en
+              minutos y conecto con cocineros que comparten mi estilo casero.”</p>
+            <div class="flex items-center gap-1 text-amber-300 text-sm">
+              <span class="material-symbols-outlined text-base">grade</span>
+              <span>Calificación 5/5</span>
+            </div>
+          </article>
+          <article class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 space-y-4 shadow-lg">
+            <div class="flex items-center gap-3">
+              <img src="https://ui-avatars.com/api/?name=Carlos+Hernandez" alt="Carlos" class="w-12 h-12 rounded-full">
+              <div>
+                <h3 class="font-semibold text-white">Carlos Hernández</h3>
+                <p class="text-xs text-slate-400">Papá & entusiasta • Monterrey</p>
+              </div>
+            </div>
+            <p class="text-sm text-slate-200">“Usamos las colecciones compartidas para guardar las recetas favoritas de
+              la familia y descubrir nuevas ideas cada semana.”</p>
+            <div class="flex items-center gap-1 text-emerald-300 text-sm">
+              <span class="material-symbols-outlined text-base">schedule</span>
+              <span>Ahorró 5 h por semana</span>
+            </div>
+          </article>
+          <article class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 space-y-4 shadow-lg">
+            <div class="flex items-center gap-3">
+              <img src="https://ui-avatars.com/api/?name=Ana+Soto" alt="Ana" class="w-12 h-12 rounded-full">
+              <div>
+                <h3 class="font-semibold text-white">Ana Soto</h3>
+                <p class="text-xs text-slate-400">Nutrióloga deportiva • Guadalajara</p>
+              </div>
+            </div>
+            <p class="text-sm text-slate-200">“Sigo a colegas, comparto mis versiones saludables y organizo mis
+              recetarios temáticos sin límites.”</p>
+            <div class="flex items-center gap-1 text-orange-200 text-sm">
+              <span class="material-symbols-outlined text-base">workspace_premium</span>
+              <span>Recomendado a sus clientes</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Garantía y soporte -->
+    <section class="py-16 bg-slate-900/80 border-y border-slate-800">
+      <div class="max-w-5xl mx-auto px-4 grid lg:grid-cols-2 gap-10 items-center">
+        <div class="space-y-4">
+          <span class="text-sm font-semibold tracking-widest text-orange-300 uppercase">Sin riesgos</span>
+          <h2 class="text-3xl font-bold text-white">Garantía de devolución de 30 días</h2>
+          <p class="text-slate-300">Si Premium no supera tus expectativas, solicítalo dentro de los primeros 30 días y
+            te devolveremos el 100% de tu inversión. Sin preguntas.</p>
+          <div class="flex items-center gap-3 text-sm text-slate-200">
+            <span class="material-symbols-outlined text-2xl text-orange-300">support_agent</span>
+            <span>Soporte humano 24/7 vía chat, email y WhatsApp para ayudarte en cada paso.</span>
+          </div>
+        </div>
+        <div class="bg-slate-950/70 border border-orange-400/30 rounded-3xl p-6 space-y-4 shadow-xl">
+          <h3 class="text-xl font-semibold text-white">Incluye además</h3>
+          <ul class="space-y-3 text-sm text-slate-200">
+            <li class="flex items-start gap-3"><span
+                class="material-symbols-outlined text-orange-300 text-base">verified</span>Badge premium en tu perfil y
+              acceso anticipado a nuevas funciones.</li>
+            <li class="flex items-start gap-3"><span
+                class="material-symbols-outlined text-orange-300 text-base">restaurant_menu</span>Menús personalizados
+              por temporada y acceso a recetarios impresos exclusivos.</li>
+            <li class="flex items-start gap-3"><span
+                class="material-symbols-outlined text-orange-300 text-base">card_giftcard</span>Programa de referidos
+              con recompensas, descuentos en utensilios y alianzas.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-20" aria-labelledby="faq-title">
+      <div class="max-w-5xl mx-auto px-4">
+        <div class="text-center max-w-3xl mx-auto space-y-4 mb-10">
+          <span class="text-sm font-semibold tracking-widest text-orange-300 uppercase">Resolvemos tus dudas</span>
+          <h2 id="faq-title" class="text-3xl sm:text-4xl font-bold text-white">Preguntas frecuentes</h2>
+        </div>
+        <div class="space-y-3">
+          <details class="group bg-slate-900/80 border border-slate-800 rounded-2xl p-5" open>
+            <summary class="flex items-center justify-between cursor-pointer text-sm font-semibold text-white">
+              ¿Puedo cancelar mi suscripción cuando quiera?
+              <span
+                class="material-symbols-outlined text-base transition-transform group-open:rotate-180">expand_more</span>
+            </summary>
+            <p class="mt-3 text-sm text-slate-300">Sí. Puedes cancelar desde tu perfil en cualquier momento. Mantendrás
+              el acceso hasta la fecha de renovación y no se te volverá a cobrar.</p>
+          </details>
+          <details class="group bg-slate-900/80 border border-slate-800 rounded-2xl p-5">
+            <summary class="flex items-center justify-between cursor-pointer text-sm font-semibold text-white">
+              ¿Qué métodos de pago aceptan?
+              <span
+                class="material-symbols-outlined text-base transition-transform group-open:rotate-180">expand_more</span>
+            </summary>
+            <p class="mt-3 text-sm text-slate-300">Aceptamos tarjetas de crédito y débito nacionales e internacionales,
+              PayPal y transferencias SPEI. También puedes solicitar facturación electrónica.</p>
+          </details>
+          <details class="group bg-slate-900/80 border border-slate-800 rounded-2xl p-5">
+            <summary class="flex items-center justify-between cursor-pointer text-sm font-semibold text-white">
+              ¿Hay contenido nuevo cada mes?
+              <span
+                class="material-symbols-outlined text-base transition-transform group-open:rotate-180">expand_more</span>
+            </summary>
+            <p class="mt-3 text-sm text-slate-300">Liberamos al menos 3 colecciones nuevas al mes, más recetas
+              estacionales, retos con premios, masterclasses grabadas y eventos en vivo.</p>
+          </details>
+          <details class="group bg-slate-900/80 border border-slate-800 rounded-2xl p-5">
+            <summary class="flex items-center justify-between cursor-pointer text-sm font-semibold text-white">
+              ¿Puedo compartir mi cuenta?
+              <span
+                class="material-symbols-outlined text-base transition-transform group-open:rotate-180">expand_more</span>
+            </summary>
+            <p class="mt-3 text-sm text-slate-300">El plan Anual admite hasta 4 perfiles familiares. El plan Pro permite
+              agregar hasta 10 miembros con roles personalizados.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Llamada a la acción final -->
+    <section class="py-16 bg-gradient-to-r from-orange-500 to-pink-500">
+      <div class="max-w-5xl mx-auto px-4 text-center text-white space-y-6">
+        <h2 class="text-3xl sm:text-4xl font-bold">Da el paso hoy y transforma tu cocina</h2>
+        <p class="text-white/90 max-w-2xl mx-auto">Únete a miles de personas que ya cocinan mejor, planifican con
+          inteligencia y disfrutan de una comunidad premium en español.</p>
+        <div class="flex flex-wrap justify-center gap-4">
+          <a href="#planes"
+            class="inline-flex items-center gap-2 bg-white text-orange-600 font-semibold px-5 py-3 rounded-lg shadow-lg hover:bg-orange-50 transition">
+            <span class="material-symbols-outlined text-base">workspace_premium</span>
+            Escoger mi plan ideal
+          </a>
+          <a href="/contacto"
+            class="inline-flex items-center gap-2 border border-white/60 text-white font-semibold px-5 py-3 rounded-lg hover:bg-white/10 transition">
+            <span class="material-symbols-outlined text-base">chat_bubble</span>
+            Habla con nuestro equipo
+          </a>
+        </div>
+        <p class="text-xs text-white/70">¿Eres estudiante o institución educativa? Escríbenos para obtener descuentos
+          especiales.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="/js/loadFooter.js" defer></script>
+  <div id="footerContainer"></div>
+
+  <script>
+    // Previene el checkout si el usuario no ha iniciado sesión (usa la misma lógica que otras páginas)
+    document.addEventListener('DOMContentLoaded', function () {
+      function hasUserInfoCookie() {
+        return document.cookie.split('; ').some(function (c) { return c.indexOf('userInfo=') === 0; });
+      }
+
+      document.querySelectorAll('form.lookup-form').forEach(form => {
+        form.addEventListener('submit', function (event) {
+          if (!hasUserInfoCookie()) {
+            event.preventDefault();
+            window.location.href = '/iniciar-sesion';
+          }
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inicio de sesión - El Recetario</title>
+  <link rel="shortcut icon" href="../Imagenes/Logo/favicon.ico">
+  <link href="../css/output.css" rel="stylesheet">
+  <script src="/js/userSession.js"></script>
+</head>
+
+<body class="flex min-h-screen bg-gray-900 text-white">
+  <!-- Left section (form) -->
+  <div class="w-full lg:w-1/2 flex flex-col justify-center px-8 md:px-16 lg:px-24">
+    <!-- Logo -->
+    <div class="mb-10">
+      <div class="flex items-center justify-center">
+        <a href="/inicio">
+          <img src="/Imagenes/Logo/logo  (1).png" alt="Logo El Recetario" class="h-16 w-auto mx-auto">
+        </a>
+      </div>
+    </div>
+
+    <!-- Mensaje (cuadro estilo modal/alerta) -->
+    <div id="messageBox" class="mb-4 hidden max-w-sm mx-auto rounded-lg p-3 items-start gap-3 border shadow-sm"
+      role="alert" aria-live="polite">
+      <div id="messageIcon" class="text-xl leading-none"></div>
+      <div class="text-left flex-1">
+        <p id="messageText" class="text-sm font-medium"></p>
+      </div>
+      <button id="messageClose" aria-label="Cerrar mensaje" class="ml-2 text-white/80 hover:text-white">&times;</button>
+    </div>
+
+    <form action="/iniciar-sesion" method="POST" class="space-y-6">
+      <h2 class="text-3xl font-bold mb-2">Inicia sesión</h2>
+
+      <div>
+        <label for="email" class="block text-sm font-medium mb-2">Correo electrónico</label>
+        <input id="email" name="email" type="email" required
+          class="w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+      </div>
+
+      <div>
+        <label for="password" class="block text-sm font-medium mb-2">Contraseña</label>
+        <input id="password" name="password" type="password" required
+          class="w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+      </div>
+
+      <div class="flex items-center justify-between">
+        <a href="/recuperar-contrasena" class="text-sm text-blue-500 hover:underline font-medium">¿Olvidaste tu
+          contraseña?</a>
+      </div>
+
+      <button type="submit"
+        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md transition duration-150">
+        Iniciar sesión
+      </button>
+
+      <p class="text-center text-sm text-gray-500">
+        ¿No tienes una cuenta?
+        <a href="/registro" class=" text-blue-500 hover:underline font-medium">Regístrate</a>
+      </p>
+    </form>
+
+  </div>
+
+  <!-- Right section (image) -->
+  <div class="hidden lg:block w-1/2">
+    <img src="../Imagenes/Fondos/Fondo.jpg" alt="workspace" class="w-full h-full object-cover">
+  </div>
+
+  
+  <script>
+    (function () {
+      // Referencias de elementos
+      const urlParams = new URLSearchParams(window.location.search);
+      const error = urlParams.get('error');
+      const success = urlParams.get('success');
+      const box = document.getElementById('messageBox');
+      const text = document.getElementById('messageText');
+      const icon = document.getElementById('messageIcon');
+      const close = document.getElementById('messageClose');
+      const form = document.querySelector('form');
+
+      // Función para mostrar mensajes
+      function showMessage(kind, msg) {
+        // Reset de clases
+        box.className = 'mb-4 max-w-sm mx-auto rounded-lg p-3 flex items-start gap-3 border shadow-sm transition-all duration-200';
+        text.classList.remove('text-red-100', 'text-emerald-100');
+
+        if (kind === 'error') {
+          box.classList.add('bg-red-600/10', 'border-red-600');
+          text.classList.add('text-red-100');
+          icon.innerHTML = '⛔';
+        } else if (kind === 'success') {
+          box.classList.add('bg-emerald-600/10', 'border-emerald-600');
+          text.classList.add('text-emerald-100');
+          icon.innerHTML = '✅';
+        } else {
+          box.classList.add('bg-white/10', 'border-white/20');
+          icon.innerHTML = 'ℹ️';
+        }
+
+        text.textContent = msg;
+        box.classList.remove('hidden');
+      }
+
+      // Mostrar mensaje si viene desde la URL
+      if (error) showMessage('error', error);
+      else if (success) showMessage('success', success);
+
+      // Botón de cierre del mensaje
+      if (close) {
+        close.addEventListener('click', () => box.classList.add('hidden'));
+      }
+
+      // Lógica del formulario
+      if (form) {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const email = document.getElementById('email').value.trim();
+          const password = document.getElementById('password').value.trim();
+
+          // Oculta mensaje previo
+          box.classList.add('hidden');
+
+          try {
+            const res = await fetch('/api/iniciar-sesion', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, password })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+              showMessage('success', data.message || 'Inicio de sesión exitoso');
+              setTimeout(() => { window.location.href = '/'; }, 1200);
+            } else {
+              showMessage('error', data.error || 'Error al iniciar sesión');
+            }
+          } catch (err) {
+            showMessage('error', 'Error de red o servidor');
+          }
+        });
+      }
+    })();
+  </script>
+
+</body>
+
+</html>

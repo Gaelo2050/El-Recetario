@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regístrate - El Recetario</title>
+  <link rel="shortcut icon" href="../Imagenes/Logo/favicon.ico">
+  <link href="../css/output.css" rel="stylesheet">
+  <script src="/js/userSession.js"></script>
+</head>
+
+<body class="flex min-h-screen bg-gray-900 text-white">
+  <!-- Left section (image) -->
+  <div class="hidden lg:block w-1/2">
+    <img src="../Imagenes/Fondos/Fondo2.png" alt="workspace" class="w-full h-full object-cover">
+  </div>
+
+  <div class="w-full lg:w-1/2 flex flex-col justify-center px-8 md:px-16 lg:px-24">
+    <!-- Logo -->
+    <div class="mb-10">
+      <div class="flex items-center justify-center">
+        <a href="/inicio">
+          <img src="/Imagenes/Logo/logo  (1).png" alt="Logo El Recetario" class="h-16 w-auto mx-auto">
+        </a>
+      </div>
+    </div>
+
+    <!-- Mensaje (cuadro estilo modal/alerta) -->
+    <div id="messageBox" class="mb-4 hidden max-w-sm mx-auto rounded-lg p-3 items-start gap-3 border shadow-sm"
+      role="alert" aria-live="polite">
+      <div id="messageIcon" class="text-xl leading-none"></div>
+      <div class="text-left flex-1">
+        <p id="messageText" class="text-sm font-medium"></p>
+      </div>
+      <button id="messageClose" aria-label="Cerrar mensaje" class="ml-2 text-white/80 hover:text-white">&times;</button>
+    </div>
+
+
+    <form id="registerForm" action="/registro" method="POST" class="space-y-6">
+      <h2 class="text-3xl font-bold mb-2">Crea tu cuenta</h2>
+
+      <!-- Nombre -->
+      <div>
+        <label for="nombre" class="block text-sm font-medium mb-2">Nombre completo</label>
+        <input type="text" id="nombre" name="nombre" required
+          class="w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+      </div>
+
+      <!-- Alias, Fecha de nacimiento y Género (responsivo) -->
+      <div class="flex flex-wrap gap-4 w-full">
+        <!-- Alias público -->
+        <div class="w-full md:w-1/3 flex-1">
+          <label for="alias" class="block text-sm font-medium mb-2">Alias público</label>
+          <input type="text" id="alias" name="alias" required minlength="6" maxlength="19" pattern="[A-Za-z0-9]+" class="w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 text-white 
+                 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+          <p class="text-xs text-gray-200 mt-1">Entre 6 y 19 caracteres, sin @</p>
+          <p id="aliasFeedback" class="text-xs text-gray-300 mt-1 hidden"></p>
+        </div>
+
+        <!-- Fecha de nacimiento -->
+        <div class="w-full md:w-1/3 flex-1">
+          <label for="Usu_Cum" class="block text-sm font-medium mb-2">Fecha de nacimiento</label>
+          <input type="date" id="Usu_Cum" name="Usu_Cum" required class="w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 text-white 
+                 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+          <p class="text-xs text-gray-200 mt-1">Debes ser mayor de edad (18+)</p>
+        </div>
+
+        <!-- Género -->
+        <div class="w-full md:w-1/3 flex-1">
+          <label for="genero" class="block text-sm font-medium mb-2">Género</label>
+          <select id="genero" name="genero" class="w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 text-white 
+                   focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            <option value="" disabled selected>Selecciona</option>
+            <option value="masculino">Masculino</option>
+            <option value="femenino">Femenino</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Contenedor en línea -->
+      <div class="flex flex-wrap gap-4">
+        <!-- Correo electrónico -->
+        <div class="flex-1 min-w-[200px]">
+          <label for="email" class="block text-sm font-medium mb-2">Correo electrónico</label>
+          <input type="email" id="email" name="email" required
+            class="w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        </div>
+
+        <!-- Teléfono -->
+        <div class="flex-1 min-w-[200px]">
+          <label for="phone" class="block text-sm font-medium mb-2">Teléfono</label>
+          <input type="tel" id="phone" name="phone" required pattern="\d{10}" maxlength="10" inputmode="numeric" placeholder="Ej: 5512345678"
+            class="w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        </div>
+      </div>
+
+
+      <!-- Password -->
+      <div>
+        <label for="password" class="block text-sm font-medium mb-2">Contraseña</label>
+        <input id="password" name="password" type="password" required
+          class="w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+      </div>
+
+      <!-- Confirmación -->
+      <div>
+        <label for="password_confirmation" class="block text-sm font-medium mb-2">Confirmar contraseña</label>
+        <input type="password" id="password_confirmation" name="password_confirmation" required
+          class="w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+      </div>
+
+      <!-- Botón -->
+      <div class="flex items-start gap-3">
+        <label class="flex items-start gap-2 text-left">
+          <input id="agreePrivacy" type="checkbox" name="agreePrivacy" required class="mt-1">
+          <span class="text-sm">He leído y acepto la <a href="/privacidad" class="underline">Política de Privacidad</a>
+            (obligatorio)</span>
+        </label>
+      </div>
+      <div class="flex items-start gap-3">
+        <label class="flex items-start gap-2 text-left">
+          <input id="agreeTerms" type="checkbox" name="agreeTerms" required class="mt-1">
+          <span class="text-sm">Acepto los <a href="/terminos" class="underline">Términos y Condiciones</a>
+            (obligatorio)</span>
+        </label>
+      </div>
+
+      <button type="submit"
+        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md transition duration-150">
+        Crear cuenta
+      </button>
+
+      <p class="text-center text-sm text-gray-500">
+        ¿Ya tienes cuenta?
+        <a href="/iniciar-sesion" class=" text-blue-500 hover:underline font-medium">Inicia sesión</a>
+      </p>
+    </form>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('registerForm');
+      const messageBox = document.getElementById('messageBox');
+      const messageText = document.getElementById('messageText');
+      const messageIcon = document.getElementById('messageIcon');
+      const dateInput = document.getElementById('Usu_Cum');
+      const messageClose = document.getElementById('messageClose');
+      const aliasInput = document.getElementById('alias');
+      const aliasFeedback = document.getElementById('aliasFeedback');
+      const phoneInput = document.getElementById('phone');
+
+      const clearAliasFeedback = () => {
+        if (!aliasFeedback) return;
+        aliasFeedback.textContent = '';
+        aliasFeedback.classList.add('hidden');
+        aliasFeedback.classList.remove('text-emerald-400', 'text-red-400');
+        if (!aliasFeedback.classList.contains('text-gray-300')) {
+          aliasFeedback.classList.add('text-gray-300');
+        }
+      };
+
+      const showAliasFeedback = (message, tone = 'info') => {
+        if (!aliasFeedback) return;
+        aliasFeedback.textContent = message;
+        aliasFeedback.classList.remove('hidden', 'text-emerald-400', 'text-red-400', 'text-gray-300');
+        if (tone === 'success') aliasFeedback.classList.add('text-emerald-400');
+        else if (tone === 'error') aliasFeedback.classList.add('text-red-400');
+        else aliasFeedback.classList.add('text-gray-300');
+      };
+
+      const requestAliasAvailability = async (aliasValue) => {
+        const response = await fetch(`/verificar-alias?alias=${encodeURIComponent(aliasValue)}`);
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          throw new Error(data && data.error ? data.error : 'No se pudo validar el alias.');
+        }
+        return !!(data && data.available);
+      };
+
+      if (phoneInput) {
+        phoneInput.addEventListener('input', () => {
+          const digitsOnly = phoneInput.value.replace(/[^0-9]/g, '').slice(0, 10);
+          phoneInput.value = digitsOnly;
+        });
+      }
+
+      if (aliasInput) {
+        aliasInput.addEventListener('input', () => {
+          clearAliasFeedback();
+        });
+
+        aliasInput.addEventListener('blur', async () => {
+          const aliasValue = aliasInput.value.trim();
+          if (!aliasValue) {
+            clearAliasFeedback();
+            return;
+          }
+          if (!/^[A-Za-z0-9]{6,19}$/.test(aliasValue)) {
+            showAliasFeedback('Debe tener entre 6 y 19 caracteres alfanuméricos.', 'error');
+            return;
+          }
+          try {
+            const available = await requestAliasAvailability(aliasValue);
+            if (available) showAliasFeedback('Alias disponible.', 'success');
+            else showAliasFeedback('Alias no disponible.', 'error');
+          } catch (aliasErr) {
+            showAliasFeedback(aliasErr.message || 'No se pudo validar el alias.', 'error');
+          }
+        });
+      }
+
+      // --- Configurar rango de fechas (18 a 150 años) ---
+      if (dateInput) {
+        const today = new Date();
+        const year = today.getFullYear();
+        const maxYear = year - 18;
+        const minYear = year - 120;
+        const pad = (n) => String(n).padStart(2, '0');
+        const maxDate = `${maxYear}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+        const minDate = `${minYear}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+        dateInput.setAttribute('min', minDate);
+        dateInput.setAttribute('max', maxDate);
+      }
+
+      // --- Cerrar mensaje de resultado ---
+      if (messageClose) {
+        messageClose.addEventListener('click', () => {
+          messageBox.classList.add('hidden');
+        });
+      }
+
+      // --- Validación y envío del formulario ---
+      if (form) {
+        form.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          messageBox.classList.add('hidden');
+
+          // alias validation
+          const alias = form.querySelector('#alias').value.trim();
+          if (!/^[A-Za-z0-9]{6,19}$/.test(alias)) {
+            alert('El alias debe tener entre 6 y 19 caracteres y sólo letras o números.');
+            return;
+          }
+
+          let aliasAvailable;
+          try {
+            aliasAvailable = await requestAliasAvailability(alias);
+          } catch (aliasErr) {
+            showAliasFeedback(aliasErr.message || 'No se pudo validar el alias.', 'error');
+            alert(aliasErr.message || 'No se pudo validar la disponibilidad del alias. Intenta nuevamente.');
+            aliasInput && aliasInput.focus();
+            return;
+          }
+          if (!aliasAvailable) {
+            showAliasFeedback('Alias no disponible.', 'error');
+            alert('El alias ya está en uso. Por favor elige otro.');
+            aliasInput && aliasInput.focus();
+            return;
+          }
+          showAliasFeedback('Alias disponible.', 'success');
+
+          // birthdate validation
+          const dob = form.querySelector('#Usu_Cum').value;
+          if (!dob) { alert('Debes indicar tu fecha de nacimiento.'); return; }
+          const birth = new Date(dob);
+          const today = new Date();
+          const age = today.getFullYear() - birth.getFullYear() -
+            (new Date(today.getFullYear(), today.getMonth(), today.getDate()) <
+              new Date(today.getFullYear(), birth.getMonth(), birth.getDate()) ? 1 : 0);
+          if (age < 18) { alert('Debes ser mayor de 18 años para registrarte.'); return; }
+          if (age > 150) { alert('La fecha seleccionada indica más de 150 años. Elige una fecha válida.'); return; }
+
+          // checkbox validation
+          const privacy = form.querySelector('#agreePrivacy');
+          const terms = form.querySelector('#agreeTerms');
+          if (!privacy.checked) { alert('Debes aceptar la Política de Privacidad.'); return; }
+          if (!terms.checked) { alert('Debes aceptar los Términos y Condiciones.'); return; }
+
+          // password confirmation
+          const pw = form.querySelector('#password').value;
+          const pwc = form.querySelector('#password_confirmation').value;
+          if (pw !== pwc) { alert('Las contraseñas no coinciden.'); return; }
+
+          // phone validation (10 digits)
+          const phoneVal = (form.querySelector('#phone') && form.querySelector('#phone').value) || '';
+          const digits = phoneVal.replace(/\D/g, '');
+          if (digits.length !== 10) { alert('El teléfono debe tener exactamente 10 dígitos.'); return; }
+
+          // gather values
+          const payload = {
+            nombre: form.querySelector('#nombre').value || '',
+            alias: alias,
+            Usu_Cum: form.querySelector('#Usu_Cum').value || '',
+            genero: form.querySelector('#genero').value || '',
+            phone: digits,
+            email: form.querySelector('#email').value || '',
+            password: pw
+          };
+
+          // --- Envío al servidor ---
+          try {
+            const res = await fetch('/api/registro', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+              messageIcon.innerHTML = '✅';
+              messageText.textContent = data.message || 'Registro exitoso. Revisa tu correo para verificar tu cuenta.';
+              messageBox.classList.remove('hidden');
+              messageBox.classList.remove('bg-red-600/12', 'border-red-600');
+              messageBox.classList.add('bg-emerald-600/12', 'border-emerald-600');
+              setTimeout(() => { window.location.href = '/iniciar-sesion'; }, 1400);
+            } else {
+              messageIcon.innerHTML = '⛔';
+              messageText.textContent = data.error || 'Error al registrar usuario';
+              messageBox.classList.remove('hidden');
+              messageBox.classList.remove('bg-emerald-600/12', 'border-emerald-600');
+              messageBox.classList.add('bg-red-600/12', 'border-red-600');
+            }
+          } catch (err) {
+            messageIcon.innerHTML = '⛔';
+            messageText.textContent = 'Error de red o servidor';
+            messageBox.classList.remove('hidden');
+            messageBox.classList.remove('bg-emerald-600/12', 'border-emerald-600');
+            messageBox.classList.add('bg-red-600/12', 'border-red-600');
+            console.error('Error:', err);
+          }
+        });
+      }
+    });
+  </script>
+
+</body>
+
+</html>

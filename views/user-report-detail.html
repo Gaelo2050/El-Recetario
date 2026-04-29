@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Administración | Detalle del reporte</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link rel="shortcut icon" href="/Imagenes/Logo/favicon.ico" />
+    <link rel="stylesheet" href="/css/output.css" />
+    <script src="/js/userSession.js" defer></script>
+    <script src="/js/confirmDialog.js" defer></script>
+  </head>
+  <body class="bg-slate-50 text-slate-800 min-h-screen">
+    <div class="max-w-6xl mx-auto px-4 py-10">
+      <header class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 class="text-3xl font-semibold text-slate-900">Detalle del reporte</h1>
+          <p id="pageSubtitle" class="text-sm text-slate-500">Preparando la información...</p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <button id="backToAdmin" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50">
+            <span class="material-symbols-outlined text-base" aria-hidden="true">arrow_back</span>
+            Regresar al panel
+          </button>
+          <button id="refreshReport" class="inline-flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 transition hover:bg-indigo-100">
+            <span class="material-symbols-outlined text-base" aria-hidden="true">refresh</span>
+            Recargar datos
+          </button>
+        </div>
+      </header>
+
+      <div id="statusToast" class="fixed left-1/2 top-6 z-50 hidden -translate-x-1/2 rounded-xl border px-5 py-3 text-sm font-medium shadow-lg"></div>
+
+      <div id="loadingState" class="mt-10 rounded-2xl border border-dashed border-slate-200 bg-white/70 p-10 text-center text-slate-500">
+        Cargando reporte...
+      </div>
+
+      <div id="reportDetailContent" class="mt-10 hidden space-y-8">
+        <section class="rounded-2xl border border-slate-200 bg-white/95 p-6 shadow-sm">
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <div class="flex flex-wrap items-center gap-3">
+                <span id="reportStatusBadge" class="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-700">
+                  Estado
+                </span>
+                <span id="reportTypeBadge" class="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-indigo-700">
+                  Tipo
+                </span>
+              </div>
+              <h2 id="reportTitle" class="mt-4 text-2xl font-semibold text-slate-900">Reporte</h2>
+              <p id="reportObjectLabel" class="text-sm text-slate-500">Sin objeto</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button id="resolveReportBtn" class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700">
+                <span class="material-symbols-outlined text-base" aria-hidden="true">task_alt</span>
+                Marcar resuelto
+              </button>
+              <button id="discardReportBtn" class="inline-flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700 transition hover:bg-rose-100">
+                <span class="material-symbols-outlined text-base" aria-hidden="true">cancel</span>
+                Descartar
+              </button>
+              <button id="reopenReportBtn" class="inline-flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-700 transition hover:bg-amber-100">
+                <span class="material-symbols-outlined text-base" aria-hidden="true">history</span>
+                Reabrir
+              </button>
+              <button id="copyReportIdBtn" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                <span class="material-symbols-outlined text-base" aria-hidden="true">content_copy</span>
+                Copiar ID
+              </button>
+            </div>
+          </div>
+          <p id="reportReason" class="mt-6 text-base text-slate-700">-</p>
+          <dl class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="rounded-xl bg-slate-50/80 p-4">
+              <dt class="text-xs uppercase tracking-wide text-slate-400">Reportes totales</dt>
+              <dd id="statsTotal" class="text-2xl font-semibold text-slate-900">-</dd>
+            </div>
+            <div class="rounded-xl bg-slate-50/80 p-4">
+              <dt class="text-xs uppercase tracking-wide text-slate-400">Pendientes</dt>
+              <dd id="statsPendientes" class="text-2xl font-semibold text-amber-600">-</dd>
+            </div>
+            <div class="rounded-xl bg-slate-50/80 p-4">
+              <dt class="text-xs uppercase tracking-wide text-slate-400">Resueltos</dt>
+              <dd id="statsResueltos" class="text-2xl font-semibold text-emerald-600">-</dd>
+            </div>
+            <div class="rounded-xl bg-slate-50/80 p-4">
+              <dt class="text-xs uppercase tracking-wide text-slate-400">Descartados</dt>
+              <dd id="statsDescartados" class="text-2xl font-semibold text-rose-600">-</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="grid gap-6 lg:grid-cols-1">
+          <article class="rounded-2xl border border-slate-200 bg-white/95 p-6 shadow-sm">
+            <div class="flex items-center justify-between gap-4">
+              <div>
+                <p class="text-xs uppercase tracking-wide text-slate-400">Información del reporte</p>
+                <h3 class="text-xl font-semibold text-slate-900">Estado general</h3>
+              </div>
+              <span id="metaStatusBadge" class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600">-</span>
+            </div>
+            <dl class="mt-6 grid gap-4 sm:grid-cols-2">
+              <div class="rounded-xl bg-slate-50/80 p-4">
+                <dt class="text-xs uppercase tracking-wide text-slate-400">ID interno</dt>
+                <dd id="metaReportId" class="text-lg font-semibold text-slate-900">-</dd>
+              </div>
+              <div class="rounded-xl bg-slate-50/80 p-4">
+                <dt class="text-xs uppercase tracking-wide text-slate-400">Fecha de creación</dt>
+                <dd id="metaReportDate" class="text-sm font-medium text-slate-800">-</dd>
+              </div>
+              <div class="rounded-xl bg-slate-50/80 p-4">
+                <dt class="text-xs uppercase tracking-wide text-slate-400">Tipo de objeto</dt>
+                <dd id="metaReportType" class="text-sm font-medium text-slate-800">-</dd>
+              </div>
+              <div class="rounded-xl bg-slate-50/80 p-4">
+                <dt class="text-xs uppercase tracking-wide text-slate-400">ID del objeto</dt>
+                <dd id="metaObjectId" class="text-sm font-medium text-slate-800">-</dd>
+              </div>
+            </dl>
+            <p id="metaElapsed" class="mt-4 text-sm text-slate-500">Tiempo transcurrido: -</p>
+          </article>
+        </section>
+
+        <section class="grid gap-6 lg:grid-cols-2">
+          <article class="rounded-2xl border border-slate-200 bg-white/95 p-6 shadow-sm">
+            <div class="flex items-center gap-4">
+              <img id="reporterAvatar" src="/Imagenes/Usuarios/0.png" alt="Avatar del reportante" class="h-16 w-16 rounded-2xl border border-slate-100 object-cover" />
+              <div>
+                <p class="text-xs uppercase tracking-wide text-slate-400">Reportado por</p>
+                <h3 id="reporterName" class="text-xl font-semibold text-slate-900">-</h3>
+                <p id="reporterAlias" class="text-sm text-slate-500">-</p>
+              </div>
+            </div>
+            <dl class="mt-6 grid gap-4 sm:grid-cols-2">
+              <div class="rounded-xl bg-slate-50/80 p-4">
+                <dt class="text-xs uppercase text-slate-400">Correo</dt>
+                <dd id="reporterEmail" class="text-sm font-medium text-slate-800 break-all">-</dd>
+              </div>
+              <div class="rounded-xl bg-slate-50/80 p-4">
+                <dt class="text-xs uppercase text-slate-400">Enlace administrativo</dt>
+                <dd>
+                  <a id="viewReporterBtn" href="#" class="inline-flex items-center gap-2 text-sm font-medium text-indigo-600 hover:underline" target="_blank" rel="noopener">
+                    <span class="material-symbols-outlined text-base" aria-hidden="true">open_in_new</span>
+                    Abrir perfil
+                  </a>
+                </dd>
+              </div>
+            </dl>
+          </article>
+
+          <article class="rounded-2xl border border-slate-200 bg-white/95 p-6 shadow-sm">
+            <div class="flex items-center gap-4">
+              <div>
+                <p class="text-xs uppercase tracking-wide text-slate-400">Objeto reportado</p>
+                <h3 id="objectTitle" class="text-xl font-semibold text-slate-900">-</h3>
+                <p id="objectSubtitle" class="text-sm text-slate-500">Selecciona una acción para ver más detalle.</p>
+              </div>
+            </div>
+            <div class="mt-6 flex flex-wrap gap-2">
+              <a id="viewObjectAdminBtn" href="#" class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700" target="_blank" rel="noopener">
+                <span class="material-symbols-outlined text-base" aria-hidden="true">shield_person</span>
+                Ver en panel
+              </a>
+
+            </div>
+          </article>
+        </section>
+
+
+        <section id="commentObjectSection" class="hidden rounded-2xl border border-slate-200 bg-white/95 p-6 shadow-sm">
+          <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+            <div>
+              <p class="text-xs uppercase tracking-wide text-slate-400">Comentario reportado</p>
+              <h3 class="text-xl font-semibold text-slate-900">Contenido</h3>
+            </div>
+            <button id="deleteObjectBtn" class="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700">
+              <span class="material-symbols-outlined text-base" aria-hidden="true">delete</span>
+              Eliminar comentario
+            </button>
+          </div>
+          <p id="commentText" class="mt-4 whitespace-pre-wrap text-base text-slate-800">Sin contenido</p>
+          <div class="mt-6 grid gap-4 md:grid-cols-3">
+            <div class="rounded-xl bg-slate-50/80 p-4">
+              <dt class="text-xs uppercase tracking-wide text-slate-400">Autor</dt>
+              <dd id="commentAuthor" class="text-sm font-medium text-slate-800">-</dd>
+            </div>
+            <div class="rounded-xl bg-slate-50/80 p-4">
+              <dt class="text-xs uppercase tracking-wide text-slate-400">Receta</dt>
+              <dd id="commentRecipe" class="text-sm font-medium text-slate-800">-</dd>
+            </div>
+            <div class="rounded-xl bg-slate-50/80 p-4">
+              <dt class="text-xs uppercase tracking-wide text-slate-400">Enlaces rápidos</dt>
+              <dd class="flex flex-wrap gap-2 pt-2">
+                <a id="commentAdminLink" href="#" class="text-xs font-semibold text-indigo-600 hover:underline" target="_blank" rel="noopener">Ver comentario</a>
+                <a id="commentRecipeLink" href="#" class="text-xs font-semibold text-indigo-600 hover:underline" target="_blank" rel="noopener">Ver receta</a>
+                <a id="commentAuthorLink" href="#" class="text-xs font-semibold text-indigo-600 hover:underline" target="_blank" rel="noopener">Ver autor</a>
+              </dd>
+            </div>
+          </div>
+        </section>
+
+        <section id="recipeObjectSection" class="hidden rounded-2xl border border-slate-200 bg-white/95 p-6 shadow-sm">
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+            <img id="recipeImage" src="/Imagenes/Recetas/0.png" alt="Receta" class="h-24 w-24 rounded-2xl border border-slate-100 object-cover" />
+            <div>
+              <p class="text-xs uppercase tracking-wide text-slate-400">Receta reportada</p>
+              <h3 id="recipeTitle" class="text-xl font-semibold text-slate-900">-</h3>
+              <p id="recipeMeta" class="text-sm text-slate-500">-</p>
+            </div>
+          </div>
+          <dl class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="rounded-xl bg-slate-50/80 p-4">
+              <dt class="text-xs uppercase text-slate-400">Categoría</dt>
+              <dd id="recipeCategory" class="text-sm font-medium text-slate-800">-</dd>
+            </div>
+            <div class="rounded-xl bg-slate-50/80 p-4">
+              <dt class="text-xs uppercase text-slate-400">Tipo</dt>
+              <dd id="recipeType" class="text-sm font-medium text-slate-800">-</dd>
+            </div>
+            <div class="rounded-xl bg-slate-50/80 p-4">
+              <dt class="text-xs uppercase text-slate-400">Dificultad</dt>
+              <dd id="recipeDifficulty" class="text-2xl font-semibold text-slate-900">-</dd>
+            </div>
+            <div class="rounded-xl bg-slate-50/80 p-4">
+              <dt class="text-xs uppercase text-slate-400">Tiempo de preparación</dt>
+              <dd id="recipePrepTime" class="text-lg font-semibold text-slate-900">-</dd>
+            </div>
+            <div class="rounded-xl bg-slate-50/80 p-4">
+              <dt class="text-xs uppercase text-slate-400">Porciones</dt>
+              <dd id="recipeServings" class="text-lg font-semibold text-slate-900">-</dd>
+            </div>
+            <div class="rounded-xl bg-slate-50/80 p-4">
+              <dt class="text-xs uppercase text-slate-400">Publicación</dt>
+              <dd id="recipePublishedAt" class="text-sm font-medium text-slate-800">-</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section id="userObjectSection" class="hidden rounded-2xl border border-slate-200 bg-white/95 p-6 shadow-sm">
+          <div class="flex items-center gap-4">
+            <img id="targetUserAvatar" src="/Imagenes/Usuarios/0.png" alt="Usuario reportado" class="h-20 w-20 rounded-2xl border border-slate-100 object-cover" />
+            <div>
+              <p class="text-xs uppercase tracking-wide text-slate-400">Usuario reportado</p>
+              <h3 id="targetUserName" class="text-xl font-semibold text-slate-900">-</h3>
+              <p id="targetUserAlias" class="text-sm text-slate-500">-</p>
+            </div>
+          </div>
+          <dl class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="rounded-xl bg-slate-50/80 p-4">
+              <dt class="text-xs uppercase text-slate-400">Correo</dt>
+              <dd id="targetUserEmail" class="text-sm font-medium text-slate-800 break-all">-</dd>
+            </div>
+            <div class="rounded-xl bg-slate-50/80 p-4">
+              <dt class="text-xs uppercase text-slate-400">Tipo</dt>
+              <dd id="targetUserRole" class="text-sm font-medium text-slate-800">-</dd>
+            </div>
+            <div class="rounded-xl bg-slate-50/80 p-4">
+              <dt class="text-xs uppercase text-slate-400">Estado</dt>
+              <dd id="targetUserStatus" class="text-sm font-semibold">-</dd>
+            </div>
+            <div class="rounded-xl bg-slate-50/80 p-4">
+              <dt class="text-xs uppercase text-slate-400">Registro</dt>
+              <dd id="targetUserRegisteredAt" class="text-sm font-medium text-slate-800">-</dd>
+            </div>
+          </dl>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      const backToAdminBtn = document.getElementById('backToAdmin');
+      const refreshBtn = document.getElementById('refreshReport');
+      const deleteBtn = document.getElementById('deleteObjectBtn');
+      const resolveBtn = document.getElementById('resolveReportBtn');
+      const discardBtn = document.getElementById('discardReportBtn');
+      const reopenBtn = document.getElementById('reopenReportBtn');
+      const copyIdBtn = document.getElementById('copyReportIdBtn');
+      const statusToast = document.getElementById('statusToast');
+      const loadingState = document.getElementById('loadingState');
+      const contentContainer = document.getElementById('reportDetailContent');
+      const subtitle = document.getElementById('pageSubtitle');
+      const reportStatusBadge = document.getElementById('reportStatusBadge');
+      const reportTypeBadge = document.getElementById('reportTypeBadge');
+      const reportTitle = document.getElementById('reportTitle');
+      const reportObjectLabel = document.getElementById('reportObjectLabel');
+      const reportReason = document.getElementById('reportReason');
+      const statsTotal = document.getElementById('statsTotal');
+      const statsPendientes = document.getElementById('statsPendientes');
+      const statsResueltos = document.getElementById('statsResueltos');
+      const statsDescartados = document.getElementById('statsDescartados');
+      const reporterAvatar = document.getElementById('reporterAvatar');
+      const reporterName = document.getElementById('reporterName');
+      const reporterAlias = document.getElementById('reporterAlias');
+      const reporterEmail = document.getElementById('reporterEmail');
+      const viewReporterBtn = document.getElementById('viewReporterBtn');
+      const objectTitle = document.getElementById('objectTitle');
+      const objectSubtitle = document.getElementById('objectSubtitle');
+      const viewObjectAdminBtn = document.getElementById('viewObjectAdminBtn');
+      const viewObjectExtraBtn = document.getElementById('viewObjectExtraBtn');
+      const commentSection = document.getElementById('commentObjectSection');
+      const recipeSection = document.getElementById('recipeObjectSection');
+      const userSection = document.getElementById('userObjectSection');
+      const metaStatusBadge = document.getElementById('metaStatusBadge');
+      const metaReportId = document.getElementById('metaReportId');
+      const metaReportDate = document.getElementById('metaReportDate');
+      const metaReportType = document.getElementById('metaReportType');
+      const metaObjectId = document.getElementById('metaObjectId');
+      const metaElapsed = document.getElementById('metaElapsed');
+      const downloadReportBtn = document.getElementById('downloadReportBtn');
+      const copyEmailsBtn = document.getElementById('copyEmailsBtn');
+      const openApiBtn = document.getElementById('openApiBtn');
+      const shareReportBtn = document.getElementById('shareReportBtn');
+      const lastRefreshedLabel = document.getElementById('lastRefreshedLabel');
+      const relatedReportsSection = document.getElementById('relatedReportsSection');
+      const relatedReportsList = document.getElementById('relatedReportsList');
+      const relatedReportsEmpty = document.getElementById('relatedReportsEmpty');
+      const viewAllReportsBtn = document.getElementById('viewAllReportsBtn');
+      const commentTextEl = document.getElementById('commentText');
+      const commentAuthorEl = document.getElementById('commentAuthor');
+      const commentRecipeEl = document.getElementById('commentRecipe');
+      const commentAdminLink = document.getElementById('commentAdminLink');
+      const commentRecipeLink = document.getElementById('commentRecipeLink');
+      const commentAuthorLink = document.getElementById('commentAuthorLink');
+      const recipeImage = document.getElementById('recipeImage');
+      const recipeTitleEl = document.getElementById('recipeTitle');
+      const recipeMetaEl = document.getElementById('recipeMeta');
+      const recipeCategoryEl = document.getElementById('recipeCategory');
+      const recipeTypeEl = document.getElementById('recipeType');
+      const recipeDifficultyEl = document.getElementById('recipeDifficulty');
+      const recipePrepTimeEl = document.getElementById('recipePrepTime');
+      const recipeServingsEl = document.getElementById('recipeServings');
+      const recipePublishedAt = document.getElementById('recipePublishedAt');
+      const targetUserAvatar = document.getElementById('targetUserAvatar');
+      const targetUserName = document.getElementById('targetUserName');
+      const targetUserAlias = document.getElementById('targetUserAlias');
+      const targetUserEmail = document.getElementById('targetUserEmail');
+      const targetUserRole = document.getElementById('targetUserRole');
+      const targetUserStatus = document.getElementById('targetUserStatus');
+      const targetUserRegisteredAt = document.getElementById('targetUserRegisteredAt');
+      const viewObjectExtraBtnWrapper = viewObjectExtraBtn ? viewObjectExtraBtn.parentElement : null;
+
+      const DEFAULT_USER_AVATAR = '/Imagenes/Usuarios/0.png';
+      const DEFAULT_RECIPE_IMAGE = '/Imagenes/Recetas/0.png';
+      const pathSegments = window.location.pathname.split('/').filter(Boolean);
+      const params = new URLSearchParams(window.location.search);
+      const parseReportId = (value) => {
+        if (value === null || typeof value === 'undefined') return null;
+        const normalized = typeof value === 'string' ? value.trim() : value;
+        if (normalized === '') return null;
+        const num = Number(normalized);
+        return Number.isFinite(num) && num > 0 ? num : null;
+      };
+      const pathId = parseReportId(pathSegments[pathSegments.length - 1]);
+      const queryId = parseReportId(params.get('id') || params.get('reportId') || params.get('reporte'));
+      const hashMatch = (window.location.hash || '').match(/(\d+)/);
+      const hashId = parseReportId(hashMatch ? hashMatch[1] : null);
+      let reportId = pathId || queryId || hashId;
+      if (!reportId) {
+        try {
+          reportId = parseReportId(sessionStorage.getItem('adminReportLastId'));
+        } catch (storageErr) {
+          console.warn('No se pudo recuperar el ID del reporte almacenado:', storageErr);
+        }
+      }
+      if (reportId) {
+        try {
+          sessionStorage.setItem('adminReportLastId', String(reportId));
+        } catch (storageErr) {
+          console.warn('No se pudo sincronizar el ID del reporte con sessionStorage:', storageErr);
+        }
+      }
+      let currentDetail = null;
+      let lastLoadedAt = null;
+
+      const showToast = (message, type = 'info', duration = 3200) => {
+        const palette = {
+          info: 'bg-slate-900/90 text-white border-slate-900/80',
+          success: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+          error: 'bg-red-50 text-red-700 border-red-200'
+        };
+        statusToast.textContent = message;
+        statusToast.className = `fixed left-1/2 top-6 z-50 -translate-x-1/2 rounded-xl border px-5 py-3 text-sm font-medium shadow-lg ${palette[type] || palette.info}`;
+        statusToast.classList.remove('hidden');
+        clearTimeout(showToast.timer);
+        showToast.timer = setTimeout(() => {
+          statusToast.classList.add('hidden');
+        }, duration);
+      };
+
+      const formatDateTime = (value) => {
+        if (!value) return 'Sin registro';
+        const normalized = typeof value === 'string' ? value.replace(' ', 'T') : value;
+        const date = new Date(normalized);
+        if (Number.isNaN(date.getTime())) return 'Sin registro';
+        return date.toLocaleString('es-MX', {
+          year: 'numeric',
+          month: 'short',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      };
+
+      const formatTime = (value) => {
+        if (!value) return 'N/D';
+        const parts = value.split(':');
+        if (parts.length < 2) return value;
+        const hours = Number(parts[0]);
+        const minutes = Number(parts[1]);
+        if (Number.isFinite(hours) && Number.isFinite(minutes)) {
+          if (!hours) return `${minutes} min`;
+          if (!minutes) return `${hours} h`;
+          return `${hours} h ${minutes} min`;
+        }
+        return value;
+      };
+
+      const ensureImage = (value, fallback) => {
+        if (typeof value !== 'string' || !value.trim()) return fallback;
+        if (value.startsWith('http://') || value.startsWith('https://')) return value;
+        const sanitized = value.replace(/^[./]+/, '');
+        return `/${sanitized}`;
+      };
+
+      const escapeHtml = (value) => {
+        if (value === null || typeof value === 'undefined') return '';
+        return String(value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      };
+
+      const formatRelativeElapsed = (value) => {
+        if (!value) return 'Sin registro';
+        const normalized = typeof value === 'string' ? value.replace(' ', 'T') : value;
+        const date = new Date(normalized);
+        if (Number.isNaN(date.getTime())) return 'Sin registro';
+        const diffMs = Date.now() - date.getTime();
+        if (diffMs < 0) return 'En el futuro';
+        const minutes = Math.floor(diffMs / 60000);
+        if (minutes < 1) return 'Hace segundos';
+        if (minutes < 60) return `Hace ${minutes} min`;
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return `Hace ${hours} h`;
+        const days = Math.floor(hours / 24);
+        if (days < 30) return `Hace ${days} día${days === 1 ? '' : 's'}`;
+        const months = Math.floor(days / 30);
+        if (months < 12) return `Hace ${months} mes${months === 1 ? '' : 'es'}`;
+        const years = Math.floor(days / 365);
+        return `Hace ${years} año${years === 1 ? '' : 's'}`;
+      };
+
+      const handleAuthErrors = (response) => {
+        if (response.status === 401) {
+          window.location.href = '/iniciar-sesion';
+          return true;
+        }
+        if (response.status === 403) {
+          showToast('No tienes permisos para acceder a este recurso.', 'error');
+          return true;
+        }
+        return false;
+      };
+
+      const loadDetail = async () => {
+        if (!Number.isFinite(reportId) || reportId <= 0) {
+          loadingState.textContent = 'Identificador de reporte inválido.';
+          return null;
+        }
+        const response = await fetch(`/api/administracion/reportes/${encodeURIComponent(reportId)}`, {
+          credentials: 'include'
+        });
+        if (handleAuthErrors(response)) {
+          return null;
+        }
+        if (response.status === 404) {
+          loadingState.textContent = 'El reporte indicado no existe o ya fue eliminado.';
+          return null;
+        }
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}`);
+        }
+        return response.json();
+      };
+
+      const updateActionButtons = (acciones) => {
+        const disable = (btn, enabled) => {
+          if (!btn) return;
+          btn.disabled = !enabled;
+          btn.classList.toggle('opacity-60', !enabled);
+          btn.classList.toggle('cursor-not-allowed', !enabled);
+        };
+        disable(resolveBtn, acciones?.puedeResolver);
+        disable(discardBtn, acciones?.puedeDescartar);
+        disable(reopenBtn, acciones?.puedeReabrir);
+        if (deleteBtn) {
+          disable(deleteBtn, acciones?.puedeEliminarComentario);
+          deleteBtn.classList.toggle('hidden', !acciones?.puedeEliminarComentario);
+        }
+      };
+
+      const renderDetail = (detail) => {
+        if (!detail || !detail.reporte) {
+          loadingState.textContent = 'No se pudo cargar el reporte.';
+          return;
+        }
+        currentDetail = detail;
+        lastLoadedAt = new Date();
+        loadingState.classList.add('hidden');
+        contentContainer.classList.remove('hidden');
+
+        const { reporte, reportante, objeto, stats, acciones, links, relacionados } = detail;
+        subtitle.textContent = `Reporte #${reporte.id || '-'} — ${reporte.tipo || 'N/D'}`;
+        reportTitle.textContent = `Reporte #${reporte.id || 'N/D'}`;
+        reportObjectLabel.textContent = reporte.objetoId ? `Objeto #${reporte.objetoId}` : 'Objeto no disponible';
+        reportReason.textContent = reporte.motivo || 'Sin motivo registrado';
+        reportStatusBadge.textContent = reporte.estado || 'pendiente';
+        const statusPalette = {
+          pendiente: 'bg-amber-50 text-amber-700 border border-amber-200',
+          resuelto: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+          descartado: 'bg-rose-50 text-rose-700 border border-rose-200'
+        };
+        const statusKey = (reporte.estado || '').toLowerCase();
+        reportStatusBadge.className = `inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${statusPalette[statusKey] || 'bg-slate-100 text-slate-700'}`;
+        reportTypeBadge.textContent = (objeto?.tipo || 'N/D').toUpperCase();
+        if (metaStatusBadge) {
+          metaStatusBadge.textContent = reportStatusBadge.textContent;
+          metaStatusBadge.className = `rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${statusPalette[statusKey] || 'bg-slate-100 text-slate-700'}`;
+        }
+        if (metaReportId) metaReportId.textContent = reporte.id ? `#${reporte.id}` : '-';
+        if (metaReportDate) metaReportDate.textContent = formatDateTime(reporte.fecha);
+        if (metaReportType) metaReportType.textContent = objeto?.tipo ? objeto.tipo.charAt(0).toUpperCase() + objeto.tipo.slice(1) : 'N/D';
+        if (metaObjectId) metaObjectId.textContent = reporte.objetoId != null ? `#${reporte.objetoId}` : 'Sin ID';
+        if (metaElapsed) metaElapsed.textContent = `Tiempo transcurrido: ${formatRelativeElapsed(reporte.fecha)}`;
+        if (lastRefreshedLabel) {
+          lastRefreshedLabel.textContent = `Actualizado ${formatRelativeElapsed(lastLoadedAt)}`;
+        }
+        statsTotal.textContent = stats?.total != null ? stats.total : '-';
+        statsPendientes.textContent = stats?.pendientes != null ? stats.pendientes : '-';
+        statsResueltos.textContent = stats?.resueltos != null ? stats.resueltos : '-';
+        statsDescartados.textContent = stats?.descartados != null ? stats.descartados : '-';
+
+        reporterAvatar.src = ensureImage(reportante?.foto, DEFAULT_USER_AVATAR);
+        reporterAvatar.onerror = () => { reporterAvatar.src = DEFAULT_USER_AVATAR; };
+        reporterName.textContent = reportante?.nombre || 'Sin nombre';
+        reporterAlias.textContent = reportante?.alias || 'Sin alias';
+        reporterEmail.textContent = reportante?.email || 'Sin correo';
+        if (links?.admin?.reportante) {
+          viewReporterBtn.href = links.admin.reportante;
+          viewReporterBtn.classList.remove('pointer-events-none', 'opacity-60');
+        } else {
+          viewReporterBtn.href = '#';
+          viewReporterBtn.classList.add('pointer-events-none', 'opacity-60');
+        }
+
+        objectTitle.textContent = objeto?.tipo ? objeto.tipo.charAt(0).toUpperCase() + objeto.tipo.slice(1) : 'Objeto';
+        objectSubtitle.textContent = reporte.objetoId ? `Identificador ${reporte.objetoId}` : 'Sin identificador disponible';
+
+        const adminLink = (() => {
+          if (objeto?.tipo === 'comentario') {
+            return links?.admin?.comentario || links?.admin?.receta;
+          }
+          if (objeto?.tipo === 'usuario') {
+            return links?.admin?.usuario;
+          }
+          if (objeto?.tipo === 'receta') {
+            return links?.admin?.receta;
+          }
+          return null;
+        })();
+
+        const orderedExtras = [
+          links?.admin?.receta,
+          links?.admin?.comentario,
+          links?.admin?.usuario,
+          links?.admin?.autorComentario,
+          links?.admin?.reportante
+        ];
+        const extraLink = orderedExtras.find((href) => href && href !== adminLink) || null;
+
+        const setButtonLink = (anchor, link) => {
+          if (!anchor) return;
+          if (link) {
+            anchor.href = link;
+            anchor.classList.remove('pointer-events-none', 'opacity-60');
+          } else {
+            anchor.href = '#';
+            anchor.classList.add('pointer-events-none', 'opacity-60');
+          }
+        };
+
+        setButtonLink(viewObjectAdminBtn, adminLink || links?.admin?.panel);
+        setButtonLink(viewObjectExtraBtn, extraLink);
+        if (viewObjectExtraBtnWrapper) {
+          viewObjectExtraBtnWrapper.classList.toggle('hidden', !extraLink);
+        }
+
+        commentSection.classList.add('hidden');
+        recipeSection.classList.add('hidden');
+        userSection.classList.add('hidden');
+
+        if (objeto?.tipo === 'comentario' && objeto.comentario) {
+          commentSection.classList.remove('hidden');
+          commentTextEl.textContent = objeto.comentario.texto || 'Sin contenido';
+          commentAuthorEl.textContent = objeto.comentario.autor?.nombre
+            ? `${objeto.comentario.autor.nombre}${objeto.comentario.autor.alias ? ` (${objeto.comentario.autor.alias})` : ''}`
+            : 'Sin autor';
+          commentRecipeEl.textContent = objeto.receta?.titulo || 'Sin receta';
+          setButtonLink(commentAdminLink, links?.admin?.comentario);
+          setButtonLink(commentRecipeLink, objeto.receta?.id ? `/administracion/recetas/${encodeURIComponent(objeto.receta.id)}` : null);
+          setButtonLink(commentAuthorLink, objeto.comentario.autor?.id ? `/administracion/usuarios/${encodeURIComponent(objeto.comentario.autor.id)}` : null);
+        }
+
+        if (objeto?.tipo === 'receta' && objeto.receta) {
+          recipeSection.classList.remove('hidden');
+          recipeImage.src = ensureImage(objeto.receta.imagenPrincipal, DEFAULT_RECIPE_IMAGE);
+          recipeImage.onerror = () => { recipeImage.src = DEFAULT_RECIPE_IMAGE; };
+          recipeTitleEl.textContent = objeto.receta.titulo || 'Sin título';
+          recipeMetaEl.textContent = objeto.receta.autor?.nombre ? `Autor: ${objeto.receta.autor.nombre}` : 'Autor desconocido';
+          recipeCategoryEl.textContent = objeto.receta.categoriaNombre || 'Sin categoría';
+          recipeTypeEl.textContent = objeto.receta.tipoNombre || 'Sin tipo';
+          recipeDifficultyEl.textContent = objeto.receta.dificultad != null ? objeto.receta.dificultad : 'N/D';
+          recipePrepTimeEl.textContent = formatTime(objeto.receta.tiempoPrep);
+          recipeServingsEl.textContent = objeto.receta.porciones != null ? objeto.receta.porciones : 'N/D';
+          recipePublishedAt.textContent = formatDateTime(objeto.receta.fechaPublicacion);
+        }
+
+        if (objeto?.tipo === 'usuario' && objeto.usuario) {
+          userSection.classList.remove('hidden');
+          targetUserAvatar.src = ensureImage(objeto.usuario.foto, DEFAULT_USER_AVATAR);
+          targetUserAvatar.onerror = () => { targetUserAvatar.src = DEFAULT_USER_AVATAR; };
+          targetUserName.textContent = objeto.usuario.nombre || 'Sin nombre';
+          targetUserAlias.textContent = objeto.usuario.alias || 'Sin alias';
+          targetUserEmail.textContent = objeto.usuario.email || 'Sin correo';
+          targetUserRole.textContent = objeto.usuario.tipoNombre || 'Sin tipo';
+          targetUserStatus.textContent = objeto.usuario.activo ? 'Activo' : 'Inactivo';
+          targetUserStatus.className = `text-sm font-semibold ${objeto.usuario.activo ? 'text-emerald-600' : 'text-rose-600'}`;
+          targetUserRegisteredAt.textContent = formatDateTime(objeto.usuario.fechaRegistro);
+        }
+
+        if (relatedReportsSection) {
+          relatedReportsSection.classList.remove('hidden');
+          const relatedItems = Array.isArray(relacionados) ? relacionados : [];
+          if (relatedItems.length && relatedReportsList) {
+            relatedReportsList.innerHTML = relatedItems.map((item) => {
+              const badgeClass = statusPalette[(item.estado || '').toLowerCase()] || 'bg-slate-100 text-slate-700';
+              const alias = item.reportante?.alias || '';
+              const aliasDisplay = alias ? (alias.startsWith('@') ? alias : `@${alias}`) : '';
+              const reporterLine = [item.reportante?.nombre || '', aliasDisplay].filter(Boolean).join(' ');
+              const motivoSafe = escapeHtml(item.motivo || 'Sin motivo registrado');
+              const reporterSafe = escapeHtml(reporterLine || 'Reportante desconocido');
+              return `
+                <li class="rounded-2xl border border-slate-100 bg-slate-50/80 p-4">
+                  <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                    <div>
+                      <p class="text-sm font-semibold text-slate-900">Reporte #${item.id}</p>
+                      <p class="text-xs text-slate-500">${formatDateTime(item.fecha)}</p>
+                      <p class="mt-1 text-sm text-slate-600">${motivoSafe}</p>
+                      <p class="text-xs text-slate-500">${reporterSafe}</p>
+                    </div>
+                    <div class="flex flex-col gap-2 md:items-end">
+                      <span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${badgeClass}">${item.estado || 'pendiente'}</span>
+                      <a href="/administracion/reportes/${encodeURIComponent(item.id)}" class="inline-flex items-center gap-2 rounded-lg bg-white px-3 py-1 text-xs font-semibold text-indigo-600 shadow-sm transition hover:bg-indigo-50">
+                        <span class="material-symbols-outlined text-base" aria-hidden="true">open_in_new</span>
+                        Abrir detalle
+                      </a>
+                    </div>
+                  </div>
+                </li>`;
+            }).join('');
+            if (relatedReportsEmpty) relatedReportsEmpty.classList.add('hidden');
+          } else if (relatedReportsList) {
+            relatedReportsList.innerHTML = '';
+            if (relatedReportsEmpty) relatedReportsEmpty.classList.remove('hidden');
+          }
+        }
+
+        updateActionButtons(acciones);
+      };
+
+      const performAction = async (accion, button) => {
+        if (!Number.isFinite(reportId) || reportId <= 0) return;
+        button.disabled = true;
+        button.classList.add('opacity-60');
+        try {
+          const response = await fetch(`/api/administracion/reportes/${encodeURIComponent(reportId)}/acciones`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ accion })
+          });
+          if (handleAuthErrors(response)) {
+            return;
+          }
+          if (response.status === 422) {
+            const data = await response.json();
+            showToast(data?.error || 'Acción no disponible para este tipo.', 'error');
+            return;
+          }
+          if (!response.ok) {
+            throw new Error(`Error ${response.status}`);
+          }
+          const data = await response.json();
+          showToast('Acción aplicada correctamente.', 'success');
+          await init();
+        } catch (error) {
+          console.error('Error al ejecutar la acción del reporte:', error);
+          showToast('No se pudo completar la acción. Intenta más tarde.', 'error');
+        } finally {
+          button.disabled = false;
+          button.classList.remove('opacity-60');
+        }
+      };
+
+      const copyReportId = async () => {
+        if (!Number.isFinite(reportId)) return;
+        try {
+          if (!navigator.clipboard || typeof navigator.clipboard.writeText !== 'function') {
+            showToast('Tu navegador no permite copiar automáticamente.', 'error');
+            return;
+          }
+          await navigator.clipboard.writeText(String(reportId));
+          showToast('ID copiado al portapapeles.', 'success');
+        } catch (err) {
+          showToast('No se pudo copiar el ID.', 'error');
+        }
+      };
+
+      const init = async () => {
+        try {
+          loadingState.classList.remove('hidden');
+          contentContainer.classList.add('hidden');
+          const detail = await loadDetail();
+          if (detail) {
+            renderDetail(detail);
+          } else {
+            loadingState.textContent = 'No pudimos obtener la información del reporte.';
+          }
+        } catch (error) {
+          console.error('Error cargando el reporte:', error);
+          loadingState.textContent = 'Ocurrió un error al cargar el reporte. Intenta de nuevo más tarde.';
+        }
+      };
+
+      backToAdminBtn?.addEventListener('click', () => {
+        window.location.href = '/administracion#reportes';
+      });
+      refreshBtn?.addEventListener('click', init);
+      resolveBtn?.addEventListener('click', () => performAction('resolver', resolveBtn));
+      discardBtn?.addEventListener('click', () => performAction('descartar', discardBtn));
+      reopenBtn?.addEventListener('click', () => performAction('reabrir', reopenBtn));
+      deleteBtn?.addEventListener('click', async () => {
+        const confirmation = await showPopupConfirm('¿Seguro que deseas eliminar el objeto reportado? Esta acción es permanente.', {
+          title: 'Eliminar objeto',
+          subtitle: 'Moderación de reportes',
+          confirmText: 'Eliminar',
+          cancelText: 'Cancelar'
+        });
+        if (!confirmation) return;
+        performAction('eliminar_objeto', deleteBtn);
+      });
+      copyIdBtn?.addEventListener('click', copyReportId);
+      downloadReportBtn?.addEventListener('click', () => {
+        if (!currentDetail) {
+          showToast('Aún no se carga el reporte.', 'error');
+          return;
+        }
+        try {
+          const blob = new Blob([JSON.stringify(currentDetail, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const anchor = document.createElement('a');
+          anchor.href = url;
+          anchor.download = `reporte-${reportId}.json`;
+          document.body.appendChild(anchor);
+          anchor.click();
+          document.body.removeChild(anchor);
+          URL.revokeObjectURL(url);
+          showToast('Reporte descargado.', 'success');
+        } catch (err) {
+          console.error('No se pudo descargar el reporte:', err);
+          showToast('No se pudo exportar el JSON.', 'error');
+        }
+      });
+
+      copyEmailsBtn?.addEventListener('click', async () => {
+        if (!currentDetail) {
+          showToast('Carga el reporte antes de copiar.', 'error');
+          return;
+        }
+        if (!navigator.clipboard || typeof navigator.clipboard.writeText !== 'function') {
+          showToast('Tu navegador no permite copiar automáticamente.', 'error');
+          return;
+        }
+        const targets = new Set();
+        const addEmail = (value) => {
+          if (value && typeof value === 'string') {
+            const trimmed = value.trim();
+            if (trimmed) targets.add(trimmed);
+          }
+        };
+        addEmail(currentDetail.reportante?.email);
+        addEmail(currentDetail.objeto?.usuario?.email);
+        addEmail(currentDetail.objeto?.comentario?.autor?.email);
+        if (!targets.size) {
+          showToast('No hay correos disponibles en este reporte.', 'error');
+          return;
+        }
+        try {
+          await navigator.clipboard.writeText(Array.from(targets).join(', '));
+          showToast('Correos copiados al portapapeles.', 'success');
+        } catch (err) {
+          console.error('Error al copiar correos:', err);
+          showToast('No se pudo copiar. Intenta manualmente.', 'error');
+        }
+      });
+
+      openApiBtn?.addEventListener('click', () => {
+        window.open(`/api/administracion/reportes/${encodeURIComponent(reportId)}`, '_blank');
+      });
+
+      shareReportBtn?.addEventListener('click', async () => {
+        if (!navigator.clipboard || typeof navigator.clipboard.writeText !== 'function') {
+          showToast('Tu navegador no permite copiar automáticamente.', 'error');
+          return;
+        }
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          showToast('Enlace copiado.', 'success');
+        } catch (err) {
+          console.error('Error al copiar enlace:', err);
+          showToast('No se pudo copiar el enlace.', 'error');
+        }
+      });
+
+      viewAllReportsBtn?.addEventListener('click', () => {
+        window.location.href = '/administracion#reportes';
+      });
+
+      const hasValidReportId = Number.isFinite(reportId) && reportId > 0;
+      if (!hasValidReportId) {
+        loadingState.textContent = 'Identificador de reporte inválido.';
+        resolveBtn?.classList.add('pointer-events-none', 'opacity-60');
+        discardBtn?.classList.add('pointer-events-none', 'opacity-60');
+        reopenBtn?.classList.add('pointer-events-none', 'opacity-60');
+        deleteBtn?.classList.add('pointer-events-none', 'opacity-60');
+      } else {
+        init();
+      }
+    </script>
+  </body>
+</html>

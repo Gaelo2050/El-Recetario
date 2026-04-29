@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recetas Guardadas - El Recetario®</title>
+  <link rel="shortcut icon" href="../Imagenes/Logo/favicon.ico">
+  <link href="./css/output.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <script src="/js/userSession.js"></script>
+  <script src="/js/confirmDialog.js"></script>
+</head>
+
+<body class="font-sans bg-gray-50 text-gray-800">
+  <!-- Header -->
+  <script src="/js/loadHeader.js" defer></script>
+  <div id="headerContainer"></div>
+
+  <!-- Breadcrumbs -->
+  <nav class="bg-white border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 py-3 text-sm">
+      <ol class="flex items-center gap-2 text-gray-500">
+        <li><a href="/inicio" class="hover:text-purple-600">Inicio</a></li>
+        <li class="text-gray-400">/</li>
+        <li class="text-gray-700 font-medium">Recetas guardadas</li>
+      </ol>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto px-4 py-10 space-y-8">
+    <!-- Encabezado y estadísticas -->
+    <section class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+      <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+        <div>
+          <p class="text-sm uppercase tracking-wide text-purple-500 font-semibold">Mi recetario personal</p>
+          <h1 class="mt-2 text-3xl font-bold text-gray-900">Recetas guardadas</h1>
+          <p class="mt-2 text-gray-500">Organiza tus favoritos, revisa tus colecciones y vuelve a cocinar lo que más te
+            inspira.</p>
+        </div>
+        <div class="grid grid-cols-3 gap-4 sm:gap-6 text-center">
+          <div class="bg-purple-50 border border-purple-100 rounded-xl px-5 py-4">
+            <span class="block text-xs font-semibold text-purple-500">Total</span>
+            <span id="savedTotalCount" class="mt-1 text-2xl font-bold text-purple-700">0</span>
+          </div>
+          <div class="bg-amber-50 border border-amber-100 rounded-xl px-5 py-4">
+            <span class="block text-xs font-semibold text-amber-500">Premium</span>
+            <span id="savedPremiumCount" class="mt-1 text-2xl font-bold text-amber-600">0</span>
+          </div>
+          <div class="bg-emerald-50 border border-emerald-100 rounded-xl px-5 py-4">
+            <span class="block text-xs font-semibold text-emerald-500">Gratuitas</span>
+            <span id="savedFreeCount" class="mt-1 text-2xl font-bold text-emerald-600">0</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div id="savedRecipesMessage" class="hidden mb-6 px-4 py-3 rounded-lg border text-sm"></div>
+
+    <!-- Filtros, búsqueda y vista -->
+    <section class="bg-white rounded-2xl shadow-sm p-6 space-y-4">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div class="w-full lg:max-w-md">
+          <label for="searchSavedRecipes"
+            class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Buscar</label>
+          <div class="relative mt-2">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+            <input id="searchSavedRecipes" type="text" placeholder="Busca por título, autor o descripción"
+              class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-purple-300 focus:ring-2 focus:ring-purple-200 transition" />
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full lg:max-w-3xl">
+          <div>
+            <label for="categoryFilter"
+              class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Categoría</label>
+            <select id="categoryFilter"
+              class="mt-2 w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-purple-300 focus:ring-2 focus:ring-purple-200 transition">
+              <option value="">Todas las categorías</option>
+            </select>
+          </div>
+          <div>
+            <label for="sortFilter" class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Ordenar
+              por</label>
+            <select id="sortFilter"
+              class="mt-2 w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:border-purple-300 focus:ring-2 focus:ring-purple-200 transition">
+              <option value="recent">Más recientes</option>
+              <option value="oldest">Más antiguos</option>
+              <option value="rating">Mejor valorados</option>
+              <option value="alpha">Alfabético (A-Z)</option>
+              <option value="prep_time">Menor tiempo de preparación</option>
+            </select>
+          </div>
+          <div class="flex items-end">
+            <div class="w-full bg-gray-100 rounded-xl p-1 flex gap-1">
+              <button type="button" class="flex-1 py-2 rounded-lg bg-white text-purple-600 font-medium" data-view="grid"
+                aria-pressed="true">
+                <span class="material-symbols-outlined text-base">grid_view</span>
+              </button>
+              <button type="button" class="flex-1 py-2 rounded-lg text-gray-500 hover:text-purple-600 transition"
+                data-view="list" aria-pressed="false">
+                <span class="material-symbols-outlined text-base">view_list</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Colecciones sugeridas -->
+    <section>
+      <h2 class="text-lg font-semibold text-gray-800 mb-3">Categorias destacadas</h2>
+      <div id="collectionsContainer" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div
+          class="col-span-2 md:col-span-4 bg-white border border-dashed border-gray-200 rounded-xl p-6 text-center text-gray-400 text-sm">
+          Cargando colecciones...
+        </div>
+      </div>
+    </section>
+
+    <!-- Grid de recetas -->
+    <section>
+      <div id="savedRecipesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      <div id="paginationContainer" class="flex justify-center gap-2 mt-8"></div>
+    </section>
+  </main>
+
+  <script src="/js/loadFooter.js" defer></script>
+  <div id="footerContainer"></div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const state = {
+        recipes: [],
+        stats: { total: 0, premium: 0, free: 0 },
+        categories: [],
+        view: 'grid',
+        filters: { search: '', category: '', sort: 'recent' },
+        page: 1,
+        pageSize: 9,
+      };
+
+      const fallbackImage = '/Imagenes/Recetas/1.png';
+      const fallbackAvatar = '/Imagenes/Usuarios/0.png';
+
+      const elements = {
+        totalCount: document.getElementById('savedTotalCount'),
+        premiumCount: document.getElementById('savedPremiumCount'),
+        freeCount: document.getElementById('savedFreeCount'),
+        message: document.getElementById('savedRecipesMessage'),
+        search: document.getElementById('searchSavedRecipes'),
+        category: document.getElementById('categoryFilter'),
+        sort: document.getElementById('sortFilter'),
+        viewButtons: Array.from(document.querySelectorAll('[data-view]')),
+        collections: document.getElementById('collectionsContainer'),
+        recipesContainer: document.getElementById('savedRecipesContainer'),
+        pagination: document.getElementById('paginationContainer'),
+      };
+
+      let fetchTimeout = null;
+      let messageTimer = null;
+      let lastMessageType = null;
+
+      const escapeHtml = (value) => {
+        if (value === null || typeof value === 'undefined') return '';
+        return String(value).replace(/[&<>"']/g, (match) => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;',
+        })[match]);
+      };
+
+      const truncate = (value, max = 110) => {
+        if (!value) return '';
+        const str = String(value);
+        return str.length > max ? `${str.slice(0, max - 3)}...` : str;
+      };
+
+      const formatPrepTime = (value) => {
+        if (!value) return 'Tiempo no disponible';
+        if (typeof value === 'number' && Number.isFinite(value)) {
+          const hours = Math.floor(value / 60);
+          const minutes = value % 60;
+          const parts = [];
+          if (hours > 0) parts.push(`${hours} h`);
+          parts.push(`${minutes} min`);
+          return parts.join(' ');
+        }
+        const parts = String(value).split(':').map((part) => Number(part));
+        if (parts.length < 2 || parts.some((part) => !Number.isFinite(part))) return value;
+        const [hours, minutes] = parts;
+        const segments = [];
+        if (hours > 0) segments.push(`${hours} h`);
+        segments.push(`${minutes} min`);
+        return segments.join(' ');
+      };
+
+      const formatDifficulty = (difficulty) => {
+        if (!Number.isFinite(difficulty)) return 'Dificultad no disponible';
+        if (difficulty <= 3) return 'Fácil';
+        if (difficulty <= 6) return 'Intermedio';
+        return 'Avanzado';
+      };
+
+      const formatSavedDate = (iso) => {
+        if (!iso) return '';
+        const date = new Date(iso);
+        if (Number.isNaN(date.getTime())) return '';
+        return new Intl.DateTimeFormat('es-ES', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+        }).format(date);
+      };
+
+      const formatRating = (recipe) => {
+        if (recipe.avgRating === null || typeof recipe.avgRating === 'undefined') return 'Sin valoración';
+        const rating = Number(recipe.avgRating);
+        if (!Number.isFinite(rating)) return 'Sin valoración';
+        const votes = Number(recipe.totalRatings || 0);
+        return votes > 0 ? `${rating.toFixed(1)} (${votes})` : rating.toFixed(1);
+      };
+
+      const setActiveView = (view) => {
+        state.view = view === 'list' ? 'list' : 'grid';
+        elements.viewButtons.forEach((button) => {
+          const isActive = button.dataset.view === state.view;
+          button.setAttribute('aria-pressed', String(isActive));
+          if (isActive) {
+            button.classList.add('bg-white', 'text-purple-600');
+            button.classList.remove('text-gray-400', 'hover:text-gray-600');
+          } else {
+            button.classList.remove('bg-white', 'text-purple-600');
+            button.classList.add('text-gray-400');
+          }
+        });
+      };
+
+      const getTotalPages = () => Math.max(1, Math.ceil(state.recipes.length / state.pageSize));
+
+      const getPageSlice = () => {
+        const totalPages = getTotalPages();
+        if (state.page > totalPages) state.page = totalPages;
+        if (state.page < 1) state.page = 1;
+        const start = (state.page - 1) * state.pageSize;
+        return state.recipes.slice(start, start + state.pageSize);
+      };
+
+      const clearMessage = () => {
+        if (!elements.message) return;
+        elements.message.classList.add('hidden');
+        elements.message.textContent = '';
+        elements.message.className = 'hidden mb-6 px-4 py-3 rounded-lg border text-sm';
+        if (messageTimer) {
+          clearTimeout(messageTimer);
+          messageTimer = null;
+        }
+        lastMessageType = null;
+      };
+
+      const showMessage = (text, variant = 'info') => {
+        if (!elements.message) return;
+        const variantClasses = {
+          success: 'mb-6 px-4 py-3 rounded-lg border text-sm bg-green-50 border-green-200 text-green-700',
+          error: 'mb-6 px-4 py-3 rounded-lg border text-sm bg-red-50 border-red-200 text-red-700',
+          info: 'mb-6 px-4 py-3 rounded-lg border text-sm bg-blue-50 border-blue-200 text-blue-700',
+        };
+        elements.message.className = variantClasses[variant] || variantClasses.info;
+        elements.message.textContent = text;
+        elements.message.classList.remove('hidden');
+        if (messageTimer) clearTimeout(messageTimer);
+        messageTimer = setTimeout(() => {
+          elements.message.classList.add('hidden');
+          lastMessageType = null;
+        }, 4000);
+        lastMessageType = variant;
+      };
+
+      const handleViewToggle = (event) => {
+        const { view } = event.currentTarget.dataset;
+        if (!view || view === state.view) return;
+        setActiveView(view);
+        renderRecipes();
+      };
+
+      const handleCategoryChange = () => {
+        state.filters.category = elements.category.value || '';
+        state.page = 1;
+        obtenerRecetasGuardadas();
+      };
+
+      const handleSortChange = () => {
+        state.filters.sort = elements.sort.value || 'recent';
+        state.page = 1;
+        obtenerRecetasGuardadas();
+      };
+
+      const handleSearchInput = () => {
+        state.filters.search = elements.search.value.trim();
+        state.page = 1;
+        scheduleFetch();
+      };
+
+      const scheduleFetch = () => {
+        if (fetchTimeout) clearTimeout(fetchTimeout);
+        fetchTimeout = setTimeout(() => {
+          fetchTimeout = null;
+          obtenerRecetasGuardadas();
+        }, 300);
+      };
+
+      const obtenerRecetasGuardadas = async () => {
+        if (!elements.recipesContainer) return;
+        try {
+          elements.recipesContainer.setAttribute('aria-busy', 'true');
+          const params = new URLSearchParams();
+          if (state.filters.search) params.set('search', state.filters.search);
+          if (state.filters.category) params.set('category', state.filters.category);
+          if (state.filters.sort) params.set('sort', state.filters.sort);
+          const query = params.toString() ? `?${params.toString()}` : '';
+          const response = await fetch(`/api/yo/recetas-guardadas${query}`, { credentials: 'same-origin' });
+          if (response.status === 401) {
+            window.location.href = '/iniciar-sesion';
+            return;
+          }
+          if (!response.ok) throw new Error('request_failed');
+          const payload = await response.json();
+          state.recipes = Array.isArray(payload.recipes) ? payload.recipes : [];
+          state.stats = payload.stats || { total: 0, premium: 0, free: 0 };
+          state.categories = Array.isArray(payload.categories) ? payload.categories : [];
+          if (lastMessageType === 'error') clearMessage();
+          const totalPages = getTotalPages();
+          if (state.page > totalPages) state.page = totalPages;
+          renderAll();
+        } catch (error) {
+          console.error('recetas-guardadas: failed to load data', error);
+          showMessage('No se pudieron cargar tus recetas guardadas. Intenta de nuevo más tarde.', 'error');
+        } finally {
+          elements.recipesContainer.removeAttribute('aria-busy');
+        }
+      };
+
+      const renderStats = () => {
+        if (elements.totalCount) elements.totalCount.textContent = state.stats.total || 0;
+        if (elements.premiumCount) elements.premiumCount.textContent = state.stats.premium || 0;
+        if (elements.freeCount) elements.freeCount.textContent = state.stats.free || 0;
+      };
+
+      const renderCategoryOptions = () => {
+        if (!elements.category) return;
+        const defaultOption = '<option value="">Todas las categorías</option>';
+        const options = state.categories
+          .map((category) => `<option value="${category.id}">${escapeHtml(category.name)}</option>`)
+          .join('');
+        elements.category.innerHTML = defaultOption + options;
+        const current = state.filters.category || '';
+        const hasCurrent = Array.from(elements.category.options).some((option) => option.value === current);
+        elements.category.value = hasCurrent ? current : '';
+        if (!hasCurrent) state.filters.category = '';
+      };
+
+      const renderCollections = () => {
+        if (!elements.collections) return;
+        elements.collections.innerHTML = '';
+
+        if (!state.recipes.length) {
+          const emptyCard = document.createElement('div');
+          emptyCard.className = 'col-span-2 md:col-span-4 bg-white border border-dashed border-gray-200 rounded-xl p-6 text-center text-gray-500 text-sm';
+          emptyCard.innerHTML = `
+            <div class="flex flex-col items-center gap-2">
+              <span class="material-symbols-outlined text-4xl text-gray-300">bookmark_border</span>
+              <p class="font-semibold text-gray-600">Aún no hay colecciones para mostrar</p>
+              <p class="text-gray-500 text-sm">Guarda recetas para organizar tus colecciones personalizadas.</p>
+            </div>`;
+          elements.collections.appendChild(emptyCard);
+          return;
+        }
+
+        const fragment = document.createDocumentFragment();
+
+        const totalButton = document.createElement('button');
+        totalButton.type = 'button';
+        totalButton.className = 'bg-gradient-to-br from-purple-500 to-pink-500 p-4 rounded-xl text-white text-left shadow';
+        totalButton.innerHTML = `
+          <span class="material-symbols-outlined text-2xl mb-2">folder_special</span>
+          <div class="font-semibold">Todas</div>
+          <div class="text-sm text-white/80">${state.stats.total} recetas</div>`;
+        totalButton.addEventListener('click', () => {
+          state.filters.category = '';
+          if (elements.category) elements.category.value = '';
+          state.page = 1;
+          obtenerRecetasGuardadas();
+        });
+        fragment.appendChild(totalButton);
+
+        const grouped = state.recipes.reduce((acc, recipe) => {
+          const key = recipe.categoryId !== null ? String(recipe.categoryId) : 'sin_categoria';
+          if (!acc[key]) {
+            acc[key] = {
+              id: recipe.categoryId,
+              name: recipe.categoryName || 'Sin categoría',
+              count: 0,
+            };
+          }
+          acc[key].count += 1;
+          return acc;
+        }, {});
+
+        const sortedGroups = Object.values(grouped)
+          .filter((group) => group.id !== null)
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 2);
+
+        const palettes = [
+          'bg-gradient-to-br from-orange-500 to-yellow-500',
+          'bg-gradient-to-br from-teal-500 to-green-500',
+          'bg-gradient-to-br from-sky-500 to-blue-500',
+        ];
+
+        sortedGroups.forEach((group, index) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = `${palettes[index % palettes.length]} p-4 rounded-xl text-white text-left shadow`;
+          button.innerHTML = `
+            <span class="material-symbols-outlined text-2xl mb-2">bookmark</span>
+            <div class="font-semibold">${escapeHtml(group.name)}</div>
+            <div class="text-sm text-white/80">${group.count} recetas</div>`;
+          button.addEventListener('click', () => {
+            state.filters.category = String(group.id);
+            if (elements.category) elements.category.value = String(group.id);
+            state.page = 1;
+            obtenerRecetasGuardadas();
+          });
+          fragment.appendChild(button);
+        });
+
+        const placeholder = document.createElement('button');
+        placeholder.type = 'button';
+        placeholder.disabled = true;
+        placeholder.className = 'bg-white p-4 rounded-xl text-gray-600 text-left border-2 border-dashed cursor-not-allowed';
+        placeholder.innerHTML = `
+          <span class="material-symbols-outlined text-2xl mb-2">add</span>
+          <div class="font-semibold">Nueva colección</div>
+          <div class="text-sm text-gray-400">Próximamente podrás organizar tus guardados</div>`;
+        fragment.appendChild(placeholder);
+
+        elements.collections.appendChild(fragment);
+      };
+
+      const attachRemoveHandler = (node, recipeId) => {
+        const action = node.querySelector('[data-action="remove"]');
+        if (!action) return;
+        action.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          handleRemove(recipeId);
+        });
+      };
+
+      const createGridCard = (recipe) => {
+        const card = document.createElement('article');
+        card.className = 'bg-white rounded-xl shadow-lg overflow-hidden group cursor-pointer hover:shadow-xl transition';
+        const premiumBadge = recipe.premium
+          ? '<span class="bg-yellow-400 text-yellow-900 text-xs font-medium px-2 py-1 rounded-full">Premium</span>'
+          : '<span class="bg-emerald-500 text-white text-xs font-medium px-2 py-1 rounded-full">Gratis</span>';
+        const ratingLabel = formatRating(recipe);
+        const difficultyLabel = formatDifficulty(recipe.difficulty);
+        const prepTimeLabel = formatPrepTime(recipe.prepTime);
+        const savedDate = formatSavedDate(recipe.savedAt) || 'fecha desconocida';
+        const authorName = recipe.author && recipe.author.name ? recipe.author.name : 'Autor';
+        const authorPhoto = recipe.author && recipe.author.photo ? recipe.author.photo : fallbackAvatar;
+        const description = truncate(recipe.description || '', 110);
+        const imageUrl = recipe.imageUrl || fallbackImage;
+
+        card.innerHTML = `
+          <div class="relative">
+            <img src="${imageUrl}" alt="Imagen de ${escapeHtml(recipe.name)}" class="w-full h-48 object-cover group-hover:scale-105 transition duration-300" loading="lazy">
+            <div class="absolute top-4 left-4 flex gap-2">${premiumBadge}</div>
+            <div class="absolute top-4 right-4 flex gap-2">
+              <button type="button" class="p-2 rounded-full bg-white/90 text-red-500 hover:bg-red-500 hover:text-white transition" title="Quitar de guardados" data-action="remove">
+                <span class="material-symbols-outlined text-base">bookmark_remove</span>
+              </button>
+            </div>
+          </div>
+          <div class="p-4 space-y-3">
+            <div>
+              <h3 class="font-semibold text-lg text-gray-800">${escapeHtml(recipe.name)}</h3>
+              <p class="text-sm text-gray-500">${escapeHtml(description)}</p>
+            </div>
+            <div class="flex items-center justify-between text-sm text-gray-600">
+              <span class="flex items-center gap-1">
+                <span class="material-symbols-outlined text-base text-purple-500">schedule</span>
+                ${escapeHtml(prepTimeLabel)}
+              </span>
+              <span class="inline-flex items-center gap-1 text-gray-500">
+                <span class="material-symbols-outlined text-base text-amber-500">star</span>
+                ${escapeHtml(ratingLabel)}
+              </span>
+            </div>
+            <div class="flex items-center justify-between text-sm text-gray-600">
+              <span class="inline-flex items-center gap-2">
+                <img src="${authorPhoto}" alt="${escapeHtml(authorName)}" class="w-7 h-7 rounded-full object-cover">
+                <span>${escapeHtml(authorName)}</span>
+              </span>
+              <span class="px-2 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-medium">${escapeHtml(difficultyLabel)}</span>
+            </div>
+            <div class="flex items-center justify-between text-sm text-gray-400">
+              <span>Guardada el ${escapeHtml(savedDate)}</span>
+            </div>
+          </div>`;
+
+        card.addEventListener('click', (e) => {
+          // Evita que el botón de eliminar dispare la navegación
+          if (e.target.closest('[data-action="remove"]')) return;
+          window.location.href = `/receta/${recipe.id}`;
+        });
+        attachRemoveHandler(card, recipe.id);
+        return card;
+      };
+
+      const createListCard = (recipe) => {
+        const card = document.createElement('article');
+        card.className = 'bg-white rounded-xl shadow-md overflow-hidden flex flex-col md:flex-row cursor-pointer hover:shadow-lg transition';
+        const premiumBadge = recipe.premium
+          ? '<span class="bg-yellow-400 text-yellow-900 text-xs font-medium px-2 py-1 rounded-full">Premium</span>'
+          : '<span class="bg-emerald-500 text-white text-xs font-medium px-2 py-1 rounded-full">Gratis</span>';
+        const ratingLabel = formatRating(recipe);
+        const difficultyLabel = formatDifficulty(recipe.difficulty);
+        const prepTimeLabel = formatPrepTime(recipe.prepTime);
+        const savedDate = formatSavedDate(recipe.savedAt) || 'fecha desconocida';
+        const authorName = recipe.author && recipe.author.name ? recipe.author.name : 'Autor';
+        const authorPhoto = recipe.author && recipe.author.photo ? recipe.author.photo : fallbackAvatar;
+        const description = truncate(recipe.description || '', 160);
+        const imageUrl = recipe.imageUrl || fallbackImage;
+
+        card.innerHTML = `
+          <div class="md:w-48 h-48 md:h-auto flex-shrink-0 relative">
+            <img src="${imageUrl}" alt="Imagen de ${escapeHtml(recipe.name)}" class="w-full h-full object-cover" loading="lazy">
+            <div class="absolute top-4 left-4">${premiumBadge}</div>
+          </div>
+          <div class="flex-1 p-4 space-y-3">
+            <div class="flex justify-between items-start gap-4">
+              <div>
+                <h3 class="font-semibold text-lg text-gray-800">${escapeHtml(recipe.name)}</h3>
+                <p class="text-sm text-gray-500">${escapeHtml(description)}</p>
+              </div>
+              <button type="button" class="p-2 rounded-full bg-gray-100 text-red-500 hover:bg-red-500 hover:text-white transition" title="Quitar de guardados" data-action="remove">
+                <span class="material-symbols-outlined text-base">bookmark_remove</span>
+              </button>
+            </div>
+            <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+              <span class="flex items-center gap-1">
+                <span class="material-symbols-outlined text-base text-purple-500">schedule</span>
+                ${escapeHtml(prepTimeLabel)}
+              </span>
+              <span class="flex items-center gap-1">
+                <span class="material-symbols-outlined text-base text-amber-500">star</span>
+                ${escapeHtml(ratingLabel)}
+              </span>
+              <span class="px-2 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-medium">${escapeHtml(difficultyLabel)}</span>
+              <span class="text-gray-400">Guardada el ${escapeHtml(savedDate)}</span>
+            </div>
+            <div class="flex items-center justify-between text-sm text-gray-600">
+              <span class="inline-flex items-center gap-2">
+                <img src="${authorPhoto}" alt="${escapeHtml(authorName)}" class="w-8 h-8 rounded-full object-cover">
+                <span>${escapeHtml(authorName)}</span>
+              </span>
+            </div>
+          </div>`;
+
+        card.addEventListener('click', (e) => {
+          if (e.target.closest('[data-action="remove"]')) return;
+          window.location.href = `/receta/${recipe.id}`;
+        });
+        attachRemoveHandler(card, recipe.id);
+        return card;
+      };
+
+      const renderRecipes = () => {
+        if (!elements.recipesContainer) return;
+        elements.recipesContainer.innerHTML = '';
+
+        if (!state.recipes.length) {
+          elements.recipesContainer.className = 'flex flex-col gap-4';
+          const empty = document.createElement('div');
+          empty.className = 'bg-white border border-dashed border-gray-200 rounded-xl p-10 text-center text-gray-500';
+          empty.innerHTML = `
+            <div class="flex flex-col items-center gap-3">
+              <span class="material-symbols-outlined text-5xl text-gray-300">bookmark_add</span>
+              <p class="text-lg font-semibold text-gray-600">Aún no guardas recetas</p>
+              <p class="text-sm text-gray-500 max-w-md">Explora la comunidad, guarda tus platillos favoritos y vuelve para verlos aquí.</p>
+            </div>`;
+          elements.recipesContainer.appendChild(empty);
+          return;
+        }
+
+        const pageItems = getPageSlice();
+        const fragment = document.createDocumentFragment();
+        pageItems.forEach((recipe) => {
+          const card = state.view === 'grid' ? createGridCard(recipe) : createListCard(recipe);
+          fragment.appendChild(card);
+        });
+
+        elements.recipesContainer.className = state.view === 'grid'
+          ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
+          : 'flex flex-col gap-4';
+        elements.recipesContainer.appendChild(fragment);
+      };
+
+      const changePage = (page) => {
+        const totalPages = getTotalPages();
+        const nextPage = Math.min(Math.max(page, 1), totalPages);
+        if (nextPage === state.page) return;
+        state.page = nextPage;
+        renderRecipes();
+        renderPagination();
+        if (elements.recipesContainer) {
+          const offsetTop = elements.recipesContainer.getBoundingClientRect().top + window.scrollY - 120;
+          window.scrollTo({ top: Math.max(offsetTop, 0), behavior: 'smooth' });
+        }
+      };
+
+      const createPageButton = (label, page, disabled = false, icon = null) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'px-4 py-2 rounded-lg bg-white text-gray-600 shadow-sm hover:bg-gray-50 transition';
+        if (icon) {
+          button.innerHTML = `<span class="material-symbols-outlined">${icon}</span>`;
+        } else {
+          button.textContent = label;
+        }
+        if (disabled) {
+          button.disabled = true;
+          button.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+          button.addEventListener('click', () => changePage(page));
+        }
+        return button;
+      };
+
+      const renderPagination = () => {
+        if (!elements.pagination) return;
+        elements.pagination.innerHTML = '';
+
+        const totalPages = Math.ceil(state.recipes.length / state.pageSize);
+        if (totalPages <= 1) return;
+
+        const fragment = document.createDocumentFragment();
+        fragment.appendChild(createPageButton('', state.page - 1, state.page === 1, 'chevron_left'));
+
+        const windowSize = 5;
+        let startPage = Math.max(1, state.page - 2);
+        let endPage = Math.min(totalPages, startPage + windowSize - 1);
+        if (endPage - startPage < windowSize - 1) {
+          startPage = Math.max(1, endPage - windowSize + 1);
+        }
+
+        for (let page = startPage; page <= endPage; page += 1) {
+          const button = createPageButton(String(page), page, false, null);
+          if (page === state.page) {
+            button.classList.add('bg-purple-600', 'text-white');
+            button.classList.remove('bg-white', 'text-gray-600');
+          }
+          fragment.appendChild(button);
+        }
+
+        fragment.appendChild(createPageButton('', state.page + 1, state.page === totalPages, 'chevron_right'));
+        elements.pagination.appendChild(fragment);
+      };
+
+      const handleRemove = async (recipeId) => {
+        const confirmed = await showPopupConfirm('¿Deseas quitar esta receta de tus guardados?', {
+          title: 'Quitar receta',
+          subtitle: 'Recetas guardadas',
+          confirmText: 'Quitar',
+          cancelText: 'Cancelar'
+        });
+        if (!confirmed) return;
+        try {
+          const response = await fetch(`/api/recetas/${encodeURIComponent(recipeId)}/favorita`, {
+            method: 'DELETE',
+            credentials: 'same-origin',
+          });
+          if (!response.ok) throw new Error('request_failed');
+          showMessage('Receta eliminada de tus guardados.', 'success');
+          await obtenerRecetasGuardadas();
+        } catch (error) {
+          console.error('recetas-guardadas: remove failed', error);
+          showMessage('No se pudo quitar la receta. Intenta nuevamente.', 'error');
+        }
+      };
+
+      const renderAll = () => {
+        renderStats();
+        renderCategoryOptions();
+        renderCollections();
+        setActiveView(state.view);
+        renderRecipes();
+        renderPagination();
+      };
+
+      const init = () => {
+        if (elements.search) elements.search.addEventListener('input', handleSearchInput);
+        if (elements.category) elements.category.addEventListener('change', handleCategoryChange);
+        if (elements.sort) elements.sort.addEventListener('change', handleSortChange);
+        elements.viewButtons.forEach((button) => button.addEventListener('click', handleViewToggle));
+        setActiveView(state.view);
+        obtenerRecetasGuardadas();
+      };
+
+      document.addEventListener('DOMContentLoaded', init);
+    })();
+  </script>
+
+</body>
+
+</html>

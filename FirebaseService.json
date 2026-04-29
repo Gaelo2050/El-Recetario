@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "el-recetario-56efd",
+  "private_key_id": "6c45cf5dd57fc7d5f89da5b7e20e543433787426",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCobmPyQHPin6F2\nKXBMaDmvVQZDSK4s7YkJjpztMyCM71r5RguXYz2iwus81Nf1bAE2udhbUfSNRoSZ\n4GyEuIYW3+d00crRWcq+gieJo7DZqoWNt+uDDuQdvMn99zRHiSv+465BxQESEAmk\n7tFi8VX1tJ3lxsWzgj6PGQB2aUeXTJPdYh98TPATTyLfpR48O+vuMpNjCKatrPwK\nmqX4Qg5AvWFSbMFlkxYD5IzK4rmR/BUnisuYjJX7l9dMbxzHG8QMO2VB91Jhp5mK\neLn5Ygyi5/1p8c1FNvt7dsbvBilcCdk/xqP6299tc0TxD3bT+/jHq6rRJ8jrv+/A\n1UMm8uIJAgMBAAECggEAAhb5ijtKvMp0fUPzGt2VrqNYTCwqDhBl6X6Rm59NZXZA\nS5S3BtoyPPNcahEte0PraW+Jm8ty5HBWK5cVXZmw/zZot6I1OR77NR0mCq8DXhX/\nqXQZWdNM2QIbQvmG1mbhKvzN8A62zk+w4PEeG7NJGN70cRID6K/iYRHjN7TjcKD7\nToUPN1EfPqoT0cCtmJcOsIedAF5z+rvwNPS2uNUmZbKJGVdajRE0KYkA2lpcZ60+\n9lo53tq1Vvoo+2wnIMAFnL/QVcbknSRhNV2gjmkQJU66LwXGTevZX/cG/fp/VjMn\nvoOJdlVNzyoWU/qLMLaryqUF4Xp7NzLFKTQtwr94YQKBgQDhovEu2zURPnwsjMQh\nL6Yx1UymkClJVyzG4VRntz+7USVRQ7bUX4AP5noyGtHsLBjkmi+5joCcVXng21UI\nJCrQzjLCBmyd3Z0WS0811rGuHbej0os0WFjS2aKo95pIwQODN9IoaIXn3UTL7nbh\na1jwWpMeiMGphJBB4+y3Nro14QKBgQC/GMGzFCM5c/NG+ZWsK5ZO1ElxQbVr1w7Y\nrCcO0T5ikXrEu5HfMiZQYUn2JK8VP0XOpZ4PYI/oluMP4MlPRAK+B1CrO3hSWuDi\nK7vIDJzpFpqR8maw8s0kox5kaK++Ofq+gMNWL7+CiIo/2M2AWhR9Z+uO1yQknrg+\nYVjL33ZhKQKBgDZbNpb/H+2ji+5/itAj1nmy1OBbYlbUtWjD572Em8nYZpEJKwZG\na2dpMo7XfzLR/L01l8Gv3rPKs63DqNxpOhdLVVcAjTIKrUkto0tpCSzU4+SHWBmo\nHt3MqC7kVzqnpNz7mZk6dOfCmkw2ilULs0VTzJVShLT9xnLZIbGRcZKBAoGAfzOT\nfAijidLM1Sm9n2VEICTe3izG/omgsEmnlg1iYWpFNj9E0jUnm8mm2dmBUbtUVEGZ\n/NJh+Ii3jBIs7j5vNN7Zq6Fibi9gEizaSkdbCyyopw2bnZ2BQCn0SRIGKbGeXsCH\nRg9ygwkwPV+rKwzLJs7N1b8Pp/Ce46cY3FxbCEECgYAtjzt+wPRnGiTMq6ufkcLw\nC0ZL1cI+Puqsiji+slB5PxenKg70UY2+Caqos5pU1rxPU73M6UTigtxG3IEmVn+t\nvLvoGkPY5wfoLf4iJ9j3JYi1Zgfczww8Kt/9j58ehqllO1xq8/wS/7Bfomek9GaS\nHEX5gLkmSZ2U4Oor3GLv1Q==\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-fbsvc@el-recetario-56efd.iam.gserviceaccount.com",
+  "client_id": "107634351959822916021",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40el-recetario-56efd.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel Admin | Categoría</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <link rel="shortcut icon" href="../Imagenes/Logo/favicon.ico">
+  <link href="/css/output.css" rel="stylesheet">
+  <script src="/js/userSession.js"></script>
+</head>
+
+<body class="bg-gray-50 min-h-screen text-gray-800">
+  <div class="max-w-5xl mx-auto px-4 py-10 space-y-8">
+    <header class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <p class="text-sm uppercase text-orange-500 font-semibold">Administración</p>
+        <h1 id="categoryTitle" class="text-3xl md:text-4xl font-bold text-gray-900">Categoría no seleccionada</h1>
+        <p id="categorySubtitle" class="text-gray-500">Selecciona una categoría desde el panel principal para editarla.</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="/administracion"
+          class="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white/80 px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-white">
+          <span class="material-symbols-outlined text-base">home</span>
+          Regresar al panel principal
+        </a>
+      </div>
+    </header>
+
+    <section id="emptyState" class="rounded-3xl border border-dashed border-gray-300 bg-white p-8 text-center">
+      <div class="space-y-3">
+        <span class="material-symbols-outlined text-5xl text-gray-300">category</span>
+        <h2 class="text-xl font-semibold text-gray-800">Sin categoría seleccionada</h2>
+        <p id="emptyMessage" class="text-gray-500">
+          Usa el panel principal para elegir qué categoría deseas editar.
+        </p>
+      </div>
+    </section>
+
+    <section id="loadingState" class="rounded-3xl border border-gray-200 bg-white px-6 py-8 hidden">
+      <div class="flex items-center gap-4">
+        <span class="material-symbols-outlined text-3xl text-orange-400 animate-spin">progress_activity</span>
+        <div>
+          <p class="text-lg font-semibold text-gray-800">Cargando información</p>
+          <p class="text-sm text-gray-500">Esto tomará sólo unos segundos...</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="categoryContent" class="hidden space-y-8">
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <article class="rounded-2xl bg-white shadow-sm border border-orange-100 p-5">
+          <p class="text-xs font-semibold uppercase tracking-wide text-orange-500">Recetas vinculadas</p>
+          <p class="text-3xl font-bold text-gray-900" id="statRecetas">-</p>
+          <p class="text-sm text-gray-500">Total de recetas asociadas</p>
+        </article>
+        <article class="rounded-2xl bg-white shadow-sm border border-purple-100 p-5">
+          <p class="text-xs font-semibold uppercase tracking-wide text-purple-500">Recetas premium</p>
+          <p class="text-3xl font-bold text-gray-900" id="statPremium">-</p>
+          <p class="text-sm text-gray-500">Incluye contenido exclusivo</p>
+        </article>
+        <article class="rounded-2xl bg-white shadow-sm border border-teal-100 p-5">
+          <p class="text-xs font-semibold uppercase tracking-wide text-teal-500">Identificador</p>
+          <p class="text-3xl font-bold text-gray-900" id="statId">-</p>
+          <p class="text-sm text-gray-500">Código interno de la categoría</p>
+        </article>
+      </div>
+
+      <div class="grid gap-10 lg:grid-cols-[280px_1fr]">
+        <div class="space-y-4">
+          <div class="rounded-3xl border border-gray-200 bg-white p-4 shadow-sm">
+            <p class="text-sm font-semibold text-gray-700 mb-3">Imagen de portada</p>
+            <div class="aspect-[4/3] overflow-hidden rounded-2xl bg-gray-100 border border-dashed border-orange-200">
+              <img id="imagePreview" src="/Imagenes/Recetas/1.png" alt="Vista previa de la categoría"
+                class="h-full w-full object-cover">
+            </div>
+          </div>
+          <input type="file" id="imageInput" accept="image/png,image/jpeg,image/webp" class="hidden">
+          <div class="flex flex-col gap-2">
+            <button type="button" id="triggerImageInput"
+              class="inline-flex items-center justify-center gap-2 rounded-xl border border-orange-200 bg-white px-3 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50">
+              <span class="material-symbols-outlined text-base">file_upload</span>
+              Cambiar imagen
+            </button>
+            <button type="button" id="removeImageButton"
+              class="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-3 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50">
+              <span class="material-symbols-outlined text-base">restart_alt</span>
+              Restablecer imagen
+            </button>
+          </div>
+          <p class="text-xs text-gray-500">Formatos JPG, PNG o WebP · Máx. 5 MB.</p>
+        </div>
+
+        <form id="categoryForm" class="space-y-6">
+          <div>
+            <label for="nombre" class="block text-sm font-semibold text-gray-700 mb-1">Nombre</label>
+            <input id="nombre" name="nombre" type="text" required maxlength="255"
+              class="w-full rounded-2xl border border-gray-200 px-4 py-2.5 text-sm shadow-sm focus:border-orange-300 focus:outline-none"
+              placeholder="Ej. Postres saludables">
+          </div>
+          <div>
+            <label for="descripcion" class="block text-sm font-semibold text-gray-700 mb-1">Descripción</label>
+            <textarea id="descripcion" name="descripcion" rows="6" maxlength="100"
+              class="w-full rounded-2xl border border-gray-200 px-4 py-2.5 text-sm shadow-sm focus:border-orange-300 focus:outline-none"
+              placeholder="Breve descripción para los usuarios."></textarea>
+            <p class="text-xs text-gray-500 mt-1">Opcional — máximo 100 caracteres.</p>
+          </div>
+          <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
+            <button type="button" id="cancelChanges"
+              class="inline-flex items-center justify-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50">
+              Cancelar
+            </button>
+            <button type="submit"
+              class="inline-flex items-center justify-center gap-2 rounded-2xl bg-orange-500 px-5 py-2 text-sm font-semibold text-white shadow hover:bg-orange-600">
+              <span class="material-symbols-outlined text-base">save</span>
+              Guardar cambios
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="flex flex-col gap-4 rounded-3xl border border-rose-100 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p class="text-xs uppercase text-rose-500 font-semibold">Acción peligrosa</p>
+          <p class="text-sm text-gray-600">Eliminar una categoría es permanente. Si hay recetas vinculadas el sistema no lo permitirá.</p>
+        </div>
+        <button id="deleteButton"
+          class="inline-flex items-center justify-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-600 hover:bg-rose-100">
+          <span class="material-symbols-outlined text-base">delete</span>
+          Eliminar categoría
+        </button>
+      </div>
+
+      <div class="rounded-3xl border border-gray-100 bg-white p-5 text-sm text-gray-600">
+        <p><span class="font-semibold text-gray-800">Última actividad:</span> <span id="statFecha">-</span></p>
+      </div>
+    </section>
+  </div>
+
+  <div id="modalBackdrop" class="fixed inset-0 z-40 hidden bg-black/50 backdrop-blur-sm"></div>
+
+  <section id="confirmDialog" class="fixed inset-0 z-50 hidden items-center justify-center px-4 py-10">
+    <div class="w-full max-w-md rounded-2xl bg-white shadow-2xl border border-red-100">
+      <header class="flex items-center gap-3 border-b border-gray-100 px-6 py-4">
+        <span class="material-symbols-outlined text-red-500">warning</span>
+        <div>
+          <p class="text-xs uppercase text-red-500 font-semibold">Eliminar categoría</p>
+          <h3 class="text-lg font-bold text-gray-900">Confirmar eliminación</h3>
+        </div>
+      </header>
+      <div class="px-6 py-5 space-y-3 text-sm text-gray-600">
+        <p id="confirmMessage">¿Deseas eliminar esta categoría?</p>
+        <p class="text-xs text-red-500">Esta acción no se puede deshacer.</p>
+      </div>
+      <div class="flex flex-col gap-3 border-t border-gray-100 px-6 py-4 sm:flex-row sm:justify-end">
+        <button type="button" id="cancelDelete"
+          class="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50">Cancelar</button>
+        <button type="button" id="confirmDelete"
+          class="inline-flex items-center justify-center gap-2 rounded-xl bg-red-500 px-4 py-2 text-sm font-semibold text-white hover:bg-red-600">
+          <span class="material-symbols-outlined text-base">delete</span>
+          Eliminar
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <div id="toast"
+    class="fixed bottom-6 left-1/2 z-50 hidden -translate-x-1/2 rounded-full border px-5 py-3 text-sm font-semibold shadow-lg"></div>
+
+  <script>
+    const state = {
+      categoryId: null,
+      category: null,
+      imageDataUrl: null,
+      removeImage: false,
+    };
+
+    const DEFAULT_IMAGE = '/Imagenes/Recetas/1.png';
+
+    const refs = {
+      title: document.getElementById('categoryTitle'),
+      subtitle: document.getElementById('categorySubtitle'),
+      emptyState: document.getElementById('emptyState'),
+      emptyMessage: document.getElementById('emptyMessage'),
+      loadingState: document.getElementById('loadingState'),
+      content: document.getElementById('categoryContent'),
+      statRecetas: document.getElementById('statRecetas'),
+      statPremium: document.getElementById('statPremium'),
+      statId: document.getElementById('statId'),
+      statFecha: document.getElementById('statFecha'),
+      form: document.getElementById('categoryForm'),
+      nombre: document.getElementById('nombre'),
+      descripcion: document.getElementById('descripcion'),
+      imagePreview: document.getElementById('imagePreview'),
+      imageInput: document.getElementById('imageInput'),
+      triggerImageInput: document.getElementById('triggerImageInput'),
+      removeImageButton: document.getElementById('removeImageButton'),
+      cancelChanges: document.getElementById('cancelChanges'),
+      deleteButton: document.getElementById('deleteButton'),
+      toast: document.getElementById('toast'),
+      modalBackdrop: document.getElementById('modalBackdrop'),
+      confirmDialog: document.getElementById('confirmDialog'),
+      confirmMessage: document.getElementById('confirmMessage'),
+      confirmDelete: document.getElementById('confirmDelete'),
+      cancelDelete: document.getElementById('cancelDelete'),
+    };
+
+    const showView = (view) => {
+      refs.emptyState.classList.toggle('hidden', view !== 'empty');
+      refs.loadingState.classList.toggle('hidden', view !== 'loading');
+      refs.content.classList.toggle('hidden', view !== 'content');
+    };
+
+    const showToast = (message, variant = 'success') => {
+      refs.toast.textContent = message;
+      const baseClasses = 'fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full border px-5 py-3 text-sm font-semibold shadow-lg backdrop-blur';
+      const palette = variant === 'error'
+        ? 'bg-red-600/90 text-white border-red-400'
+        : 'bg-emerald-600/90 text-white border-emerald-400';
+      refs.toast.className = `${baseClasses} ${palette}`;
+      refs.toast.classList.remove('hidden');
+      window.clearTimeout(refs.toast._timeout);
+      refs.toast._timeout = window.setTimeout(() => refs.toast.classList.add('hidden'), 3000);
+    };
+
+    const formatDate = (value) => {
+      if (!value) return 'Sin registros';
+      const parsed = new Date(value);
+      if (Number.isNaN(parsed.getTime())) return 'Sin registros';
+      return parsed.toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+    };
+
+    const parseCategoryId = () => {
+      const params = new URLSearchParams(window.location.search);
+      const idValue = params.get('id');
+      if (!idValue) return null;
+      const parsed = Number(idValue);
+      if (!Number.isFinite(parsed) || parsed <= 0) return null;
+      return parsed;
+    };
+
+    const hydrateCategory = (category) => {
+      state.category = category;
+      state.imageDataUrl = null;
+      state.removeImage = false;
+      refs.title.textContent = category.nombre || 'Categoría sin nombre';
+      refs.subtitle.textContent = `ID #${category.id}`;
+      const recetas = Number(category.recetasCount) || 0;
+      refs.statRecetas.textContent = recetas.toLocaleString('es-MX');
+      const premium = Number(category.premiumCount) || 0;
+      refs.statPremium.textContent = premium.toLocaleString('es-MX');
+      refs.statId.textContent = category.id ? `#${category.id}` : '-';
+      refs.statFecha.textContent = formatDate(category.ultimaReceta);
+      refs.nombre.value = category.nombre || '';
+      refs.descripcion.value = category.descripcion || '';
+      refs.imagePreview.src = category.imagen || DEFAULT_IMAGE;
+    };
+
+    const redirectToLogin = () => {
+      showToast('Sesión expirada, vuelve a iniciar sesión.', 'error');
+      setTimeout(() => window.location.replace('/iniciar-sesion'), 1500);
+    };
+
+    const loadCategory = async () => {
+      if (!state.categoryId) {
+        refs.emptyMessage.textContent = 'Selecciona una categoría desde el panel principal para editarla.';
+        showView('empty');
+        return;
+      }
+      showView('loading');
+      try {
+        const response = await fetch(`/api/administracion/categorias/${state.categoryId}`, { credentials: 'include' });
+        if (response.status === 401) {
+          redirectToLogin();
+          return;
+        }
+        if (response.status === 403) {
+          refs.emptyMessage.textContent = 'No tienes permisos para ver esta categoría.';
+          showView('empty');
+          return;
+        }
+        if (response.status === 404) {
+          refs.emptyMessage.textContent = 'La categoría solicitada no existe.';
+          showView('empty');
+          return;
+        }
+        if (!response.ok) {
+          throw new Error(`Estado inesperado: ${response.status}`);
+        }
+        const data = await response.json();
+        hydrateCategory(data);
+        showView('content');
+      } catch (error) {
+        console.error('No se pudo cargar la categoría', error);
+        refs.emptyMessage.textContent = 'No se pudo cargar la información. Intenta nuevamente.';
+        showView('empty');
+      }
+    };
+
+    const getFormPayload = () => {
+      const payload = {
+        nombre: (refs.nombre.value || '').trim(),
+        descripcion: (refs.descripcion.value || '').trim(),
+      };
+      if (!payload.descripcion) {
+        payload.descripcion = '';
+      }
+      if (state.imageDataUrl) {
+        payload.imagenDataUrl = state.imageDataUrl;
+      }
+      if (state.removeImage && !state.imageDataUrl) {
+        payload.eliminarImagen = true;
+      }
+      return payload;
+    };
+
+    const resetFormToCurrent = () => {
+      if (!state.category) return;
+      hydrateCategory(state.category);
+    };
+
+    const saveCategory = async (event) => {
+      event.preventDefault();
+      if (!state.categoryId) {
+        showToast('No hay categoría seleccionada.', 'error');
+        return;
+      }
+      const payload = getFormPayload();
+      if (!payload.nombre) {
+        showToast('El nombre es obligatorio.', 'error');
+        return;
+      }
+      try {
+        const response = await fetch(`/api/administracion/categorias/${state.categoryId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(payload),
+        });
+        if (response.status === 401) {
+          redirectToLogin();
+          return;
+        }
+        if (!response.ok) {
+          const errorBody = await response.json().catch(() => ({}));
+          const message = errorBody && errorBody.error ? errorBody.error : 'No se pudo guardar la categoría.';
+          throw new Error(message);
+        }
+        const data = await response.json();
+        hydrateCategory(data);
+        showToast('Categoría actualizada.');
+      } catch (error) {
+        console.error('Error al guardar la categoría', error);
+        showToast(error.message || 'Ocurrió un error al guardar.', 'error');
+      }
+    };
+
+    const deleteCategory = async () => {
+      if (!state.categoryId) {
+        toggleConfirmDialog(false);
+        return;
+      }
+      refs.confirmDelete.disabled = true;
+      try {
+        const response = await fetch(`/api/administracion/categorias/${state.categoryId}`, {
+          method: 'DELETE',
+          credentials: 'include',
+        });
+        if (response.status === 401) {
+          redirectToLogin();
+          return;
+        }
+        if (!response.ok) {
+          const errorBody = await response.json().catch(() => ({}));
+          const message = errorBody && errorBody.error ? errorBody.error : 'No se pudo eliminar.';
+          throw new Error(message);
+        }
+        toggleConfirmDialog(false);
+        showToast('Categoría eliminada.');
+        setTimeout(() => window.location.replace('/administracion#categorias'), 1200);
+      } catch (error) {
+        console.error('Error al eliminar la categoría', error);
+        showToast(error.message || 'Error al eliminar.', 'error');
+      } finally {
+        refs.confirmDelete.disabled = false;
+      }
+    };
+
+    const fileToDataUrl = (file) => new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+    const handleImageSelection = async (event) => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('La imagen supera los 5 MB permitidos.', 'error');
+        return;
+      }
+      try {
+        const dataUrl = await fileToDataUrl(file);
+        state.imageDataUrl = dataUrl;
+        state.removeImage = false;
+        refs.imagePreview.src = dataUrl;
+      } catch (error) {
+        showToast('No se pudo leer la imagen.', 'error');
+      }
+    };
+
+    const handleRemoveImage = () => {
+      state.imageDataUrl = null;
+      state.removeImage = true;
+      refs.imagePreview.src = DEFAULT_IMAGE;
+      refs.imageInput.value = '';
+    };
+
+    const toggleConfirmDialog = (open) => {
+      refs.confirmDialog.classList.toggle('hidden', !open);
+      refs.confirmDialog.classList.toggle('flex', open);
+      refs.modalBackdrop.classList.toggle('hidden', !open);
+    };
+
+    refs.form.addEventListener('submit', saveCategory);
+    refs.triggerImageInput.addEventListener('click', () => refs.imageInput.click());
+    refs.imageInput.addEventListener('change', handleImageSelection);
+    refs.removeImageButton.addEventListener('click', handleRemoveImage);
+    refs.cancelChanges.addEventListener('click', resetFormToCurrent);
+    refs.deleteButton.addEventListener('click', () => {
+      if (!state.category) {
+        showToast('Selecciona una categoría antes de eliminar.', 'error');
+        return;
+      }
+      refs.confirmMessage.textContent = `¿Deseas eliminar "${state.category.nombre || 'esta categoría'}"?`;
+      toggleConfirmDialog(true);
+    });
+    refs.confirmDelete.addEventListener('click', deleteCategory);
+    refs.cancelDelete.addEventListener('click', () => toggleConfirmDialog(false));
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !refs.confirmDialog.classList.contains('hidden')) {
+        toggleConfirmDialog(false);
+      }
+    });
+
+    state.categoryId = parseCategoryId();
+    showView('loading');
+    loadCategory();
+  </script>
+</body>
+
+</html>

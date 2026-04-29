@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logros - El Recetario®</title>
+  <link rel="shortcut icon" href="../Imagenes/Logo/favicon.ico">
+  <link href="./css/output.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <script src="/js/userSession.js"></script>
+</head>
+<!-- Header -->
+<script src="/js/loadHeader.js" defer></script>
+<div id="headerContainer"></div>
+
+<!-- Sección principal de contenido -->
+<main class="max-w-4xl mx-auto p-6 space-y-6">
+  <!-- Panel introductorio de logros -->
+  <div class="bg-white rounded-2xl shadow-lg p-6">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 id="headerTitle" class="text-2xl font-bold">Mis Logros</h1>
+        <p id="headerSummary" class="text-gray-500">0 logros desbloqueados de 0 totales</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <span id="unlockedCountBadge" class="text-2xl font-bold text-yellow-500">0</span>
+        <span class="material-symbols-outlined text-yellow-500">workspace_premium</span>
+      </div>
+    </div>
+
+    <!-- Indicador de avance general -->
+    <div class="w-full bg-gray-200 rounded-full h-2.5" aria-hidden="true">
+      <div id="progressBarFill"
+        class="bg-gradient-to-r from-yellow-500 to-yellow-300 h-2.5 rounded-full transition-all duration-500"
+        style="width: 0%"></div>
+    </div>
+    <p id="progressLabel" class="text-sm text-gray-500 mt-2">Progreso general 0%</p>
+  </div>
+
+
+  <!-- Listado de logros desbloqueados -->
+  <div class="bg-white rounded-2xl shadow-lg p-6">
+    <h2 class="text-xl font-semibold mb-6">Logros recientes</h2>
+    <div id="achievementsContainer" class="space-y-4">
+      <!-- Contenido generado por JavaScript -->
+    </div>
+  </div>
+
+  <!-- Listado de objetivos pendientes -->
+  <div class="bg-white rounded-2xl shadow-lg p-6">
+    <h2 class="text-xl font-semibold mb-6">Próximos objetivos</h2>
+    <div id="upcomingList" class="space-y-4">
+      <!-- Contenido dinámico para objetivos siguientes -->
+    </div>
+  </div>
+</main>
+
+<script src="/js/loadFooter.js" defer></script>
+<div id="footerContainer"></div>
+
+<div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
+<script>
+  (() => {
+    'use strict';
+
+    const ENDPOINT_LOGROS = '/api/logros';
+    const CLAVE_STORAGE = 'elrecetario.logrosDesbloqueados';
+    const DURACION_AVISO_MS = 6000;
+
+    let contenedorAvisos = null;
+
+    const asegurarContenedorAvisos = () => {
+      if (!contenedorAvisos) contenedorAvisos = document.getElementById('toastContainer');
+      return contenedorAvisos;
+    };
+
+    const leerLogrosLocales = () => {
+      try {
+        const texto = window.localStorage.getItem(CLAVE_STORAGE);
+        if (!texto) return new Set();
+        const arreglo = JSON.parse(texto);
+        if (!Array.isArray(arreglo)) return new Set();
+        return new Set(arreglo.map((id) => String(id)));
+      } catch (error) {
+        console.warn('No se pudo leer logros almacenados localmente:', error);
+        return new Set();
+      }
+    };
+
+    const guardarLogrosLocales = (conjunto) => {
+      try {
+        const listado = Array.from(conjunto || []).map((id) => String(id));
+        window.localStorage.setItem(CLAVE_STORAGE, JSON.stringify(listado));
+      } catch (error) {
+        console.warn('No se pudo guardar logros localmente:', error);
+      }
+    };
+
+    const obtenerContextoUsuario = () => {
+      try {
+        const info = window.UserSession && typeof window.UserSession.obtenerInfoUsuario === 'function'
+          ? window.UserSession.obtenerInfoUsuario()
+          : null;
+        const tipo = window.UserSession && typeof window.UserSession.obtenerTipoUsuario === 'function'
+          ? window.UserSession.obtenerTipoUsuario(info)
+          : null;
+        return {
+          info,
+          tipo,
+          autenticado: Boolean(info),
+        };
+      } catch (error) {
+        console.warn('No se pudo obtener el contexto del usuario:', error);
+        return { info: null, tipo: null, autenticado: false };
+      }
+    };
+
+    const estilosAvisos = {
+      exito: {
+        borde: 'border-green-200',
+        icono: 'workspace_premium',
+        colorIcono: 'text-green-500',
+        tituloPredeterminado: 'Acción completada',
+      },
+      error: {
+        borde: 'border-red-200',
+        icono: 'error',
+        colorIcono: 'text-red-500',
+        tituloPredeterminado: 'Ocurrió un problema',
+      },
+      info: {
+        borde: 'border-blue-200',
+        icono: 'info',
+        colorIcono: 'text-blue-500',
+        tituloPredeterminado: 'Información',
+      },
+    };
+
+    const crearBotonCerrar = (toast) => {
+      const boton = document.createElement('button');
+      boton.type = 'button';
+      boton.className = 'ml-auto text-gray-400 hover:text-gray-600 transition';
+      boton.innerHTML = '<span class="material-symbols-outlined text-base">close</span>';
+      boton.addEventListener('click', () => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        window.setTimeout(() => toast.remove(), 200);
+      });
+      return boton;
+    };
+
+    const mostrarAviso = ({ tipo = 'info', titulo, mensaje, detalle, icono }) => {
+      const contenedor = asegurarContenedorAvisos();
+      if (!contenedor) return;
+
+      const estilo = estilosAvisos[tipo] || estilosAvisos.info;
+      const toast = document.createElement('div');
+      toast.className = `pointer-events-auto border ${estilo.borde} bg-white shadow-xl rounded-2xl px-4 py-3 flex items-start gap-3 opacity-0 translate-y-2 transition-all duration-200`;
+
+      const iconoNodo = document.createElement('span');
+      iconoNodo.className = `material-symbols-outlined text-2xl ${estilo.colorIcono}`;
+      iconoNodo.textContent = icono || estilo.icono;
+
+      const cuerpo = document.createElement('div');
+      cuerpo.className = 'flex-1';
+
+      const tituloNodo = document.createElement('p');
+      tituloNodo.className = 'font-semibold text-gray-800 text-sm';
+      tituloNodo.textContent = titulo || estilo.tituloPredeterminado;
+
+      const mensajeNodo = document.createElement('p');
+      mensajeNodo.className = 'text-sm text-gray-600';
+      mensajeNodo.textContent = mensaje || '';
+      cuerpo.append(tituloNodo, mensajeNodo);
+
+      if (detalle) {
+        const detalleNodo = document.createElement('p');
+        detalleNodo.className = 'text-xs text-gray-400 mt-1';
+        detalleNodo.textContent = detalle;
+        cuerpo.appendChild(detalleNodo);
+      }
+
+      toast.append(iconoNodo, cuerpo, crearBotonCerrar(toast));
+      contenedor.appendChild(toast);
+
+      window.requestAnimationFrame(() => {
+        toast.classList.remove('opacity-0', 'translate-y-2');
+      });
+
+      window.setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        window.setTimeout(() => toast.remove(), 200);
+      }, DURACION_AVISO_MS);
+    };
+
+    const mostrarAvisoError = (mensaje) => {
+      mostrarAviso({ tipo: 'error', mensaje });
+    };
+
+    const formatearFechaLogro = (valor) => {
+      if (!valor) return '';
+      const fecha = new Date(valor);
+      if (Number.isNaN(fecha.getTime())) return '';
+      try {
+        return new Intl.DateTimeFormat('es-MX', { dateStyle: 'medium' }).format(fecha);
+      } catch (error) {
+        console.warn('No se pudo formatear la fecha del logro:', error);
+        return fecha.toLocaleDateString('es-MX');
+      }
+    };
+
+    const construirTituloLogro = (logro) => {
+      const nombre = logro?.nombre || logro?.Logro_Nombre || 'Logro sin nombre';
+      const nivel = logro?.nivel ? ` (Nivel ${logro.nivel})` : '';
+      return `${nombre}${nivel}`;
+    };
+
+    const mostrarAvisoLogro = (logro) => {
+      if (!logro) return;
+      const puntos = Number(logro.Logro_puntos ?? logro.puntos ?? 0) || 0;
+      const partesDetalle = [];
+      if (logro.nivel) partesDetalle.push(`Nivel ${logro.nivel}`);
+      if (puntos > 0) partesDetalle.push(`+${puntos} pts`);
+      mostrarAviso({
+        tipo: 'exito',
+        titulo: construirTituloLogro(logro),
+        mensaje: logro.descripcion || 'Has conseguido un nuevo logro.',
+        detalle: partesDetalle.join(' · ') || null,
+        icono: 'emoji_events',
+      });
+    };
+
+    const crearPlaceholder = (texto) => {
+      const nodo = document.createElement('div');
+      nodo.className = 'p-4 rounded-xl border border-dashed border-gray-200 text-gray-500 text-sm bg-gray-50';
+      nodo.textContent = texto;
+      return nodo;
+    };
+
+    const construirBloqueMeta = (logro) => {
+      const meta = document.createElement('div');
+      meta.className = 'flex flex-col md:items-end gap-1 text-sm text-gray-600 font-medium';
+
+      if (logro?.nivel) {
+        const nivel = document.createElement('span');
+        nivel.className = 'text-xs uppercase tracking-wide text-gray-500';
+        nivel.textContent = `Nivel ${logro.nivel}`;
+        meta.appendChild(nivel);
+      }
+
+      const puntos = Number(logro?.Logro_puntos ?? 0) || 0;
+      if (puntos > 0) {
+        const puntosNodo = document.createElement('span');
+        puntosNodo.textContent = `+${puntos} pts`;
+        meta.appendChild(puntosNodo);
+      }
+
+      return meta;
+    };
+
+    const construirCardDesbloqueado = (logro) => {
+      const tarjeta = document.createElement('div');
+      tarjeta.className = 'flex flex-col gap-4 md:flex-row md:items-center md:justify-between p-4 rounded-xl border bg-white shadow-sm';
+
+      const bloqueInfo = document.createElement('div');
+      bloqueInfo.className = 'flex items-start gap-3';
+
+      const icono = document.createElement('span');
+      icono.className = 'material-symbols-outlined text-3xl text-yellow-500';
+      icono.textContent = 'workspace_premium';
+
+      const texto = document.createElement('div');
+
+      const titulo = document.createElement('h3');
+      titulo.className = 'font-semibold text-gray-800';
+      titulo.textContent = construirTituloLogro(logro);
+
+      const descripcion = document.createElement('p');
+      descripcion.className = 'text-sm text-gray-600';
+      descripcion.textContent = logro.descripcion || 'Has cumplido este objetivo.';
+
+      const fechaTexto = formatearFechaLogro(logro.fecha_obtenido);
+      if (fechaTexto) {
+        const fecha = document.createElement('p');
+        fecha.className = 'text-xs text-gray-400';
+        fecha.textContent = `Desbloqueado el ${fechaTexto}`;
+        texto.append(titulo, descripcion, fecha);
+      } else {
+        texto.append(titulo, descripcion);
+      }
+
+      bloqueInfo.append(icono, texto);
+      tarjeta.appendChild(bloqueInfo);
+      tarjeta.appendChild(construirBloqueMeta(logro));
+
+      return tarjeta;
+    };
+
+    const prepararInteraccionBoton = (boton, logro) => {
+      if (!boton || !logro) return;
+      boton.addEventListener('click', () => desbloquearLogro(logro, boton));
+    };
+
+    const construirCardPendiente = (logro, contextoUsuario) => {
+      const contenedor = document.createElement('div');
+      contenedor.className = 'flex flex-col gap-4 md:flex-row md:items-center md:justify-between p-4 rounded-xl border bg-gray-50';
+
+      const bloqueInfo = document.createElement('div');
+      bloqueInfo.className = 'flex items-start gap-3';
+
+      const icono = document.createElement('span');
+      icono.className = 'material-symbols-outlined text-3xl text-gray-400';
+      icono.textContent = 'lock';
+
+      const texto = document.createElement('div');
+
+      const titulo = document.createElement('h3');
+      titulo.className = 'font-semibold text-gray-800';
+      titulo.textContent = construirTituloLogro(logro);
+
+      const descripcion = document.createElement('p');
+      descripcion.className = 'text-sm text-gray-500';
+      descripcion.textContent = logro.descripcion || 'Completa las acciones necesarias para desbloquear este logro.';
+
+      texto.append(titulo, descripcion);
+      bloqueInfo.append(icono, texto);
+      contenedor.appendChild(bloqueInfo);
+      contenedor.appendChild(construirBloqueMeta(logro));
+
+      if (contextoUsuario?.autenticado && contextoUsuario.tipo === 1) {
+        const boton = document.createElement('button');
+        boton.type = 'button';
+        boton.className = 'inline-flex items-center justify-center gap-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg transition disabled:opacity-60 disabled:cursor-not-allowed';
+        boton.textContent = 'Marcar como logrado';
+        prepararInteraccionBoton(boton, logro);
+        contenedor.appendChild(boton);
+      } else if (!contextoUsuario?.autenticado) {
+        const enlace = document.createElement('a');
+        enlace.href = '/iniciar-sesion';
+        enlace.className = 'text-sm text-yellow-600 hover:text-yellow-700 font-medium';
+        enlace.textContent = 'Inicia sesión para registrar logros';
+        contenedor.appendChild(enlace);
+      } 
+
+      return contenedor;
+    };
+
+    const actualizarResumen = ({ total, desbloqueados, porcentaje }) => {
+      const totalSeguro = Number(total) || 0;
+      const desbloqueadosSeguros = Number(desbloqueados) || 0;
+      const porcentajeSeguro = Math.min(100, Math.max(0, Number(porcentaje) || 0));
+
+      const resumen = document.getElementById('headerSummary');
+      if (resumen) resumen.textContent = `${desbloqueadosSeguros} logros desbloqueados de ${totalSeguro} totales`;
+
+      const insignia = document.getElementById('unlockedCountBadge');
+      if (insignia) insignia.textContent = desbloqueadosSeguros;
+
+      const etiquetaProgreso = document.getElementById('progressLabel');
+      if (etiquetaProgreso) etiquetaProgreso.textContent = `Progreso general ${porcentajeSeguro}%`;
+
+      const barra = document.getElementById('progressBarFill');
+      if (barra) barra.style.width = `${porcentajeSeguro}%`;
+    };
+
+    const renderizarListados = ({ desbloqueados, pendientes, contextoUsuario }) => {
+      const contenedorDesbloqueados = document.getElementById('achievementsContainer');
+      const contenedorPendientes = document.getElementById('upcomingList');
+      if (!contenedorDesbloqueados || !contenedorPendientes) return;
+
+      contenedorDesbloqueados.innerHTML = '';
+      contenedorPendientes.innerHTML = '';
+
+      const desbloqueadosOrdenados = [...desbloqueados].sort((a, b) => {
+        const fechaA = a.fecha_obtenido ? new Date(a.fecha_obtenido).getTime() : 0;
+        const fechaB = b.fecha_obtenido ? new Date(b.fecha_obtenido).getTime() : 0;
+        return fechaB - fechaA;
+      });
+
+      if (desbloqueadosOrdenados.length === 0) {
+        contenedorDesbloqueados.appendChild(crearPlaceholder('Aún no has desbloqueado logros. Cocina, participa y descúbrelos.'));
+      } else {
+        desbloqueadosOrdenados.forEach((logro) => {
+          contenedorDesbloqueados.appendChild(construirCardDesbloqueado(logro));
+        });
+      }
+
+      const pendientesOrdenados = [...pendientes].sort((a, b) => {
+        const nivelA = Number(a.nivel) || 999;
+        const nivelB = Number(b.nivel) || 999;
+        if (nivelA !== nivelB) return nivelA - nivelB;
+        const puntosA = Number(a.Logro_puntos) || 0;
+        const puntosB = Number(b.Logro_puntos) || 0;
+        return puntosB - puntosA;
+      });
+
+      if (pendientesOrdenados.length === 0) {
+        contenedorPendientes.appendChild(crearPlaceholder('No tienes objetivos pendientes por ahora.'));
+      } else {
+        pendientesOrdenados.forEach((logro) => {
+          contenedorPendientes.appendChild(construirCardPendiente(logro, contextoUsuario));
+        });
+      }
+    };
+
+    const sincronizarAlmacenLocal = (logros) => {
+      const ids = (logros || []).filter((item) => item && item.unlocked).map((item) => String(item.id));
+      const conjunto = new Set(ids);
+      guardarLogrosLocales(conjunto);
+      return conjunto;
+    };
+
+    const cargarLogros = async ({ omitirAvisos = false } = {}) => {
+      const contextoUsuario = obtenerContextoUsuario();
+      const previo = leerLogrosLocales();
+
+      try {
+        const respuesta = await window.fetch(ENDPOINT_LOGROS, { credentials: 'include' });
+        if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
+        const payload = await respuesta.json();
+        const lista = Array.isArray(payload.achievements) ? payload.achievements : [];
+
+        const desbloqueados = lista.filter((item) => item && item.unlocked);
+        const pendientes = lista.filter((item) => item && !item.unlocked);
+
+        renderizarListados({ desbloqueados, pendientes, contextoUsuario });
+        actualizarResumen({
+          total: payload.total ?? lista.length,
+          desbloqueados: payload.unlockedCount ?? desbloqueados.length,
+          porcentaje: payload.percent ?? (lista.length > 0 ? Math.round((desbloqueados.length / lista.length) * 100) : 0),
+        });
+
+        const actual = sincronizarAlmacenLocal(lista);
+        if (!omitirAvisos) {
+          const nuevos = [...actual].filter((id) => !previo.has(id));
+          nuevos.forEach((id) => {
+            const logro = lista.find((item) => String(item.id) === id);
+            if (logro) mostrarAvisoLogro(logro);
+          });
+        }
+      } catch (error) {
+        console.error('Error cargando logros:', error);
+        mostrarAvisoError('Ocurrió un problema al cargar los logros.');
+      }
+    };
+
+    const desbloquearLogro = async (logro, boton) => {
+      if (!logro || !logro.id) return;
+
+      const permisos = obtenerContextoUsuario();
+      if (!(permisos.autenticado && permisos.tipo === 1)) {
+        mostrarAvisoError('No tienes permisos para marcar logros manualmente.');
+        return;
+      }
+
+      let restaurarBoton = null;
+      if (boton instanceof HTMLElement) {
+        const textoOriginal = boton.textContent;
+        boton.disabled = true;
+        boton.dataset.loading = 'true';
+        boton.innerHTML = '<span class="material-symbols-outlined animate-spin">autorenew</span>';
+        restaurarBoton = () => {
+          boton.disabled = false;
+          boton.dataset.loading = 'false';
+          boton.textContent = textoOriginal;
+        };
+      }
+
+      try {
+        const respuesta = await window.fetch(`${ENDPOINT_LOGROS}/${encodeURIComponent(logro.id)}/desbloquear`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+        });
+        if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`);
+        const payload = await respuesta.json();
+
+        if (payload.status === 'unlocked') {
+          const infoLogro = {
+            ...logro,
+            nombre: payload.achievement?.nombre || logro.nombre,
+            Logro_puntos: payload.achievement?.puntos ?? logro.Logro_puntos,
+          };
+          mostrarAvisoLogro(infoLogro);
+          const local = leerLogrosLocales();
+          local.add(String(logro.id));
+          guardarLogrosLocales(local);
+          await cargarLogros({ omitirAvisos: true });
+        } else if (payload.status === 'already_unlocked') {
+          mostrarAviso({
+            tipo: 'info',
+            titulo: 'Logro ya registrado',
+            mensaje: 'Este logro ya se encontraba desbloqueado anteriormente.',
+            icono: 'event_available',
+          });
+          await cargarLogros({ omitirAvisos: true });
+        } else {
+          throw new Error('Estado inesperado');
+        }
+      } catch (error) {
+        console.error('No se pudo desbloquear el logro:', error);
+        mostrarAvisoError('No se pudo registrar tu progreso. Inténtalo más tarde.');
+      } finally {
+        if (typeof restaurarBoton === 'function') restaurarBoton();
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      asegurarContenedorAvisos();
+      cargarLogros({ omitirAvisos: true });
+
+      window.ElRecetarioLogros = Object.assign(window.ElRecetarioLogros || {}, {
+        recargar: () => cargarLogros({ omitirAvisos: true }),
+      });
+    });
+  })();
+</script>
+</body>
+
+</html>

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Siguiendo - El Recetario®</title>
+  <link rel="shortcut icon" href="../Imagenes/Logo/favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <link href="../css/output.css" rel="stylesheet">
+  <script src="/js/userSession.js"></script>
+  <script src="/js/confirmDialog.js"></script>
+</head>
+
+<body class="font-sans bg-gray-50 text-gray-800">
+  <!-- Header -->
+  <script src="/js/loadHeader.js" defer></script>
+  <div id="headerContainer"></div>
+
+  <main class="max-w-5xl mx-auto p-6 space-y-6">
+    <div id="followingFeedback" class="hidden rounded-lg border px-4 py-3 text-sm"></div>
+
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <h1 class="text-3xl font-bold text-gray-900">Siguiendo</h1>
+      <div class="relative w-full md:w-80">
+        <span
+          class="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+        <input id="searchFollowing" type="search" placeholder="Buscar por nombre o alias" autocomplete="off"
+          class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 bg-white shadow-sm focus:border-purple-400 focus:ring-2 focus:ring-purple-200">
+      </div>
+    </div>
+
+    <div class="flex flex-wrap gap-2" role="tablist" aria-label="Filtros de usuarios seguidos">
+      <button type="button" data-filter="all"
+        class="filter-btn px-4 py-2 rounded-lg bg-purple-600 text-white shadow-sm transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-300">
+        Todos (<span id="countAll">0</span>)
+      </button>
+      <button type="button" data-filter="chefs"
+        class="filter-btn px-4 py-2 rounded-lg bg-white text-gray-600 hover:bg-gray-50 transition focus:outline-none focus:ring-2 focus:ring-purple-200">
+        Chefs (<span id="countChefs">0</span>)
+      </button>
+    </div>
+
+    <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <p id="followingResultsInfo" class="hidden text-sm text-gray-500"></p>
+      <div id="followingPagination" class="flex items-center gap-2" hidden>
+        <button type="button" id="pagePrev"
+          class="rounded-lg border border-gray-200 bg-white px-3 py-1 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50">Anterior</button>
+        <span id="pageIndicator" class="text-sm text-gray-500">1 / 1</span>
+        <button type="button" id="pageNext"
+          class="rounded-lg border border-gray-200 bg-white px-3 py-1 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50">Siguiente</button>
+      </div>
+    </div>
+
+    <div id="followingError"
+      class="hidden rounded-2xl border border-red-100 bg-red-50 p-6 text-center text-red-600 text-sm">
+      No pudimos cargar tu lista de seguidos. Intenta nuevamente más tarde.
+    </div>
+
+    <p id="followingEmpty"
+      class="hidden rounded-2xl border border-dashed border-gray-200 bg-white p-10 text-center text-gray-400 text-sm">
+      Aún no sigues a ningún chef. Explora la comunidad y comienza a conectar con nuevos sabores.
+    </p>
+
+    <div id="followingList" class="grid grid-cols-1 gap-4 md:grid-cols-2"></div>
+  </main>
+
+  <script src="/js/loadFooter.js" defer></script>
+  <div id="footerContainer"></div>
+
+  <script>
+    (() => {
+      const state = {
+        all: [],
+        filter: 'all',
+        search: '',
+        page: 1,
+        pageSize: 6
+      };
+
+      let feedbackTimer = null;
+
+      const elements = {
+        list: document.getElementById('followingList'),
+        empty: document.getElementById('followingEmpty'),
+        loader: document.getElementById('followingLoader'),
+        error: document.getElementById('followingError'),
+        feedback: document.getElementById('followingFeedback'),
+        search: document.getElementById('searchFollowing'),
+        counts: {
+          all: document.getElementById('countAll'),
+          chefs: document.getElementById('countChefs')
+        },
+        resultsInfo: document.getElementById('followingResultsInfo')
+      };
+
+      const filterButtons = Array.from(document.querySelectorAll('[data-filter]'));
+      const pagination = {
+        container: document.getElementById('followingPagination'),
+        prev: document.getElementById('pagePrev'),
+        next: document.getElementById('pageNext'),
+        indicator: document.getElementById('pageIndicator')
+      };
+
+      const debounce = (fn, delay = 250) => {
+        let timeoutId;
+        return (...args) => {
+          clearTimeout(timeoutId);
+          timeoutId = setTimeout(() => fn(...args), delay);
+        };
+      };
+
+      const computeCounts = (users = []) => {
+        let chefs = 0;
+        for (const user of users) {
+          if (Number(user.userType) === 3) {
+            chefs += 1;
+          }
+        }
+        return {
+          total: users.length,
+          chefs
+        };
+      };
+
+      const updateCounts = () => {
+        const counts = computeCounts(state.all);
+        if (elements.counts.all) elements.counts.all.textContent = counts.total;
+        if (elements.counts.chefs) elements.counts.chefs.textContent = counts.chefs;
+      };
+
+      const applyActiveStyles = (selectedFilter) => {
+        const activeClasses = ['bg-purple-600', 'text-white', 'shadow-sm'];
+        const inactiveClasses = ['bg-white', 'text-gray-600'];
+
+        filterButtons.forEach((button) => {
+          const isActive = (button.dataset.filter || 'all') === selectedFilter;
+          if (isActive) {
+            inactiveClasses.forEach((cls) => button.classList.remove(cls));
+            activeClasses.forEach((cls) => button.classList.add(cls));
+          } else {
+            activeClasses.forEach((cls) => button.classList.remove(cls));
+            inactiveClasses.forEach((cls) => button.classList.add(cls));
+          }
+        });
+      };
+
+      const formatNumber = (value) => {
+        const numeric = Number(value) || 0;
+        if (numeric >= 1000) {
+          return new Intl.NumberFormat('es-MX', { notation: 'compact', maximumFractionDigits: 1 }).format(numeric);
+        }
+        return new Intl.NumberFormat('es-MX').format(numeric);
+      };
+
+      const formatDate = (isoString) => {
+        if (!isoString) return '';
+        try {
+          return new Date(isoString).toLocaleDateString('es-MX', { year: 'numeric', month: 'short' });
+        } catch (error) {
+          return '';
+        }
+      };
+
+      const buildIdentifier = (user) => {
+        if (user.alias) return String(user.alias).replace(/^@+/, '');
+        if (user.id) return String(user.id);
+        return '';
+      };
+
+      const hideFeedback = () => {
+        if (feedbackTimer) {
+          clearTimeout(feedbackTimer);
+          feedbackTimer = null;
+        }
+        if (elements.feedback) {
+          elements.feedback.classList.add('hidden');
+        }
+      };
+
+      const showFeedback = (variant, message, duration = 4000) => {
+        if (!elements.feedback) return;
+
+        const variants = {
+          success: 'border-green-200 bg-green-50 text-green-700',
+          error: 'border-red-200 bg-red-50 text-red-700'
+        };
+
+        elements.feedback.className = `rounded-lg border px-4 py-3 text-sm ${variants[variant] || ''}`;
+        elements.feedback.textContent = message;
+        elements.feedback.classList.remove('hidden');
+
+        if (feedbackTimer) clearTimeout(feedbackTimer);
+        if (duration !== null) {
+          feedbackTimer = setTimeout(() => {
+            elements.feedback.classList.add('hidden');
+          }, duration);
+        }
+      };
+
+      const filterData = () => {
+        const searchTerm = state.search;
+        return state.all.filter((user) => {
+          const matchesFilter = state.filter === 'all'
+            || (state.filter === 'chefs' && Number(user.userType) === 3);
+          if (!matchesFilter) return false;
+
+          if (!searchTerm) return true;
+
+          const haystack = `${user.name || ''} ${user.alias || ''} ${user.specialty || ''}`.toLowerCase();
+          return haystack.includes(searchTerm);
+        });
+      };
+
+      const ensureValidPage = (totalItems) => {
+        if (totalItems <= 0) {
+          state.page = 1;
+          return 1;
+        }
+        const totalPages = Math.max(1, Math.ceil(totalItems / state.pageSize));
+        if (state.page > totalPages) state.page = totalPages;
+        if (state.page < 1) state.page = 1;
+        return totalPages;
+      };
+
+      const updateResultsInfo = (totalItems) => {
+        if (!elements.resultsInfo) return;
+        if (totalItems <= 0) {
+          elements.resultsInfo.textContent = '';
+          elements.resultsInfo.classList.add('hidden');
+          return;
+        }
+
+        const start = (state.page - 1) * state.pageSize + 1;
+        const end = Math.min(start + state.pageSize - 1, totalItems);
+        elements.resultsInfo.textContent = `Mostrando ${start}-${end} de ${totalItems} perfiles seguidos`;
+        elements.resultsInfo.classList.remove('hidden');
+      };
+
+      const updatePaginationControls = (totalItems, totalPages) => {
+        if (!pagination.container) return;
+        if (totalItems <= state.pageSize) {
+          pagination.container.hidden = true;
+          return;
+        }
+
+        pagination.container.hidden = false;
+        if (pagination.indicator) {
+          pagination.indicator.textContent = `${state.page} / ${totalPages}`;
+        }
+        if (pagination.prev) pagination.prev.disabled = state.page <= 1;
+        if (pagination.next) pagination.next.disabled = state.page >= totalPages;
+      };
+
+      const createCard = (user) => {
+        const card = document.createElement('article');
+        card.className = 'bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition';
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'flex items-start gap-4';
+
+        const avatar = document.createElement('img');
+        avatar.src = user.avatar || '/Imagenes/Usuarios/0.png';
+        avatar.alt = `Avatar de ${user.name || 'usuario'}`;
+        avatar.className = 'w-16 h-16 rounded-full object-cover flex-shrink-0';
+        wrapper.appendChild(avatar);
+
+        const content = document.createElement('div');
+        content.className = 'flex-1 min-w-0';
+
+        const header = document.createElement('div');
+        header.className = 'flex items-start justify-between gap-3';
+
+        const info = document.createElement('div');
+
+        const nameLink = document.createElement('a');
+        nameLink.href = user.profileUrl || '#';
+        nameLink.textContent = user.name || 'Usuario sin nombre';
+        nameLink.className = 'font-semibold text-gray-900 hover:text-purple-600 transition';
+        info.appendChild(nameLink);
+
+        if (user.alias) {
+          const alias = document.createElement('p');
+          alias.className = 'text-sm text-gray-500';
+          alias.textContent = user.alias;
+          info.appendChild(alias);
+        }
+
+        const badges = document.createElement('div');
+        badges.className = 'mt-1 flex flex-wrap items-center gap-2';
+        if (user.role) {
+          const roleBadge = document.createElement('span');
+          roleBadge.className = 'bg-purple-100 text-purple-700 text-xs font-medium px-2 py-0.5 rounded-full';
+          roleBadge.textContent = user.role;
+          badges.appendChild(roleBadge);
+        }
+        info.appendChild(badges);
+
+        const followedSince = formatDate(user.followedSince);
+        if (followedSince) {
+          const since = document.createElement('p');
+          since.className = 'text-xs text-gray-400 mt-1';
+          since.textContent = `Siguiendo desde ${followedSince}`;
+          info.appendChild(since);
+        }
+
+        header.appendChild(info);
+
+        const action = document.createElement('button');
+        action.type = 'button';
+        action.className = 'bg-gray-100 text-gray-600 px-4 py-1 rounded-lg text-sm font-medium hover:bg-gray-200 transition';
+        action.textContent = 'Siguiendo';
+        action.addEventListener('click', () => handleUnfollow(user, action));
+        header.appendChild(action);
+
+        content.appendChild(header);
+
+        if (user.specialty) {
+          const specialty = document.createElement('p');
+          specialty.className = 'text-sm text-gray-600 mt-2';
+          specialty.textContent = user.specialty;
+          content.appendChild(specialty);
+        }
+
+        const meta = document.createElement('div');
+        meta.className = 'mt-3 flex flex-wrap gap-4 text-xs text-gray-500';
+
+        const recipes = document.createElement('span');
+        recipes.textContent = `${formatNumber(user.recipes)} recetas`;
+        meta.appendChild(recipes);
+
+        const followers = document.createElement('span');
+        followers.textContent = `${formatNumber(user.followers)} seguidores`;
+        meta.appendChild(followers);
+
+        content.appendChild(meta);
+
+        wrapper.appendChild(content);
+        card.appendChild(wrapper);
+        return card;
+      };
+
+      const renderList = () => {
+        const users = filterData();
+        const totalItems = users.length;
+        const totalPages = ensureValidPage(totalItems);
+
+        updateResultsInfo(totalItems);
+        updatePaginationControls(totalItems, totalPages);
+
+        if (elements.list) elements.list.innerHTML = '';
+
+        if (!totalItems) {
+          if (elements.empty) {
+            elements.empty.textContent = state.all.length
+              ? 'No encontramos coincidencias con tu búsqueda.'
+              : 'Aún no sigues a ningún chef. Explora la comunidad y comienza a conectar con nuevos sabores.';
+            elements.empty.classList.remove('hidden');
+          }
+          return;
+        }
+
+        if (elements.empty) elements.empty.classList.add('hidden');
+
+        const start = (state.page - 1) * state.pageSize;
+        const pageItems = users.slice(start, start + state.pageSize);
+
+        const fragment = document.createDocumentFragment();
+        pageItems.forEach((user) => fragment.appendChild(createCard(user)));
+        if (elements.list) elements.list.appendChild(fragment);
+      };
+
+      const handleUnfollow = async (user, button) => {
+        const identifier = buildIdentifier(user);
+        if (!identifier) return;
+
+        const displayName = user.name || user.alias || 'este usuario';
+        const confirmed = await showPopupConfirm(`¿Quieres dejar de seguir a ${displayName}?`, {
+          title: 'Dejar de seguir',
+          subtitle: 'Conexiones',
+          confirmText: 'Dejar de seguir',
+          cancelText: 'Cancelar'
+        });
+        if (!confirmed) return;
+
+        const originalText = button.textContent;
+        button.disabled = true;
+        button.textContent = 'Procesando...';
+        button.classList.add('opacity-60', 'cursor-not-allowed');
+
+        try {
+          const response = await fetch(`/api/usuario/perfil/${encodeURIComponent(identifier)}/seguir`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (response.status === 401) {
+            window.location.href = '/iniciar-sesion?redirect=' + encodeURIComponent('/siguiendo');
+            return;
+          }
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+
+          state.all = state.all.filter((item) => item.id !== user.id);
+          updateCounts();
+          renderList();
+          showFeedback('success', `Has dejado de seguir a ${displayName}.`);
+        } catch (error) {
+          console.error('Error al dejar de seguir:', error);
+          showFeedback('error', 'No pudimos actualizar tu lista de seguidos. Intenta nuevamente.');
+        } finally {
+          button.disabled = false;
+          button.textContent = originalText;
+          button.classList.remove('opacity-60', 'cursor-not-allowed');
+        }
+      };
+
+      const loadFollowings = async () => {
+        hideFeedback();
+        if (elements.error) elements.error.classList.add('hidden');
+        if (elements.empty) elements.empty.classList.add('hidden');
+        if (elements.list) elements.list.innerHTML = '';
+        if (elements.loader) elements.loader.hidden = false;
+
+        try {
+          const response = await fetch('/api/usuario/seguidos');
+          if (response.status === 401) {
+            window.location.href = '/iniciar-sesion?redirect=' + encodeURIComponent('/siguiendo');
+            return;
+          }
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+
+          const payload = await response.json();
+          const users = Array.isArray(payload.users) ? payload.users : [];
+
+          state.all = users;
+          state.page = 1;
+          updateCounts();
+          renderList();
+
+          if (!users.length && elements.empty) {
+            elements.empty.classList.remove('hidden');
+          }
+        } catch (error) {
+          console.error('Error cargando seguidos:', error);
+          if (elements.error) elements.error.classList.remove('hidden');
+        } finally {
+          if (elements.loader) elements.loader.hidden = true;
+        }
+      };
+
+      const handleSearch = debounce((value) => {
+        state.search = value.trim().toLowerCase();
+        state.page = 1;
+        renderList();
+      }, 250);
+
+      if (elements.search) {
+        elements.search.addEventListener('input', (event) => handleSearch(event.target.value));
+      }
+
+      filterButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const filter = button.dataset.filter || 'all';
+          if (state.filter === filter) return;
+          state.filter = filter;
+          state.page = 1;
+          applyActiveStyles(filter);
+          renderList();
+        });
+      });
+
+      if (pagination.prev) {
+        pagination.prev.addEventListener('click', () => {
+          if (state.page > 1) {
+            state.page -= 1;
+            renderList();
+          }
+        });
+      }
+
+      if (pagination.next) {
+        pagination.next.addEventListener('click', () => {
+          state.page += 1;
+          renderList();
+        });
+      }
+
+      applyActiveStyles(state.filter);
+      loadFollowings();
+    })();
+  </script>
+</body>
+
+</html>

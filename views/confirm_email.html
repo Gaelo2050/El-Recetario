@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Confirma tu correo — El Recetario®</title>
+  <link rel="shortcut icon" href="../Imagenes/Logo/favicon.ico">
+  <link href="./css/output.css" rel="stylesheet">
+  <script src="/js/userSession.js"></script>
+</head>
+
+<body
+  class="min-h-screen bg-gradient-to-br from-purple-600 to-pink-500 font-sans text-white flex items-center justify-center p-6">
+  <main class="w-full max-w-lg bg-white/5 backdrop-blur-md rounded-2xl shadow-xl overflow-hidden">
+    <div class="p-6 md:p-8">
+      <!-- Cabecera / logo -->
+      <header class="flex items-center gap-4 mb-6">
+        <div
+          class="text-3xl md:text-4xl bg-white/10 rounded-full w-12 h-12 md:w-14 md:h-14 flex items-center justify-center">
+          🍽️</div>
+        <div>
+          <h1 class="text-lg md:text-2xl font-bold">El Recetario®</h1>
+          <p class="text-sm text-white/80">Confirma tu correo electrónico</p>
+        </div>
+      </header>
+
+      <!-- Tarjeta de confirmación -->
+      <section class="bg-white/6 rounded-lg p-5 md:p-6">
+        <h2 class="text-lg font-semibold text-white mb-2">Casi listo — confirma tu correo</h2>
+        <p class="text-white/80 mb-4">
+          Te hemos enviado un correo electrónico con un enlace para verificar tu cuenta.
+          Abre ese correo y pulsa el enlace para activar tu cuenta.
+        </p>
+
+        <ul class="text-sm text-white/70 mb-4 pl-4 list-disc">
+          <li>Revisa la bandeja de entrada y la carpeta de spam.</li>
+          <li>Si no recibes el correo en 5 minutos, usa "Reenviar correo".</li>
+        </ul>
+
+        <div class="flex flex-col md:flex-row gap-3 md:justify-end">
+          <form action="/resend-confirmation" method="POST" class="flex-1 md:flex-none">
+            <button type="submit"
+              class="w-full md:w-auto bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-md font-medium transition">
+              Reenviar correo
+            </button>
+          </form>
+
+          <a href="/iniciar-sesion"
+            class="w-full md:w-auto text-center bg-yellow-400 text-purple-900 px-4 py-2 rounded-md font-semibold hover:bg-yellow-300 transition">
+            Ya confirmé / Iniciar sesión
+          </a>
+        </div>
+      </section>
+
+      <!-- Pie con ayuda -->
+      <div class="mt-4 text-sm text-white/70 text-center">
+        ¿Necesitas ayuda? <a href="/contacto" class="text-white underline">Contáctanos</a>
+      </div>
+    </div>
+  </main>
+</body>
+
+</html>

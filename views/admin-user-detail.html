@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Admin | Detalle de Usuario</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <link rel="shortcut icon" href="../Imagenes/Logo/favicon.ico">
+  <link href="/css/output.css" rel="stylesheet">
+  <script src="/js/userSession.js"></script>
+  <script src="/js/confirmDialog.js"></script>
+</head>
+
+<body class="bg-slate-50 min-h-screen">
+  <div class="max-w-5xl mx-auto px-4 py-10 space-y-6">
+    <div class="flex justify-end">
+      <button id="goBack"
+        class="inline-flex items-center justify-center gap-2 rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700">
+        <span class="material-symbols-outlined text-base">arrow_back</span>
+        Regresar al panel
+      </button>
+    </div>
+
+    <!-- Popup de mensajes tipo toast -->
+    <div id="statusMessage"
+      class="fixed top-6 left-1/2 z-50 hidden px-6 py-4 rounded-xl border text-base font-semibold shadow-lg transition-transform -translate-x-1/2">
+    </div>
+
+    <!-- Modal de confirmación para cambio de estado -->
+    <div id="statusConfirmBackdrop" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40 hidden"></div>
+    <div id="statusConfirmModal" class="fixed inset-0 z-50 px-4 hidden">
+      <div class="flex items-center justify-center w-full h-full">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4 border border-gray-200">
+          <div>
+            <p id="statusConfirmTitle" class="text-lg font-semibold text-gray-900">Confirmar cambio</p>
+            <p id="statusConfirmBody" class="mt-2 text-sm text-gray-600">¿Deseas continuar?</p>
+          </div>
+          <div class="bg-gray-100 rounded-xl p-4 text-sm text-gray-700" id="statusConfirmConsequences"></div>
+          <div class="flex items-center justify-end gap-3">
+            <button type="button" id="statusConfirmCancel"
+              class="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100">Cancelar</button>
+            <button type="button" id="statusConfirmAccept"
+              class="px-4 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-700">Confirmar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-6">
+      <section class="rounded-3xl bg-white p-6 shadow-xl ring-1 ring-slate-100">
+        <div class="flex flex-col gap-2 border-b border-slate-100 pb-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.35em] text-slate-400">Ficha editable</p>
+            <p class="text-sm text-slate-500" id="userSubtitle">Cargando información...</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" id="resetPhoto"
+              class="inline-flex items-center gap-2 rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 hover:border-indigo-200 hover:text-indigo-600">
+              <span class="material-symbols-outlined text-base">autorenew</span>
+              Restablecer foto
+            </button>
+          </div>
+        </div>
+
+        <form id="userForm" class="space-y-8 pt-6">
+          <section class="space-y-6">
+            <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              <div class="flex items-center gap-4">
+                <img id="fotoPreview" src="/Imagenes/Usuarios/0.png" alt="Foto del usuario"
+                  class="w-24 h-24 rounded-full object-cover border border-slate-200 shadow-sm">
+                <div class="text-sm text-slate-500">
+                  <p class="font-semibold text-slate-700">Foto de perfil</p>
+                  <p id="fotoCaption">Cargando...</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div>
+                <label class="block text-sm font-semibold text-slate-600 mb-1" for="nombre">Nombre completo</label>
+                <input id="nombre" name="nombre" type="text"
+                  class="w-full rounded-2xl border border-slate-200 px-3 py-2 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-200"
+                  required>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-600 mb-1" for="email">Correo electrónico</label>
+                <input id="email" name="email" type="email"
+                  class="w-full rounded-2xl border border-slate-200 px-3 py-2 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-200"
+                  required>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-600 mb-1" for="alias">Alias</label>
+                <input id="alias" name="alias" type="text"
+                  class="w-full rounded-2xl border border-slate-200 px-3 py-2 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-200"
+                  placeholder="Alias público">
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-600 mb-1" for="telefono">Teléfono</label>
+                <input id="telefono" name="telefono" type="tel" maxlength="10"
+                  class="w-full rounded-2xl border border-slate-200 px-3 py-2 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-200"
+                  placeholder="10 dígitos">
+              </div>
+            </div>
+          </section>
+
+          <section class="space-y-6">
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div>
+                <label class="block text-sm font-semibold text-slate-600 mb-1" for="tipoSelect">Tipo de usuario</label>
+                <select id="tipoSelect" name="tipoId"
+                  class="w-full rounded-2xl border border-slate-200 px-3 py-2 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-200"
+                  required>
+                  <option value="" disabled selected>Cargando tipos...</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-600 mb-1" for="estadoSelect">Estado de la
+                  cuenta</label>
+                <select id="estadoSelect" name="estado"
+                  class="w-full rounded-2xl border border-slate-200 px-3 py-2 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-200">
+                  <option value="1">Activo</option>
+                  <option value="0">Inactivo</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-slate-600 mb-1" for="fechaRegistro">Fecha de
+                  registro</label>
+                <input id="fechaRegistro" type="text"
+                  class="w-full rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-3 py-2 text-slate-500"
+                  disabled>
+              </div>
+              <div>
+                <section
+                  class="rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 p-5 text-white shadow-xl">
+                  <p id="statusSummary" class="mt-3 text-base text-white/80">Revisando actividad...</p>
+                  <ul class="mt-4 space-y-2 text-sm text-white/70">
+                    <li class="flex items-start gap-2">
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <span class="material-symbols-outlined text-base text-indigo-300">lock</span>
+                      <span>El estado de la cuenta impacta el acceso a todo el sitio.</span>
+                    </li>
+                  </ul>
+                </section>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <label class="block text-sm font-semibold text-slate-600 mb-2" for="biografia">Biografía</label>
+            <textarea id="biografia" name="biografia" rows="4"
+              class="w-full rounded-2xl border border-slate-200 px-3 py-2 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-200"
+              placeholder="Escribe una breve descripción"></textarea>
+          </section>
+
+          <div class="flex flex-wrap items-center justify-end gap-3">
+            <button type="button" id="deleteUser"
+              class="inline-flex items-center gap-2 rounded-2xl bg-red-600 px-4 py-2 text-white shadow-sm transition hover:bg-red-700">
+              <span class="material-symbols-outlined text-base">delete</span>
+              Eliminar usuario
+            </button>
+            <button type="button" id="resetForm"
+              class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 px-4 py-2 text-slate-600 transition hover:border-slate-300">
+              <span class="material-symbols-outlined text-base">undo</span>
+              Restablecer cambios
+            </button>
+            <button type="submit" id="saveButton"
+              class="inline-flex items-center gap-2 rounded-2xl bg-indigo-600 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-indigo-700">
+              <span class="material-symbols-outlined text-base">save</span>
+              Guardar cambios
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const DEFAULT_USER_AVATAR = '/Imagenes/Usuarios/0.png';
+
+    const goBackBtn = document.getElementById('goBack');
+    const statusMessage = document.getElementById('statusMessage');
+    const statusConfirmBackdrop = document.getElementById('statusConfirmBackdrop');
+    const statusConfirmModal = document.getElementById('statusConfirmModal');
+    const statusConfirmTitle = document.getElementById('statusConfirmTitle');
+    const statusConfirmBody = document.getElementById('statusConfirmBody');
+    const statusConfirmConsequences = document.getElementById('statusConfirmConsequences');
+    const statusConfirmCancel = document.getElementById('statusConfirmCancel');
+    const statusConfirmAccept = document.getElementById('statusConfirmAccept');
+    const userForm = document.getElementById('userForm');
+    const tipoSelect = document.getElementById('tipoSelect');
+    const estadoSelect = document.getElementById('estadoSelect');
+    const fotoPreview = document.getElementById('fotoPreview');
+    const fotoCaption = document.getElementById('fotoCaption');
+    const viewPhotoBtn = document.getElementById('viewPhoto');
+    const resetPhotoBtn = document.getElementById('resetPhoto');
+    const resetFormBtn = document.getElementById('resetForm');
+    const deleteButton = document.getElementById('deleteUser');
+    const saveButton = document.getElementById('saveButton');
+    const subtitle = document.getElementById('userSubtitle');
+
+    const heroAvatar = document.getElementById('heroAvatar');
+    const heroName = document.getElementById('heroName');
+    const heroAlias = document.getElementById('heroAlias');
+    const heroTipoBadge = document.getElementById('heroTipoBadge');
+    const heroEstadoBadge = document.getElementById('heroEstadoBadge');
+    const heroRegistro = document.getElementById('heroRegistro');
+    const heroIdBadge = document.getElementById('heroIdBadge');
+
+    const highlightTipo = document.getElementById('highlightTipo');
+    const highlightRegistro = document.getElementById('highlightRegistro');
+    const highlightEstado = document.getElementById('highlightEstado');
+    const highlightEstadoCaption = document.getElementById('highlightEstadoCaption');
+
+    const contactEmail = document.getElementById('contactEmail');
+    const contactPhone = document.getElementById('contactPhone');
+    const contactAlias = document.getElementById('contactAlias');
+    const contactId = document.getElementById('contactId');
+    const copyEmailBtn = document.getElementById('copyEmail');
+    const copyPhoneBtn = document.getElementById('copyPhone');
+    const copyIdBtn = document.getElementById('copyId');
+    const statusSummary = document.getElementById('statusSummary');
+
+    const nombreInput = document.getElementById('nombre');
+    const emailInput = document.getElementById('email');
+    const aliasInput = document.getElementById('alias');
+    const telefonoInput = document.getElementById('telefono');
+    const fechaRegistroInput = document.getElementById('fechaRegistro');
+    const biografiaInput = document.getElementById('biografia');
+
+    const pathSegments = window.location.pathname.split('/').filter(Boolean);
+    const userId = pathSegments[pathSegments.length - 1];
+
+    let originalData = null;
+    let statusConfirmResolver = null;
+
+    let toastTimeout = null;
+    const showMessage = (message, type = 'info', duration = 3500) => {
+      const colors = {
+        success: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        error: 'bg-red-50 text-red-700 border-red-200',
+        info: 'bg-blue-50 text-blue-700 border-blue-200'
+      };
+      statusMessage.textContent = message;
+      statusMessage.className = `fixed top-6 left-1/2 z-50 px-6 py-4 rounded-xl border text-base font-semibold shadow-lg transition-transform -translate-x-1/2 ${colors[type] || colors.info}`;
+      statusMessage.classList.remove('hidden');
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        statusMessage.classList.add('hidden');
+        statusMessage.textContent = '';
+      }, duration);
+    };
+
+    const clearMessage = () => {
+      statusMessage.classList.add('hidden');
+      statusMessage.textContent = '';
+      if (toastTimeout) clearTimeout(toastTimeout);
+    };
+
+    const openStatusConfirm = ({ title, body, consequences }) => new Promise((resolve) => {
+      statusConfirmResolver = resolve;
+      statusConfirmTitle.textContent = title;
+      statusConfirmBody.textContent = body;
+      statusConfirmConsequences.textContent = consequences;
+      statusConfirmBackdrop.classList.remove('hidden');
+      statusConfirmModal.classList.remove('hidden');
+    });
+
+    const closeStatusConfirm = () => {
+      statusConfirmBackdrop.classList.add('hidden');
+      statusConfirmModal.classList.add('hidden');
+      statusConfirmResolver = null;
+    };
+
+    statusConfirmCancel.addEventListener('click', () => {
+      if (statusConfirmResolver) {
+        statusConfirmResolver(false);
+      }
+      closeStatusConfirm();
+    });
+
+    statusConfirmAccept.addEventListener('click', () => {
+      if (statusConfirmResolver) {
+        statusConfirmResolver(true);
+      }
+      closeStatusConfirm();
+    });
+
+    statusConfirmBackdrop.addEventListener('click', () => {
+      if (statusConfirmResolver) {
+        statusConfirmResolver(false);
+      }
+      closeStatusConfirm();
+    });
+
+    const formatDate = (value) => {
+      if (!value) return '-';
+      const normalized = typeof value === 'string' ? value.replace(' ', 'T') : value;
+      const date = new Date(normalized);
+      if (Number.isNaN(date.getTime())) return String(value);
+      return date.toLocaleString('es-MX', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    };
+
+    const formatPhone = (value) => {
+      if (!value) return '';
+      const digits = value.replace(/\D+/g, '');
+      if (digits.length === 10) {
+        return `${digits.slice(0, 3)} ${digits.slice(3, 6)} ${digits.slice(6)}`;
+      }
+      return value;
+    };
+
+    const normalizeBinaryFlag = (value) => {
+      if (value === null || typeof value === 'undefined') return null;
+      if (typeof value === 'number') return value === 0 ? 0 : 1;
+      if (typeof value === 'boolean') return value ? 1 : 0;
+      if (typeof value === 'string') {
+        const trimmed = value.trim();
+        if (!trimmed) return null;
+        const lower = trimmed.toLowerCase();
+        if (['1', 'true', 'si', 'sí', 'activo', 'activa', 'enabled'].includes(lower)) return 1;
+        if (['0', 'false', 'no', 'inactivo', 'inactiva', 'disabled'].includes(lower)) return 0;
+        const parsed = Number(trimmed);
+        if (!Number.isNaN(parsed)) return parsed === 0 ? 0 : 1;
+        return null;
+      }
+      if (typeof value === 'object' && value !== null) {
+        if (Array.isArray(value) && value.length === 1) {
+          return value[0] === 0 ? 0 : 1;
+        }
+        if (value.type === 'Buffer' && Array.isArray(value.data)) {
+          return value.data[0] === 0 ? 0 : 1;
+        }
+      }
+      return null;
+    };
+
+    const resolveUserEstado = (user) => {
+      if (!user) return 0;
+      const candidates = [
+        user.estado,
+        user.Estado,
+        user.Usu_Activo,
+        user.Usu_Estado,
+        user.activo
+      ];
+      for (const candidate of candidates) {
+        const normalized = normalizeBinaryFlag(candidate);
+        if (normalized !== null) {
+          return normalized;
+        }
+      }
+      return 0;
+    };
+
+    const updateEstadoVisuals = (estado) => {
+      const isActive = Number(estado) === 1;
+      if (heroEstadoBadge) {
+        heroEstadoBadge.textContent = isActive ? 'Activo' : 'Inactivo';
+        heroEstadoBadge.className = `inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide border ${isActive ? 'border-emerald-200 bg-emerald-50/30 text-emerald-100' : 'border-amber-200 bg-amber-50/30 text-amber-100'}`;
+      }
+      if (highlightEstado) {
+        highlightEstado.textContent = isActive ? 'Operativa' : 'Suspendida';
+      }
+      if (highlightEstadoCaption) {
+        highlightEstadoCaption.textContent = isActive ? 'Puede iniciar sesión y operar normalmente.' : 'Sin acceso hasta que se reactive.';
+      }
+      statusSummary.textContent = isActive
+        ? 'La cuenta está activa y tiene acceso completo a la plataforma.'
+        : 'La cuenta permanece suspendida; no podrá autenticarse ni usar funcionalidades.';
+    };
+
+    const updateTipoVisuals = (tipoNombre) => {
+      const label = tipoNombre || 'Sin tipo asignado';
+      if (heroTipoBadge) {
+        heroTipoBadge.textContent = label;
+      }
+      if (highlightTipo) {
+        highlightTipo.textContent = label;
+      }
+    };
+
+    const updateRegistroVisuals = (fecha) => {
+      const formatted = formatDate(fecha);
+      if (heroRegistro) {
+        heroRegistro.textContent = fecha ? `Miembro desde ${formatted}` : 'Aún sin fecha de registro';
+      }
+      if (highlightRegistro) {
+        highlightRegistro.textContent = fecha ? formatted : 'Sin registro';
+      }
+      fechaRegistroInput.value = formatted;
+    };
+
+    const setCopyButtonPayload = (button, value) => {
+      if (!button) return;
+      const hasValue = Boolean(value && value.trim());
+      button.dataset.copyValue = hasValue ? value.trim() : '';
+      button.disabled = !hasValue;
+    };
+
+    const updateContactCard = (data) => {
+      const nombre = data.nombre || 'Usuario sin nombre';
+      if (contactEmail) {
+        contactEmail.textContent = data.email || 'Sin correo registrado';
+      }
+      if (contactPhone) {
+        contactPhone.textContent = data.telefono ? formatPhone(data.telefono) : 'Sin teléfono registrado';
+      }
+      if (contactAlias) {
+        contactAlias.textContent = data.alias ? `@${data.alias}` : 'Sin alias público';
+      }
+      if (contactId) {
+        contactId.textContent = data.id ? `#${data.id}` : '-';
+      }
+      setCopyButtonPayload(copyEmailBtn, data.email || '');
+      setCopyButtonPayload(copyPhoneBtn, data.telefono || '');
+      setCopyButtonPayload(copyIdBtn, data.id ? String(data.id) : '');
+      if (heroIdBadge) {
+        heroIdBadge.textContent = data.id ? `ID #${data.id}` : 'ID sin asignar';
+      }
+      if (heroName) {
+        heroName.textContent = nombre;
+      }
+      if (heroAlias) {
+        heroAlias.textContent = data.alias ? `Alias público: @${data.alias}` : 'Alias público no definido';
+      }
+    };
+
+    const updateAvatars = (fotoSrc) => {
+      const safeSrc = fotoSrc || DEFAULT_USER_AVATAR;
+      fotoPreview.src = safeSrc;
+      if (heroAvatar) {
+        heroAvatar.src = safeSrc;
+      }
+      fotoCaption.textContent = safeSrc === DEFAULT_USER_AVATAR ? 'Usando imagen predeterminada' : safeSrc;
+    };
+
+    const populateForm = (data) => {
+      nombreInput.value = data.nombre || '';
+      emailInput.value = data.email || '';
+      aliasInput.value = data.alias || '';
+      telefonoInput.value = data.telefono || '';
+      biografiaInput.value = data.biografia || '';
+      subtitle.textContent = `ID: ${data.id} • Registrado el ${formatDate(data.fechaRegistro)}`;
+
+      updateAvatars(data.foto);
+      updateContactCard(data);
+      updateRegistroVisuals(data.fechaRegistro);
+
+      const targetTipoId = Number(data.tipoId ?? data.Tipo_Usu_ID);
+      Array.from(tipoSelect.options).forEach((opt) => {
+        opt.selected = Number(opt.value) === targetTipoId;
+      });
+
+      const selectedTipoOption = tipoSelect.options[tipoSelect.selectedIndex];
+      const resolvedTipoNombre = data.tipoNombre || (selectedTipoOption ? selectedTipoOption.textContent : '');
+      updateTipoVisuals(resolvedTipoNombre);
+
+      if (estadoSelect) {
+        const estadoValor = resolveUserEstado(data);
+        estadoSelect.value = estadoValor === 1 ? '1' : '0';
+        updateEstadoVisuals(estadoValor);
+      }
+    };
+
+    const resetFormToOriginal = () => {
+      if (!originalData) return;
+      populateForm(originalData);
+      clearMessage();
+    };
+
+    const ensureUserIdValid = () => {
+      if (!userId || Number.isNaN(Number(userId))) {
+        showMessage('Identificador de usuario inválido.', 'error');
+        userForm.classList.add('hidden');
+        return false;
+      }
+      return true;
+    };
+
+    const fetchWithAuth = async (url, options = {}) => {
+      const response = await fetch(url, { credentials: 'include', ...options });
+      if (response.status === 401) {
+        window.location.href = '/iniciar-sesion';
+        return null;
+      }
+      if (response.status === 403) {
+        showMessage('No tienes permisos para acceder a este recurso.', 'error');
+        userForm.classList.add('hidden');
+        return null;
+      }
+      return response;
+    };
+
+    const loadUserTypes = async () => {
+      const response = await fetchWithAuth('/api/administracion/tipos-usuario');
+      if (!response) return [];
+      if (!response.ok) {
+        throw new Error('No se pudieron cargar los tipos de usuario');
+      }
+      return response.json();
+    };
+
+    const loadUserDetail = async () => {
+      const response = await fetchWithAuth(`/api/administracion/usuarios/${encodeURIComponent(userId)}`);
+      if (!response) return null;
+      if (response.status === 404) {
+        showMessage('El usuario solicitado no existe o no es editable.', 'error');
+        userForm.classList.add('hidden');
+        return null;
+      }
+      if (!response.ok) {
+        throw new Error('Error al cargar el detalle del usuario');
+      }
+      return response.json();
+    };
+
+    const initialize = async () => {
+      if (!ensureUserIdValid()) return;
+      try {
+        clearMessage();
+        saveButton.disabled = true;
+        goBackBtn.disabled = true;
+        resetFormBtn.disabled = true;
+        deleteButton.disabled = true;
+        if (viewPhotoBtn) {
+          viewPhotoBtn.disabled = true;
+        }
+        resetPhotoBtn.disabled = true;
+
+        const [tipos, detail] = await Promise.all([
+          loadUserTypes(),
+          loadUserDetail()
+        ]);
+
+        if (!detail) {
+          return;
+        }
+
+        tipoSelect.innerHTML = '';
+        tipos.forEach((tipo) => {
+          const option = document.createElement('option');
+          option.value = tipo.id;
+          option.textContent = tipo.nombre;
+          tipoSelect.appendChild(option);
+        });
+
+        originalData = {
+          ...detail,
+          tipoId: detail.tipoId ?? detail.Tipo_Usu_ID,
+          estado: resolveUserEstado(detail),
+          tipoNombre: detail.tipoNombre ?? detail.Tipo_Nombre
+        };
+        populateForm(originalData);
+        clearMessage();
+      } catch (err) {
+        console.error(err);
+        showMessage(err.message || 'Error inesperado al cargar datos', 'error');
+        userForm.classList.add('hidden');
+      } finally {
+        saveButton.disabled = false;
+        goBackBtn.disabled = false;
+        resetFormBtn.disabled = false;
+        deleteButton.disabled = false;
+        if (viewPhotoBtn) {
+          viewPhotoBtn.disabled = false;
+        }
+        resetPhotoBtn.disabled = false;
+      }
+    };
+
+    userForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      clearMessage();
+
+      const payload = {
+        nombre: nombreInput.value.trim(),
+        email: emailInput.value.trim(),
+        telefono: telefonoInput.value.trim(),
+        biografia: biografiaInput.value.trim(),
+        tipoId: tipoSelect.value ? Number(tipoSelect.value) : undefined
+      };
+
+      const aliasValue = aliasInput.value.trim();
+      if (aliasValue) {
+        payload.alias = aliasValue;
+      }
+
+      if (estadoSelect && estadoSelect.value !== '') {
+        payload.estado = Number(estadoSelect.value);
+      }
+
+      if (
+        typeof payload.estado === 'number' &&
+        originalData &&
+        typeof originalData.estado === 'number' &&
+        payload.estado !== originalData.estado
+      ) {
+        const isDeactivation = payload.estado === 0;
+        const actionLabel = isDeactivation ? 'deshabilitar' : 'reactivar';
+        const body = isDeactivation ? 'Estás a punto de deshabilitar esta cuenta.' : 'Estás a punto de reactivar esta cuenta.';
+        const consequences = isDeactivation
+          ? 'El usuario no podrá iniciar sesión ni acceder a ninguna funcionalidad hasta que vuelva a ser reactivado.'
+          : 'El usuario volverá a tener acceso completo a la plataforma y podrá iniciar sesión inmediatamente.';
+        const accepted = await openStatusConfirm({
+          title: `¿Confirmas que deseas ${actionLabel} al usuario?`,
+          body,
+          consequences
+        });
+        if (!accepted) {
+          return;
+        }
+      }
+
+      saveButton.disabled = true;
+      saveButton.textContent = 'Guardando...';
+
+      try {
+        const response = await fetchWithAuth(`/api/administracion/usuarios/${encodeURIComponent(userId)}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!response) return;
+        const data = await response.json();
+        if (!response.ok || !data.ok) {
+          throw new Error((data && data.error) || 'No se pudieron guardar los cambios');
+        }
+
+        originalData = {
+          ...originalData,
+          ...data.user,
+          tipoId: data.user?.tipoId ?? data.user?.Tipo_Usu_ID ?? originalData.tipoId,
+          tipoNombre: data.user?.tipoNombre ?? originalData.tipoNombre,
+          biografia: typeof data.user?.biografia === 'string' ? data.user.biografia : originalData.biografia,
+          foto: data.user?.foto || originalData.foto,
+          fechaRegistro: originalData.fechaRegistro
+        };
+        originalData.estado = resolveUserEstado(originalData);
+        populateForm(originalData);
+        showMessage('Cambios guardados correctamente.', 'success');
+      } catch (err) {
+        console.error(err);
+        showMessage(err.message || 'Error al guardar los cambios', 'error');
+      } finally {
+        saveButton.disabled = false;
+        saveButton.textContent = 'Guardar cambios';
+      }
+    });
+
+    resetFormBtn.addEventListener('click', () => {
+      resetFormToOriginal();
+    });
+
+    deleteButton.addEventListener('click', async () => {
+      clearMessage();
+      if (!originalData) return;
+      const confirmed = await showPopupConfirm('¿Seguro que deseas eliminar este usuario? Esta acción no se puede deshacer.', {
+        title: 'Eliminar usuario',
+        subtitle: 'Administración',
+        confirmText: 'Eliminar',
+        cancelText: 'Cancelar'
+      });
+      if (!confirmed) return;
+
+      deleteButton.disabled = true;
+      deleteButton.textContent = 'Eliminando...';
+
+      try {
+        const response = await fetchWithAuth(`/api/administracion/usuarios/${encodeURIComponent(userId)}`, { method: 'DELETE' });
+        if (!response) {
+          deleteButton.disabled = false;
+          deleteButton.textContent = 'Eliminar usuario';
+          return;
+        }
+
+        const data = await response.json();
+        if (!response.ok || !data.ok) {
+          throw new Error((data && data.error) || 'No se pudo eliminar el usuario');
+        }
+
+        showMessage('Usuario eliminado correctamente.', 'success');
+        saveButton.disabled = true;
+        resetFormBtn.disabled = true;
+
+        setTimeout(() => {
+          window.location.href = '/administracion#usuarios';
+        }, 1200);
+      } catch (err) {
+        console.error(err);
+        showMessage(err.message || 'Error al eliminar el usuario', 'error');
+        deleteButton.disabled = false;
+        deleteButton.textContent = 'Eliminar usuario';
+      }
+    });
+
+    if (viewPhotoBtn) {
+      viewPhotoBtn.addEventListener('click', () => {
+        if (!originalData || !originalData.foto) return;
+        window.open(originalData.foto, '_blank');
+      });
+    }
+
+    resetPhotoBtn.addEventListener('click', async () => {
+      clearMessage();
+      if (!originalData) return;
+      resetPhotoBtn.disabled = true;
+      resetPhotoBtn.textContent = 'Restableciendo...';
+
+      try {
+        const response = await fetchWithAuth(`/api/administracion/usuarios/${encodeURIComponent(userId)}/restablecer-foto`, { method: 'POST' });
+        if (!response) {
+          resetPhotoBtn.disabled = false;
+          resetPhotoBtn.textContent = 'Restablecer foto';
+          return;
+        }
+        const data = await response.json();
+        if (!response.ok || !data.ok) {
+          throw new Error((data && data.error) || 'No se pudo restablecer la foto');
+        }
+
+        originalData = {
+          ...originalData,
+          foto: data.foto
+        };
+        populateForm(originalData);
+        showMessage('Foto restablecida a la predeterminada.', 'success');
+      } catch (err) {
+        console.error(err);
+        showMessage(err.message || 'Error al restablecer la foto', 'error');
+      } finally {
+        resetPhotoBtn.disabled = false;
+        resetPhotoBtn.textContent = 'Restablecer foto';
+      }
+    });
+
+    const handleCopy = async (button, label) => {
+      const value = button?.dataset.copyValue;
+      if (!value) {
+        showMessage(`No hay ${label.toLowerCase()} para copiar.`, 'info');
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(value);
+        showMessage(`${label} copiado al portapapeles.`, 'success');
+      } catch (err) {
+        console.error(err);
+        showMessage('No se pudo copiar. Intenta nuevamente.', 'error');
+      }
+    };
+
+    if (copyEmailBtn) {
+      copyEmailBtn.addEventListener('click', () => handleCopy(copyEmailBtn, 'Correo'));
+    }
+    if (copyPhoneBtn) {
+      copyPhoneBtn.addEventListener('click', () => handleCopy(copyPhoneBtn, 'Teléfono'));
+    }
+    if (copyIdBtn) {
+      copyIdBtn.addEventListener('click', () => handleCopy(copyIdBtn, 'ID'));
+    }
+
+    const syncLivePreview = () => {
+      if (heroName) {
+        heroName.textContent = nombreInput.value.trim() || 'Usuario sin nombre';
+      }
+      if (heroAlias) {
+        heroAlias.textContent = aliasInput.value.trim() ? `Alias público: @${aliasInput.value.trim()}` : 'Alias público no definido';
+      }
+      if (contactEmail) {
+        contactEmail.textContent = emailInput.value.trim() || 'Sin correo registrado';
+      }
+      if (contactPhone) {
+        contactPhone.textContent = telefonoInput.value.trim() ? formatPhone(telefonoInput.value.trim()) : 'Sin teléfono registrado';
+      }
+      if (contactAlias) {
+        contactAlias.textContent = aliasInput.value.trim() ? `@${aliasInput.value.trim()}` : 'Sin alias público';
+      }
+      setCopyButtonPayload(copyEmailBtn, emailInput.value.trim());
+      setCopyButtonPayload(copyPhoneBtn, telefonoInput.value.trim());
+    };
+
+    nombreInput.addEventListener('input', syncLivePreview);
+    emailInput.addEventListener('input', syncLivePreview);
+    aliasInput.addEventListener('input', syncLivePreview);
+    telefonoInput.addEventListener('input', syncLivePreview);
+
+    tipoSelect.addEventListener('change', () => {
+      const selectedOption = tipoSelect.options[tipoSelect.selectedIndex];
+      updateTipoVisuals(selectedOption ? selectedOption.textContent : '');
+    });
+
+    estadoSelect.addEventListener('change', () => {
+      updateEstadoVisuals(Number(estadoSelect.value));
+    });
+
+    goBackBtn.addEventListener('click', () => {
+      window.location.href = '/administracion#usuarios';
+    });
+
+    initialize();
+  </script>
+</body>
+
+</html>

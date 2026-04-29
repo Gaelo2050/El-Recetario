@@ -1,0 +1,2647 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Admin | El Recetario®</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <link rel="shortcut icon" href="../Imagenes/Logo/favicon.ico">
+  <link href="/css/output.css" rel="stylesheet">
+  <script src="/js/userSession.js"></script>
+</head>
+
+<body class="bg-gray-100 text-gray-800">
+
+  <!-- Sidebar -->
+  <div class="flex flex-col md:flex-row min-h-screen">
+    <div id="sidebarBackdrop" class="fixed inset-0 bg-black bg-opacity-40 z-30 hidden md:hidden"></div>
+    <aside id="adminSidebar"
+      class="fixed inset-y-0 left-0 z-40 w-72 max-w-full bg-gray-900 text-white flex flex-col transform -translate-x-full transition-transform duration-300 md:static md:w-64 md:translate-x-0">
+      <div class="px-6 py-4 text-2xl font-bold border-b border-gray-700 flex items-center gap-3 text-white">
+        <a href="/">
+          <img src="/Imagenes/Logo/logo  (1).png" alt="Logo El Recetario" class="w-10 h-10 rounded-lg">
+        </a>
+        El Recetario
+      </div>
+      <!-- Barra lateral -->
+      <nav class="flex-1 px-4 py-6 space-y-2">
+        <button
+          class="w-full flex items-center gap-3 text-left px-4 py-2 rounded-md hover:bg-gray-800 transition-all duration-200"
+          onclick="showSection('inicio')">
+          <span class="material-symbols-outlined">home</span>
+          <span>Inicio</span>
+        </button>
+
+        <button
+          class="w-full flex items-center gap-3 text-left px-4 py-2 rounded-md hover:bg-gray-800 transition-all duration-200"
+          onclick="showSection('recetas')">
+          <span class="material-symbols-outlined">menu_book</span>
+          <span>Recetas</span>
+        </button>
+
+        <button
+          class="w-full flex items-center gap-3 text-left px-4 py-2 rounded-md hover:bg-gray-800 transition-all duration-200"
+          onclick="showSection('categorias')">
+          <span class="material-symbols-outlined">category</span>
+          <span>Categorías</span>
+        </button>
+
+        <button
+          class="w-full flex items-center gap-3 text-left px-4 py-2 rounded-md hover:bg-gray-800 transition-all duration-200"
+          onclick="showSection('usuarios')">
+          <span class="material-symbols-outlined">group</span>
+          <span>Usuarios</span>
+        </button>
+
+        <button
+          class="w-full flex items-center gap-3 text-left px-4 py-2 rounded-md hover:bg-gray-800 transition-all duration-200"
+          onclick="showSection('comentarios')">
+          <span class="material-symbols-outlined">forum</span>
+          <span>Comentarios</span>
+        </button>
+
+        <button
+          class="w-full flex items-center gap-3 text-left px-4 py-2 rounded-md hover:bg-gray-800 transition-all duration-200"
+          onclick="showSection('reportes')">
+          <span class="material-symbols-outlined">flag</span>
+          <span>Reportes</span>
+        </button>
+
+      </nav>
+      <div class="p-4 border-t border-gray-700 text-sm text-gray-400">
+        © 2025 El Recetario
+      </div>
+    </aside>
+
+    <!-- Contenido principal -->
+    <main class="flex-1 overflow-y-auto bg-gradient-to-br from-slate-50 via-white to-slate-100 p-6 lg:p-10">
+      <div class="w-full space-y-6">
+
+      <!-- Breadcrumbs -->
+      <nav class="bg-white/80 backdrop-blur border border-slate-200 rounded-2xl px-6 py-4 text-sm text-slate-600 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <ol class="flex flex-wrap items-center gap-2 text-gray-500">
+            <li><a href="/inicio" class="hover:text-purple-600">Inicio</a></li>
+            <li class="text-gray-400">/</li>
+            <li class="text-gray-700 font-medium">Panel administrativo</li>
+          </ol>
+          <div class="flex items-center gap-3 text-gray-700">
+            <span class="hidden sm:inline text-xs uppercase tracking-[0.2em] text-slate-400">Administrador</span>
+            <div class="flex items-center gap-2 text-indigo-600 font-semibold">
+              <img id="adminAvatar" src="/Imagenes/Usuarios/0.png" class="w-10 h-10 rounded-full object-cover bg-gray-200"
+                alt="Administrador">
+              <span id="adminName">Administrador</span>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Topbar -->
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between bg-white/90 backdrop-blur border border-slate-200 rounded-2xl px-6 py-4 shadow-sm">
+        <div class="flex items-center gap-3">
+          <button type="button" data-toggle-sidebar
+            class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-full bg-white border border-slate-200 text-gray-600 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <span class="material-symbols-outlined">menu</span>
+            <span class="sr-only">Abrir menú</span>
+          </button>
+          <h1 class="text-3xl font-semibold text-gray-800" id="section-title">Inicio</h1>
+        </div>
+      </div>
+
+      <!-- Sección: Inicio -->
+      <section id="inicio" class="space-y-3">
+        <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-6 lg:p-8 space-y-8">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <p class="text-sm uppercase tracking-[0.2em] text-slate-400">Panel general</p>
+              <h2 class="text-3xl font-semibold text-gray-800">Resumen general</h2>
+            </div>
+            <button type="button" id="reloadDashboardBtn"
+              class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-indigo-600 bg-indigo-50 rounded-full hover:bg-indigo-100 transition">
+              <span class="material-symbols-outlined text-base">refresh</span>
+              Recargar datos
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+              <h3 class="text-slate-500 text-sm font-semibold">Usuarios Registrados</h3>
+              <p id="usuariosTotal" class="text-4xl font-semibold text-slate-900">-</p>
+              <p id="usuariosSummary" class="text-xs text-slate-500 mt-3">Calculando totales...</p>
+            </div>
+            <div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+              <h3 class="text-slate-500 text-sm font-semibold">Recetas Publicadas</h3>
+              <p id="recetasTotal" class="text-4xl font-semibold text-slate-900">-</p>
+              <p id="recetasSummary" class="text-xs text-slate-500 mt-3">Calculando categorías...</p>
+            </div>
+            <div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+              <h3 class="text-slate-500 text-sm font-semibold">Usuarios Premium</h3>
+              <p id="usuariosPremiumTotal" class="text-4xl font-semibold text-slate-900">-</p>
+              <p id="usuariosPremiumSummary" class="text-xs text-slate-500 mt-3">Analizando membresías...</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-base font-semibold">Distribución de tipos de usuarios</h3>
+                <span id="usuariosRolesMeta" class="text-xs text-gray-500">-</span>
+              </div>
+              <div class="h-64">
+                <canvas id="usuariosRolesChart" class="h-full"></canvas>
+                <p id="usuariosRolesEmpty" class="text-center text-sm text-white/70 mt-6 hidden">Sin datos suficientes
+                  para graficar.</p>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-gray-700 text-base font-semibold">Recetas por categoría</h3>
+                <span id="recetasCategoriasMeta" class="text-xs text-gray-500">-</span>
+              </div>
+              <div class="h-64">
+                <canvas id="recetasCategoriasChart" class="h-full"></canvas>
+                <p id="recetasCategoriasEmpty" class="text-center text-sm text-gray-500 mt-6 hidden">Sin datos suficientes
+                  para graficar.</p>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 xl:col-span-1 xl:row-span-1 xl:flex xl:flex-col">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-gray-700 text-base font-semibold">Altas mensuales</h3>
+                <span id="usuariosMensualesMeta" class="text-xs text-gray-500">Últimos 6 meses</span>
+              </div>
+              <div class="h-64">
+                <canvas id="usuariosMensualesChart" class="h-full"></canvas>
+                <p id="usuariosMensualesEmpty" class="text-center text-sm text-gray-500 mt-6 hidden">Sin registros
+                  recientes.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Sección: Recetas -->
+      <section id="recetas" class="hidden space-y-3">
+        <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-4">
+          <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+            <div class="flex flex-col gap-3">
+              <input type="text" id="searchRecetas" placeholder="Buscar receta..."
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <span id="recetasSortInfo" class="text-sm text-gray-600">Orden actual: Fecha publicación (desc)</span>
+            </div>
+            <div class="flex flex-col md:flex-row md:flex-wrap md:items-center md:justify-end gap-3">
+              <div class="flex items-center gap-2">
+                <label for="recetasPageSize" class="text-sm text-gray-600">Mostrar:</label>
+                <select id="recetasPageSize" class="px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  <option value="10" selected>10</option>
+                  <option value="20">20</option>
+                  <option value="30">30</option>
+                  <option value="all">Todos</option>
+                </select>
+              </div>
+              <button id="resetRecetasSort"
+                class="px-4 py-2 text-sm bg-indigo-500 hover:bg-indigo-600 text-white rounded-full transition">
+                Borrar filtros
+              </button>
+              <button type="button" id="reloadRecetasBtn"
+                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-indigo-600 bg-indigo-50 rounded-full hover:bg-indigo-100 transition">
+                <span class="material-symbols-outlined text-base">refresh</span>
+                Recargar lista
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-3xl shadow-sm">
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-sm text-left">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-4 py-3 cursor-pointer select-none" data-sort="id">ID</th>
+                  <th class="px-4 py-3 cursor-pointer select-none" data-sort="titulo">Título</th>
+                  <th class="px-4 py-3 cursor-pointer select-none" data-sort="autor">Autor</th>
+                  <th class="px-4 py-3 cursor-pointer select-none" data-sort="categoria">Categoría</th>
+                  <th class="px-4 py-3 cursor-pointer select-none" data-sort="fecha">Fecha</th>
+                  <th class="px-4 py-3 cursor-pointer select-none" data-sort="dificultad">Dificultad</th>
+                  <th class="px-4 py-3">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="recetasTable" class="divide-y divide-gray-200">
+                <tr>
+                  <td colspan="7" class="px-4 py-3 text-center text-gray-500">Cargando recetas...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div id="recetasPagination"
+          class="bg-white border border-slate-200 rounded-3xl shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4 text-sm text-gray-600"
+          style="display: none;">
+          <span id="recetasPageInfo">Mostrando 0-0 de 0</span>
+          <div class="flex items-center gap-2">
+            <button id="recetasPrev"
+              class="px-4 py-2 text-sm bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition"
+              type="button">Anterior</button>
+            <button id="recetasNext"
+              class="px-4 py-2 text-sm bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition"
+              type="button">Siguiente</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sección: Categorías -->
+      <section id="categorias" class="hidden space-y-3">
+        <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-4">
+          <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+            <div class="flex flex-col gap-3">
+              <input type="text" id="searchCategorias" placeholder="Buscar categoría..."
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <p id="categoriasSortInfo" class="text-sm text-gray-600">Orden actual: Nombre (asc)</p>
+            </div>
+            <div class="flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-end gap-3">
+              <div class="flex items-center gap-2">
+                <label for="categoriasPageSize" class="text-sm text-gray-600">Mostrar:</label>
+                <select id="categoriasPageSize" class="px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  <option value="10" selected>10</option>
+                  <option value="20">20</option>
+                  <option value="30">30</option>
+                  <option value="all">Todas</option>
+                </select>
+              </div>
+              <button type="button" id="reloadCategoriasBtn"
+                class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-indigo-600 bg-indigo-50 rounded-full hover:bg-indigo-100 transition">
+                <span class="material-symbols-outlined text-base">refresh</span>
+                Recargar lista
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-3xl shadow-sm">
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-sm text-left">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-4 py-3 cursor-pointer select-none" data-sort="id">ID</th>
+                  <th class="px-4 py-3 cursor-pointer select-none" data-sort="nombre">Nombre</th>
+                  <th class="px-4 py-3 cursor-pointer select-none" data-sort="descripcion">Descripción</th>
+                  <th class="px-4 py-3 cursor-pointer select-none" data-sort="recetas">Recetas totales</th>
+                  <th class="px-4 py-3 cursor-pointer select-none" data-sort="premium">Recetas premium</th>
+                  <th class="px-4 py-3 cursor-pointer select-none" data-sort="fecha">Última receta</th>
+                  <th class="px-4 py-3">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="categoriasTable" class="divide-y divide-gray-200">
+                <tr>
+                  <td colspan="7" class="px-4 py-3 text-center text-gray-500">Cargando categorías...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div id="categoriasPagination"
+          class="bg-white border border-slate-200 rounded-3xl shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4 text-sm text-gray-600"
+          style="display: none;">
+          <span id="categoriasPageInfo">Mostrando 0-0 de 0</span>
+          <div class="flex items-center gap-2">
+            <button id="categoriasPrev"
+              class="px-4 py-2 text-sm bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition"
+              type="button">Anterior</button>
+            <button id="categoriasNext"
+              class="px-4 py-2 text-sm bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition"
+              type="button">Siguiente</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sección: Usuarios -->
+      <section id="usuarios" class="hidden space-y-3">
+        <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-4">
+          <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+            <div class="flex flex-col gap-3">
+              <input type="text" id="searchUsuarios" placeholder="Buscar usuarios..."
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="flex items-center gap-2">
+                  <label for="usuariosRolFilter" class="text-sm text-gray-600">Membresía:</label>
+                  <select id="usuariosRolFilter" class="px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="all" selected>Todos</option>
+                    <option value="premium">Premium</option>
+                    <option value="nopremium">No premium</option>
+                  </select>
+                </div>
+                <div class="flex items-center gap-2">
+                  <label for="usuariosEstadoFilter" class="text-sm text-gray-600">Estado:</label>
+                  <select id="usuariosEstadoFilter" class="px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="all" selected>Todos</option>
+                    <option value="activos">Activos</option>
+                    <option value="inactivos">Inactivos</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="flex flex-col md:flex-row md:flex-wrap md:items-center md:justify-end gap-3">
+              <div class="flex items-center gap-2">
+                <label for="usuariosPageSize" class="text-sm text-gray-600">Mostrar:</label>
+                <select id="usuariosPageSize" class="px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  <option value="10" selected>10</option>
+                  <option value="20">20</option>
+                  <option value="30">30</option>
+                  <option value="all">Todos</option>
+                </select>
+              </div>
+              <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+                <span id="usuariosSortInfo" class="text-sm text-gray-600">Orden actual: Fecha Registro (desc)</span>
+                <button id="resetUsuariosSort"
+                  class="px-4 py-2 text-sm bg-indigo-500 hover:bg-indigo-600 text-white rounded-full transition">
+                  Borrar filtros
+                </button>
+              </div>
+              <button type="button" id="reloadUsuariosBtn"
+                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-indigo-600 bg-indigo-50 rounded-full hover:bg-indigo-100 transition">
+                <span class="material-symbols-outlined text-base">refresh</span>
+                Recargar lista
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-3xl shadow-sm">
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-sm text-left">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-4 py-3 cursor-pointer select-none" data-sort="id">ID</th>
+                  <th class="px-4 py-3 cursor-pointer select-none" data-sort="nombre">Nombre</th>
+                  <th class="px-4 py-3 cursor-pointer select-none" data-sort="email">Correo</th>
+                  <th class="px-4 py-3 cursor-pointer select-none" data-sort="rol">Rol</th>
+                  <th class="px-4 py-3 cursor-pointer select-none" data-sort="estado">Estado</th>
+                  <th class="px-4 py-3 cursor-pointer select-none" data-sort="fecha">Fecha Registro</th>
+                  <th class="px-4 py-3">Modificar</th>
+                </tr>
+              </thead>
+              <tbody id="usuariosTable" class="divide-y divide-gray-200">
+                <tr>
+                  <td colspan="7" class="px-4 py-3 text-center text-gray-500">Cargando usuarios...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div id="usuariosPagination"
+          class="bg-white border border-slate-200 rounded-3xl shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4 text-sm text-gray-600"
+          style="display: none;">
+          <span id="usuariosPageInfo">Mostrando 0-0 de 0</span>
+          <div class="flex items-center gap-2">
+            <button id="usuariosPrev"
+              class="px-4 py-2 text-sm bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition"
+              type="button">Anterior</button>
+            <button id="usuariosNext"
+              class="px-4 py-2 text-sm bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition"
+              type="button">Siguiente</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sección: Comentarios -->
+      <section id="comentarios" class="hidden space-y-3">
+        <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-4">
+          <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+            <div class="flex flex-col gap-3">
+              <input type="text" id="searchComentarios" placeholder="Buscar comentario, usuario o receta..."
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <span id="comentariosSortInfo" class="text-sm text-gray-600">Orden actual: ID (desc)</span>
+            </div>
+            <div class="flex flex-col md:flex-row md:flex-wrap md:items-center md:justify-end gap-3">
+              <div class="flex items-center gap-2">
+                <label for="comentariosPageSize" class="text-sm text-gray-600">Mostrar:</label>
+                <select id="comentariosPageSize" class="px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  <option value="10" selected>10</option>
+                  <option value="20">20</option>
+                  <option value="30">30</option>
+                  <option value="all">Todos</option>
+                </select>
+              </div>
+              <button id="resetComentariosSort"
+                class="px-4 py-2 text-sm bg-indigo-500 hover:bg-indigo-600 text-white rounded-full transition">
+                Borrar filtros
+              </button>
+              <button type="button" id="reloadComentariosBtn"
+                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-indigo-600 bg-indigo-50 rounded-full hover:bg-indigo-100 transition">
+                <span class="material-symbols-outlined text-base">refresh</span>
+                Recargar lista
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-3xl shadow-sm">
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-sm text-left table-fixed">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-4 py-3 w-16 cursor-pointer select-none text-center" data-sort="id">ID</th>
+                  <th class="px-4 py-3 w-2/5 cursor-pointer select-none" data-sort="comentario">Comentario</th>
+                  <th class="px-4 py-3 w-1/5 cursor-pointer select-none" data-sort="usuario">Usuario</th>
+                  <th class="px-4 py-3 w-1/5 cursor-pointer select-none" data-sort="receta">Receta</th>
+                  <th class="px-4 py-3 w-1/5 text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="comentariosTable" class="divide-y divide-gray-200">
+                <tr>
+                  <td colspan="5" class="px-4 py-3 text-center text-gray-500">Cargando comentarios...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+
+        <div id="comentariosPagination"
+          class="bg-white border border-slate-200 rounded-3xl shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4 text-sm text-gray-600"
+          style="display: none;">
+          <span id="comentariosPageInfo">Mostrando 0-0 de 0</span>
+          <div class="flex items-center gap-2">
+            <button id="comentariosPrev"
+              class="px-4 py-2 text-sm bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition"
+              type="button">Anterior</button>
+            <button id="comentariosNext"
+              class="px-4 py-2 text-sm bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition"
+              type="button">Siguiente</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sección: Reportes -->
+      <section id="reportes" class="hidden space-y-3">
+        <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-4">
+          <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+            <div class="flex flex-col gap-3">
+              <input type="text" id="searchReportes" placeholder="Buscar por motivo, usuario, tipo..."
+                class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <div class="flex items-center gap-2">
+                <label for="reportesEstadoFilter" class="text-sm text-gray-600">Estado:</label>
+                <select id="reportesEstadoFilter" class="px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  <option value="all" selected>Todos</option>
+                  <option value="pendiente">Pendientes</option>
+                  <option value="resuelto">Resueltos</option>
+                  <option value="descartado">Descartados</option>
+                </select>
+              </div>
+            </div>
+            <div class="flex flex-col md:flex-row md:flex-wrap md:items-center md:justify-end gap-3">
+              <div class="flex items-center gap-2">
+                <label for="reportesPageSize" class="text-sm text-gray-600">Mostrar:</label>
+                <select id="reportesPageSize" class="px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  <option value="10" selected>10</option>
+                  <option value="20">20</option>
+                  <option value="30">30</option>
+                  <option value="all">Todos</option>
+                </select>
+              </div>
+              <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+                <span id="reportesSortInfo" class="text-sm text-gray-600">Orden actual: Fecha (desc)</span>
+                <button id="resetReportesSort"
+                  class="px-4 py-2 text-sm bg-indigo-500 hover:bg-indigo-600 text-white rounded-full transition">
+                  Borrar filtros
+                </button>
+              </div>
+              <button type="button" id="reloadReportesBtn"
+                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-indigo-600 bg-indigo-50 rounded-full hover:bg-indigo-100 transition">
+                <span class="material-symbols-outlined text-base">refresh</span>
+                Recargar lista
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-3xl shadow-sm">
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-sm text-left">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-4 py-3 cursor-pointer select-none" data-sort="id">ID</th>
+                  <th class="px-4 py-3 cursor-pointer select-none" data-sort="tipo">Tipo</th>
+                  <th class="px-4 py-3 cursor-pointer select-none" data-sort="objeto">Objeto</th>
+                  <th class="px-4 py-3 cursor-pointer select-none" data-sort="motivo">Motivo</th>
+                  <th class="px-4 py-3 cursor-pointer select-none" data-sort="reportante">Reportado por</th>
+                  <th class="px-4 py-3 cursor-pointer select-none" data-sort="fecha">Fecha</th>
+                  <th class="px-4 py-3 cursor-pointer select-none" data-sort="estado">Estado</th>
+                  <th class="px-4 py-3">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="reportesTable" class="divide-y divide-gray-200">
+                <tr>
+                  <td colspan="8" class="px-4 py-3 text-center text-gray-500">Cargando reportes...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div id="reportesPagination"
+          class="bg-white border border-slate-200 rounded-3xl shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4 text-sm text-gray-600"
+          style="display: none;">
+          <span id="reportesPageInfo">Mostrando 0-0 de 0</span>
+          <div class="flex items-center gap-2">
+            <button id="reportesPrev"
+              class="px-4 py-2 text-sm bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition"
+              type="button">Anterior</button>
+            <button id="reportesNext"
+              class="px-4 py-2 text-sm bg-white border border-gray-300 rounded-full hover:bg-gray-100 transition"
+              type="button">Siguiente</button>
+          </div>
+        </div>
+      </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/graficas.js"></script>
+
+  <script>
+    // Control de secciones
+    const adminAvatar = document.getElementById('adminAvatar');
+    const adminName = document.getElementById('adminName');
+    const adminSidebar = document.getElementById('adminSidebar');
+    const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+    const sidebarToggleButtons = document.querySelectorAll('[data-toggle-sidebar]');
+    const sidebarNavButtons = document.querySelectorAll('#adminSidebar nav button');
+
+    const usuariosTotalElement = document.getElementById('usuariosTotal');
+    const recetasTotalElement = document.getElementById('recetasTotal');
+    const usuariosPremiumTotalElement = document.getElementById('usuariosPremiumTotal');
+    const usuariosSummaryElement = document.getElementById('usuariosSummary');
+    const recetasSummaryElement = document.getElementById('recetasSummary');
+    const usuariosPremiumSummaryElement = document.getElementById('usuariosPremiumSummary');
+    const usuariosRolesMeta = document.getElementById('usuariosRolesMeta');
+    const recetasCategoriasMeta = document.getElementById('recetasCategoriasMeta');
+    const usuariosMensualesMeta = document.getElementById('usuariosMensualesMeta');
+    const usuariosRolesCanvas = document.getElementById('usuariosRolesChart');
+    const recetasCategoriasCanvas = document.getElementById('recetasCategoriasChart');
+    const usuariosMensualesCanvas = document.getElementById('usuariosMensualesChart');
+    const usuariosRolesEmpty = document.getElementById('usuariosRolesEmpty');
+    const recetasCategoriasEmpty = document.getElementById('recetasCategoriasEmpty');
+    const usuariosMensualesEmpty = document.getElementById('usuariosMensualesEmpty');
+    const reloadDashboardBtn = document.getElementById('reloadDashboardBtn');
+    const reloadRecetasBtn = document.getElementById('reloadRecetasBtn');
+    const reloadComentariosBtn = document.getElementById('reloadComentariosBtn');
+    const reloadReportesBtn = document.getElementById('reloadReportesBtn');
+    const reloadUsuariosBtn = document.getElementById('reloadUsuariosBtn');
+    const reloadCategoriasBtn = document.getElementById('reloadCategoriasBtn');
+    const categoriasTable = document.getElementById('categoriasTable');
+    const categoriasHeadings = document.querySelectorAll('#categorias thead th[data-sort]');
+    const categoriasSortInfo = document.getElementById('categoriasSortInfo');
+    const searchCategoriasInput = document.getElementById('searchCategorias');
+    const categoriasPageSize = document.getElementById('categoriasPageSize');
+    const categoriasPagination = document.getElementById('categoriasPagination');
+    const categoriasPageInfo = document.getElementById('categoriasPageInfo');
+    const categoriasPrev = document.getElementById('categoriasPrev');
+    const categoriasNext = document.getElementById('categoriasNext');
+    const comentariosTable = document.getElementById('comentariosTable');
+    const comentariosHeadings = document.querySelectorAll('#comentarios thead th[data-sort]');
+    const comentariosSortInfo = document.getElementById('comentariosSortInfo');
+    const resetComentariosSort = document.getElementById('resetComentariosSort');
+    const searchComentariosInput = document.getElementById('searchComentarios');
+    const comentariosPageSize = document.getElementById('comentariosPageSize');
+    const comentariosPagination = document.getElementById('comentariosPagination');
+    const comentariosPageInfo = document.getElementById('comentariosPageInfo');
+    const comentariosPrev = document.getElementById('comentariosPrev');
+    const comentariosNext = document.getElementById('comentariosNext');
+    const reportesTable = document.getElementById('reportesTable');
+    const reportesHeadings = document.querySelectorAll('#reportes thead th[data-sort]');
+    const reportesSortInfo = document.getElementById('reportesSortInfo');
+    const resetReportesSort = document.getElementById('resetReportesSort');
+    const searchReportesInput = document.getElementById('searchReportes');
+    const reportesEstadoFilterSelect = document.getElementById('reportesEstadoFilter');
+    const reportesPageSize = document.getElementById('reportesPageSize');
+    const reportesPagination = document.getElementById('reportesPagination');
+    const reportesPageInfo = document.getElementById('reportesPageInfo');
+    const reportesPrev = document.getElementById('reportesPrev');
+    const reportesNext = document.getElementById('reportesNext');
+    const SECTION_STORAGE_KEY = 'adminDashboardSelectedSection';
+
+    const ensureSidebarStateForViewport = () => {
+      if (!adminSidebar) return;
+      const isDesktop = window.innerWidth >= 768;
+      if (isDesktop) {
+        adminSidebar.classList.remove('-translate-x-full');
+        adminSidebar.classList.remove('translate-x-0');
+        if (sidebarBackdrop) sidebarBackdrop.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+      } else if (!adminSidebar.classList.contains('translate-x-0')) {
+        adminSidebar.classList.add('-translate-x-full');
+        if (sidebarBackdrop) sidebarBackdrop.classList.add('hidden');
+      }
+    };
+
+    const openSidebar = () => {
+      if (!adminSidebar) return;
+      adminSidebar.classList.add('translate-x-0');
+      adminSidebar.classList.remove('-translate-x-full');
+      if (sidebarBackdrop) sidebarBackdrop.classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+    };
+
+    const closeSidebar = () => {
+      if (!adminSidebar) return;
+      adminSidebar.classList.remove('translate-x-0');
+      adminSidebar.classList.add('-translate-x-full');
+      if (sidebarBackdrop) sidebarBackdrop.classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
+    };
+
+    ensureSidebarStateForViewport();
+
+    if (sidebarToggleButtons.length) {
+      sidebarToggleButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          if (!adminSidebar) return;
+          const isOpen = adminSidebar.classList.contains('translate-x-0');
+          if (isOpen) {
+            closeSidebar();
+          } else {
+            openSidebar();
+          }
+        });
+      });
+    }
+
+    if (sidebarBackdrop) {
+      sidebarBackdrop.addEventListener('click', closeSidebar);
+    }
+
+    if (sidebarNavButtons.length) {
+      sidebarNavButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          if (window.innerWidth < 768) closeSidebar();
+        });
+      });
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && window.innerWidth < 768) {
+        closeSidebar();
+      }
+    });
+
+    window.addEventListener('resize', ensureSidebarStateForViewport);
+
+    let dashboardUsuariosData = [];
+    let dashboardRecetasData = [];
+
+    let usuariosRolesChartInstance = null;
+    let recetasCategoriasChartInstance = null;
+    let usuariosMensualesChartInstance = null;
+
+    const chartPalette = ['#4f46e5', '#22c55e', '#f97316', '#0ea5e9', '#facc15', '#ec4899', '#14b8a6', '#6366f1', '#8b5cf6', '#06b6d4'];
+
+    const escapeHtml = (value) => {
+      if (value === null || value === undefined) return '';
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    };
+
+    const removeAccents = (value) => {
+      if (typeof value !== 'string') return value;
+      return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    };
+
+    const toggleChartState = (canvas, emptyElement, hasData) => {
+      if (!canvas) return;
+      canvas.style.display = hasData ? 'block' : 'none';
+      if (emptyElement) {
+        emptyElement.classList.toggle('hidden', hasData);
+      }
+    };
+
+    const resolveUserRole = (user) => {
+      const rawName = user && user.tipoNombre ? String(user.tipoNombre).trim() : '';
+      if (rawName) return rawName;
+      const typeId = Number(user && user.tipoId);
+      if (typeId === 1) return 'Administrador';
+      if (typeId === 2) return 'Usuario';
+      if (typeId === 3) return 'Premium';
+      return 'Sin rol';
+    };
+
+    const isPremiumUser = (user) => {
+      if (!user) return false;
+      const typeId = Number(user.tipoId);
+      if (Number.isFinite(typeId) && typeId === 3) return true;
+      const rawRole = user.tipoNombre ? String(user.tipoNombre).trim().toLowerCase() : '';
+      if (!rawRole) return false;
+      const normalizedRole = removeAccents(rawRole);
+      if (!normalizedRole.includes('premium')) return false;
+      if (/(no|sin)\s*-?\s*premium/.test(normalizedRole)) return false;
+      return true;
+    };
+
+    const resolveMembershipLabel = (user) => (isPremiumUser(user) ? 'Premium' : 'No premium');
+
+    const resolveReportEstadoMeta = (estadoRaw) => {
+      const normalized = removeAccents(String(estadoRaw || '').trim().toLowerCase());
+      const presets = {
+        pendiente: { label: 'Pendiente', classes: 'bg-amber-100 text-amber-700' },
+        revisando: { label: 'En revisión', classes: 'bg-cyan-100 text-cyan-700' },
+        revision: { label: 'En revisión', classes: 'bg-cyan-100 text-cyan-700' },
+        resuelto: { label: 'Resuelto', classes: 'bg-emerald-100 text-emerald-700' },
+        resuelta: { label: 'Resuelto', classes: 'bg-emerald-100 text-emerald-700' },
+        descartado: { label: 'Descartado', classes: 'bg-rose-100 text-rose-700' },
+        descartada: { label: 'Descartado', classes: 'bg-rose-100 text-rose-700' },
+      };
+      if (presets[normalized]) return presets[normalized];
+      const fallback = String(estadoRaw || 'Pendiente').trim() || 'Pendiente';
+      const formatted = fallback.charAt(0).toUpperCase() + fallback.slice(1);
+      return { label: formatted, classes: 'bg-slate-100 text-slate-700' };
+    };
+
+    const normalizeBinaryFlag = (value) => {
+      if (value === null || typeof value === 'undefined') return null;
+      if (typeof value === 'boolean') return value ? 1 : 0;
+      if (typeof value === 'number') {
+        if (Number.isNaN(value)) return null;
+        return value === 0 ? 0 : 1;
+      }
+      if (typeof value === 'string') {
+        const trimmed = value.trim();
+        if (!trimmed) return null;
+        const lower = removeAccents(trimmed.toLowerCase());
+        if (['1', 'true', 'si', 'sí', 'activo', 'activa', 'active'].includes(lower)) return 1;
+        if (['0', 'false', 'no', 'inactivo', 'inactiva', 'inactive'].includes(lower)) return 0;
+        const parsed = Number(trimmed);
+        if (!Number.isNaN(parsed)) {
+          return parsed === 0 ? 0 : 1;
+        }
+        return null;
+      }
+      return null;
+    };
+
+    const resolveUserEstado = (user) => {
+      if (!user) return 0;
+      const candidates = [
+        user.estado,
+        user.Estado,
+        user.Usu_Activo,
+        user.Usu_Activo,
+        user.activo,
+        user.isActive
+      ];
+      for (const candidate of candidates) {
+        const normalized = normalizeBinaryFlag(candidate);
+        if (normalized !== null) return normalized;
+      }
+      return 0;
+    };
+
+    const updateDashboardSummaries = ({ skipUsuarios = false, skipRecetas = false } = {}) => {
+      if (!skipUsuarios) {
+        const totalUsuarios = dashboardUsuariosData.length;
+        const premiumCount = dashboardUsuariosData.filter(isPremiumUser).length;
+        const premiumPercent = totalUsuarios ? Math.round((premiumCount / totalUsuarios) * 100) : 0;
+        const uniqueRoles = new Set(dashboardUsuariosData.map((user) => resolveUserRole(user))).size;
+
+        if (usuariosTotalElement) {
+          usuariosTotalElement.textContent = totalUsuarios ? totalUsuarios.toLocaleString('es-MX') : '0';
+        }
+        if (usuariosPremiumTotalElement) {
+          usuariosPremiumTotalElement.textContent = premiumCount ? premiumCount.toLocaleString('es-MX') : '0';
+        }
+        if (usuariosSummaryElement) {
+          usuariosSummaryElement.textContent = totalUsuarios
+            ? `${uniqueRoles} tipos detectados en la plataforma.`
+            : 'Sin datos disponibles.';
+        }
+        if (usuariosPremiumSummaryElement) {
+          usuariosPremiumSummaryElement.textContent = totalUsuarios
+            ? `${premiumPercent}% de los usuarios cuentan con membresía premium.`
+            : 'Sin información de membresías.';
+        }
+      }
+
+      if (!skipRecetas) {
+        const totalRecetas = dashboardRecetasData.length;
+        const uniqueCategories = new Set(dashboardRecetasData.map((receta) => (receta && receta.categoriaNombre ? String(receta.categoriaNombre).trim() : 'Sin categoría')));
+        if (recetasTotalElement) {
+          recetasTotalElement.textContent = totalRecetas ? totalRecetas.toLocaleString('es-MX') : '0';
+        }
+        if (recetasSummaryElement) {
+          const categoryCount = uniqueCategories.size;
+          recetasSummaryElement.textContent = totalRecetas
+            ? `${categoryCount} categoría(s) activas registradas.`
+            : 'Sin recetas disponibles.';
+        }
+      }
+    };
+
+    const renderUsuariosRolesChart = () => {
+      if (!usuariosRolesCanvas) return;
+      const roleCounts = dashboardUsuariosData.reduce((acc, user) => {
+        const role = resolveUserRole(user) || 'Sin rol';
+        acc[role] = (acc[role] || 0) + 1;
+        return acc;
+      }, {});
+      const labels = Object.keys(roleCounts);
+      const data = Object.values(roleCounts);
+      const hasData = data.some((value) => value > 0);
+
+      toggleChartState(usuariosRolesCanvas, usuariosRolesEmpty, hasData);
+
+      if (!hasData) {
+        if (usuariosRolesChartInstance) {
+          usuariosRolesChartInstance.destroy();
+          usuariosRolesChartInstance = null;
+        }
+        if (usuariosRolesMeta) usuariosRolesMeta.textContent = 'Sin datos';
+        return;
+      }
+
+      if (usuariosRolesChartInstance) {
+        usuariosRolesChartInstance.destroy();
+      }
+
+      usuariosRolesChartInstance = new Chart(usuariosRolesCanvas, {
+        type: 'doughnut',
+        data: {
+          labels,
+          datasets: [
+            {
+              data,
+              backgroundColor: labels.map((_, index) => chartPalette[index % chartPalette.length]),
+              borderWidth: 1,
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom' },
+            tooltip: {
+              callbacks: {
+                label: (context) => {
+                  const total = data.reduce((sum, value) => sum + value, 0);
+                  const value = context.parsed;
+                  const percentage = total ? Math.round((value / total) * 100) : 0;
+                  return `${context.label}: ${value.toLocaleString('es-MX')} (${percentage}%)`;
+                }
+              }
+            }
+          }
+        }
+      });
+
+      if (usuariosRolesMeta) {
+        usuariosRolesMeta.textContent = `${labels.length} rol(es)`;
+      }
+    };
+
+    const renderRecetasCategoriasChart = () => {
+      if (!recetasCategoriasCanvas) return;
+      const categoryCounts = dashboardRecetasData.reduce((acc, receta) => {
+        const name = receta && receta.categoriaNombre ? String(receta.categoriaNombre).trim() : 'Sin categoría';
+        acc[name] = (acc[name] || 0) + 1;
+        return acc;
+      }, {});
+      const labels = Object.keys(categoryCounts);
+      const data = Object.values(categoryCounts);
+      const hasData = data.some((value) => value > 0);
+
+      toggleChartState(recetasCategoriasCanvas, recetasCategoriasEmpty, hasData);
+
+      if (!hasData) {
+        if (recetasCategoriasChartInstance) {
+          recetasCategoriasChartInstance.destroy();
+          recetasCategoriasChartInstance = null;
+        }
+        if (recetasCategoriasMeta) recetasCategoriasMeta.textContent = 'Sin datos';
+        return;
+      }
+
+      if (recetasCategoriasChartInstance) {
+        recetasCategoriasChartInstance.destroy();
+      }
+
+      recetasCategoriasChartInstance = new Chart(recetasCategoriasCanvas, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Recetas',
+              data,
+              backgroundColor: labels.map((_, index) => chartPalette[index % chartPalette.length]),
+              borderRadius: 6,
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { ticks: { autoSkip: false } },
+            y: {
+              beginAtZero: true,
+              ticks: {
+                precision: 0,
+                callback: (value) => Number(value).toLocaleString('es-MX')
+              }
+            }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (context) => `${context.parsed.y.toLocaleString('es-MX')} receta(s)`
+              }
+            }
+          }
+        }
+      });
+
+      if (recetasCategoriasMeta) {
+        recetasCategoriasMeta.textContent = `${labels.length} categoría(s)`;
+      }
+    };
+
+    const renderUsuariosMensualesChart = () => {
+      if (!usuariosMensualesCanvas) return;
+      const monthlyCounts = dashboardUsuariosData.reduce((acc, user) => {
+        const value = user && user.fechaRegistro;
+        if (!value) return acc;
+        const normalizedValue = typeof value === 'string' ? value.replace(' ', 'T') : value;
+        const date = new Date(normalizedValue);
+        if (Number.isNaN(date.getTime())) return acc;
+        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        acc.set(key, (acc.get(key) || 0) + 1);
+        return acc;
+      }, new Map());
+
+      const sorted = Array.from(monthlyCounts.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+      const lastSix = sorted.slice(-6);
+      const labels = lastSix.map(([key]) => {
+        const [year, month] = key.split('-');
+        const labelDate = new Date(Number(year), Number(month) - 1, 1);
+        return labelDate.toLocaleDateString('es-MX', { month: 'short', year: 'numeric' });
+      });
+      const data = lastSix.map(([, count]) => count);
+      const hasData = data.some((value) => value > 0);
+
+      toggleChartState(usuariosMensualesCanvas, usuariosMensualesEmpty, hasData);
+
+      if (!hasData) {
+        if (usuariosMensualesChartInstance) {
+          usuariosMensualesChartInstance.destroy();
+          usuariosMensualesChartInstance = null;
+        }
+        if (usuariosMensualesMeta) usuariosMensualesMeta.textContent = 'Sin datos recientes';
+        return;
+      }
+
+      if (usuariosMensualesChartInstance) {
+        usuariosMensualesChartInstance.destroy();
+      }
+
+      usuariosMensualesChartInstance = new Chart(usuariosMensualesCanvas, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Altas',
+              data,
+              borderColor: '#4f46e5',
+              backgroundColor: 'rgba(79, 70, 229, 0.15)',
+              tension: 0.35,
+              fill: true,
+              pointRadius: 4,
+              pointBackgroundColor: '#4f46e5',
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                precision: 0,
+                callback: (value) => Number(value).toLocaleString('es-MX')
+              }
+            }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (context) => `${context.parsed.y.toLocaleString('es-MX')} alta(s)`
+              }
+            }
+          }
+        }
+      });
+
+      if (usuariosMensualesMeta) {
+        usuariosMensualesMeta.textContent = `Últimos ${labels.length} mes(es)`;
+      }
+    };
+
+    const loadDashboardStats = async () => {
+      if (usuariosSummaryElement) usuariosSummaryElement.textContent = 'Calculando totales...';
+      if (recetasSummaryElement) recetasSummaryElement.textContent = 'Calculando categorías...';
+      if (usuariosPremiumSummaryElement) usuariosPremiumSummaryElement.textContent = 'Analizando membresías...';
+
+      try {
+        const [usuariosResponse, recetasResponse] = await Promise.all([
+          fetch('/api/administracion/usuarios', { credentials: 'include' }),
+          fetch('/api/administracion/recetas', { credentials: 'include' })
+        ]);
+
+        let usuariosMessage = null;
+        if (usuariosResponse.status === 401) {
+          usuariosMessage = 'Sesión expirada. Inicia sesión nuevamente.';
+        } else if (usuariosResponse.status === 403) {
+          usuariosMessage = 'No tienes permisos para ver usuarios.';
+        } else if (!usuariosResponse.ok) {
+          usuariosMessage = `Error ${usuariosResponse.status} al cargar usuarios.`;
+        }
+
+        const usuariosHasError = Boolean(usuariosMessage);
+
+        if (usuariosHasError) {
+          dashboardUsuariosData = [];
+          if (usuariosTotalElement) usuariosTotalElement.textContent = 'N/D';
+          if (usuariosPremiumTotalElement) usuariosPremiumTotalElement.textContent = 'N/D';
+          if (usuariosSummaryElement) usuariosSummaryElement.textContent = usuariosMessage;
+          if (usuariosPremiumSummaryElement) usuariosPremiumSummaryElement.textContent = usuariosMessage;
+          if (usuariosRolesMeta) usuariosRolesMeta.textContent = 'Sin datos';
+          if (usuariosMensualesMeta) usuariosMensualesMeta.textContent = 'Sin datos';
+        } else {
+          const usuariosJson = await usuariosResponse.json();
+          dashboardUsuariosData = Array.isArray(usuariosJson) ? usuariosJson : [];
+        }
+
+        let recetasMessage = null;
+        if (recetasResponse.status === 401) {
+          recetasMessage = 'Sesión expirada. Inicia sesión nuevamente.';
+        } else if (recetasResponse.status === 403) {
+          recetasMessage = 'No tienes permisos para ver recetas.';
+        } else if (!recetasResponse.ok) {
+          recetasMessage = `Error ${recetasResponse.status} al cargar recetas.`;
+        }
+
+        const recetasHasError = Boolean(recetasMessage);
+
+        if (recetasHasError) {
+          dashboardRecetasData = [];
+          if (recetasTotalElement) recetasTotalElement.textContent = 'N/D';
+          if (recetasSummaryElement) recetasSummaryElement.textContent = recetasMessage;
+          if (recetasCategoriasMeta) recetasCategoriasMeta.textContent = 'Sin datos';
+        } else {
+          const recetasJson = await recetasResponse.json();
+          dashboardRecetasData = Array.isArray(recetasJson) ? recetasJson : [];
+        }
+
+        updateDashboardSummaries({
+          skipUsuarios: usuariosHasError,
+          skipRecetas: recetasHasError,
+        });
+        renderUsuariosRolesChart();
+        renderRecetasCategoriasChart();
+        renderUsuariosMensualesChart();
+      } catch (err) {
+        console.error('Error cargando estadísticas del panel:', err);
+        dashboardUsuariosData = [];
+        dashboardRecetasData = [];
+        if (usuariosSummaryElement) usuariosSummaryElement.textContent = 'No se pudieron obtener los datos.';
+        if (usuariosPremiumSummaryElement) usuariosPremiumSummaryElement.textContent = 'No se pudieron obtener los datos.';
+        if (recetasSummaryElement) recetasSummaryElement.textContent = 'No se pudieron obtener los datos.';
+        if (usuariosRolesMeta) usuariosRolesMeta.textContent = 'Sin datos';
+        if (recetasCategoriasMeta) recetasCategoriasMeta.textContent = 'Sin datos';
+        if (usuariosMensualesMeta) usuariosMensualesMeta.textContent = 'Sin datos';
+        toggleChartState(usuariosRolesCanvas, usuariosRolesEmpty, false);
+        toggleChartState(recetasCategoriasCanvas, recetasCategoriasEmpty, false);
+        toggleChartState(usuariosMensualesCanvas, usuariosMensualesEmpty, false);
+      }
+    };
+
+    const usuariosTable = document.getElementById('usuariosTable');
+    const usuariosHeadings = document.querySelectorAll('#usuarios thead th[data-sort]');
+    const usuariosSortInfo = document.getElementById('usuariosSortInfo');
+    const resetUsuariosSort = document.getElementById('resetUsuariosSort');
+    const usuariosRolFilterSelect = document.getElementById('usuariosRolFilter');
+    const usuariosEstadoFilterSelect = document.getElementById('usuariosEstadoFilter');
+    const usuariosPageSize = document.getElementById('usuariosPageSize');
+    const usuariosPagination = document.getElementById('usuariosPagination');
+    const usuariosPageInfo = document.getElementById('usuariosPageInfo');
+    const usuariosPrev = document.getElementById('usuariosPrev');
+    const usuariosNext = document.getElementById('usuariosNext');
+    let usuariosLoaded = false;
+    let usuariosData = [];
+    let sortState = { key: 'fecha', direction: 'desc' };
+    let usuariosPageSizeValue = 10;
+    let usuariosPage = 1;
+    let usuariosRolFilterValue = 'all';
+    let usuariosEstadoFilterValue = 'all';
+
+    const recetasTable = document.getElementById('recetasTable');
+    const recetasHeadings = document.querySelectorAll('#recetas thead th[data-sort]');
+    const recetasSortInfo = document.getElementById('recetasSortInfo');
+    const resetRecetasSort = document.getElementById('resetRecetasSort');
+    const searchRecetasInput = document.getElementById('searchRecetas');
+    const recetasPageSize = document.getElementById('recetasPageSize');
+    const recetasPagination = document.getElementById('recetasPagination');
+    const recetasPageInfo = document.getElementById('recetasPageInfo');
+    const recetasPrev = document.getElementById('recetasPrev');
+    const recetasNext = document.getElementById('recetasNext');
+    let recetasLoaded = false;
+    let recetasData = [];
+    let recetasSortState = { key: 'fecha', direction: 'desc' };
+    let recetasFilter = '';
+    let recetasPageSizeValue = 10;
+    let recetasPage = 1;
+
+    let categoriasLoaded = false;
+    let categoriasData = [];
+    let categoriasSortState = { key: 'nombre', direction: 'asc' };
+    let categoriasFilter = '';
+    let categoriasPageSizeValue = 10;
+    let categoriasPage = 1;
+
+    let comentariosLoaded = false;
+    let comentariosData = [];
+    let comentariosFilter = '';
+    let comentariosSortState = { key: 'id', direction: 'desc' };
+    let comentariosPageSizeValue = 10;
+    let comentariosPage = 1;
+    let reportesLoaded = false;
+    let reportesData = [];
+    let reportesFilter = '';
+    let reportesEstadoFilterValue = 'all';
+    let reportesSortState = { key: 'fecha', direction: 'desc' };
+    let reportesPageSizeValue = 10;
+    let reportesPage = 1;
+
+    const formatDate = (value) => {
+      if (!value) return '-';
+      const normalized = typeof value === 'string' ? value.replace(' ', 'T') : value;
+      const date = new Date(normalized);
+      if (Number.isNaN(date.getTime())) return String(value);
+      return date.toLocaleDateString('es-MX', { year: 'numeric', month: '2-digit', day: '2-digit' });
+    };
+
+    const formatDifficulty = (value) => {
+      const numeric = Number(value);
+      if (!Number.isFinite(numeric)) return '-';
+      const intValue = Math.round(numeric);
+      if (intValue < 1 || intValue > 10) return '-';
+      return String(intValue);
+    };
+
+    const formatDateTime = (value) => {
+      if (!value) return '-';
+      const normalized = typeof value === 'string' ? value.replace(' ', 'T') : value;
+      const date = new Date(normalized);
+      if (Number.isNaN(date.getTime())) return String(value);
+      return date.toLocaleString('es-MX', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    };
+
+    const loadAdminProfile = async () => {
+      if (!adminAvatar && !adminName) return;
+      try {
+        const response = await fetch('/api/administracion/perfil-sesion', { credentials: 'include' });
+        if (!response.ok) return;
+        const data = await response.json();
+        if (adminAvatar && data && data.fotoUrl) {
+          adminAvatar.src = data.fotoUrl;
+        }
+        if (adminName && data && data.nombre) {
+          adminName.textContent = data.nombre;
+        }
+      } catch (err) {
+        console.error('Error cargando perfil admin:', err);
+      }
+    };
+
+    loadDashboardStats();
+    loadAdminProfile();
+
+    const setCategoriasTableMessage = (message) => {
+      if (!categoriasTable) return;
+      categoriasTable.innerHTML = `
+        <tr>
+          <td colspan="7" class="px-4 py-3 text-center text-gray-500">${message}</td>
+        </tr>`;
+      if (categoriasPagination) categoriasPagination.style.display = 'none';
+      if (categoriasPageInfo) categoriasPageInfo.textContent = message;
+    };
+
+    const getCategoriaDateValue = (value) => {
+      if (!value) return 0;
+      const normalized = typeof value === 'string' ? value.replace(' ', 'T') : value;
+      const date = new Date(normalized);
+      return Number.isNaN(date.getTime()) ? 0 : date.getTime();
+    };
+
+    const renderCategorias = () => {
+      if (!categoriasTable) return;
+
+      if (!Array.isArray(categoriasData) || categoriasData.length === 0) {
+        setCategoriasTableMessage('No hay categorías registradas.');
+        return;
+      }
+
+      const { key, direction } = categoriasSortState;
+      const factor = direction === 'asc' ? 1 : -1;
+      const sorted = [...categoriasData];
+
+      sorted.sort((a, b) => {
+        switch (key) {
+          case 'id':
+            return ((Number(a.id) || 0) - (Number(b.id) || 0)) * factor;
+          case 'nombre':
+            return String(a.nombre || '').localeCompare(String(b.nombre || ''), 'es', { sensitivity: 'base' }) * factor;
+          case 'descripcion':
+            return String(a.descripcion || '').localeCompare(String(b.descripcion || ''), 'es', { sensitivity: 'base' }) * factor;
+          case 'recetas':
+            return ((Number(a.recetasCount) || 0) - (Number(b.recetasCount) || 0)) * factor;
+          case 'premium':
+            return ((Number(a.premiumCount) || 0) - (Number(b.premiumCount) || 0)) * factor;
+          case 'fecha':
+          default:
+            return (getCategoriaDateValue(a.ultimaReceta) - getCategoriaDateValue(b.ultimaReceta)) * factor;
+        }
+      });
+
+      categoriasHeadings.forEach((th) => {
+        const headingKey = th.getAttribute('data-sort');
+        th.classList.remove('text-indigo-600');
+        th.removeAttribute('data-direction');
+        if (headingKey === categoriasSortState.key) {
+          th.classList.add('text-indigo-600');
+          th.setAttribute('data-direction', categoriasSortState.direction);
+        }
+      });
+
+      if (categoriasSortInfo) {
+        const labels = {
+          id: 'ID',
+          nombre: 'Nombre',
+          descripcion: 'Descripción',
+          recetas: 'Recetas totales',
+          premium: 'Recetas premium',
+          fecha: 'Última receta'
+        };
+        const directionLabel = categoriasSortState.direction === 'asc' ? 'asc' : 'desc';
+        categoriasSortInfo.textContent = `Orden actual: ${labels[categoriasSortState.key] || 'Nombre'} (${directionLabel})`;
+      }
+
+      const normalizedFilter = categoriasFilter.trim().toLowerCase();
+      const filtered = normalizedFilter
+        ? sorted.filter((item) => {
+          const values = [
+            item.nombre,
+            item.descripcion,
+            item.id,
+          ].map((value) => String(value || '').toLowerCase());
+          return values.some((value) => value.includes(normalizedFilter));
+        })
+        : sorted;
+
+      if (!filtered.length) {
+        setCategoriasTableMessage('No se encontraron categorías con los filtros actuales.');
+        return;
+      }
+
+      const usingAll = categoriasPageSizeValue === 'all';
+      const totalItems = filtered.length;
+      const pageSize = usingAll ? (totalItems || 1) : (Number(categoriasPageSizeValue) || 10);
+      const totalPages = usingAll ? 1 : Math.max(1, Math.ceil(totalItems / pageSize));
+      if (categoriasPage > totalPages) categoriasPage = totalPages;
+      if (categoriasPage < 1) categoriasPage = 1;
+
+      const startIndex = usingAll ? 0 : (categoriasPage - 1) * pageSize;
+      const endIndex = usingAll ? totalItems : startIndex + pageSize;
+      const pageItems = usingAll ? filtered : filtered.slice(startIndex, endIndex);
+      const displayStart = totalItems === 0 ? 0 : startIndex + 1;
+      const displayEnd = totalItems === 0 ? 0 : (usingAll ? totalItems : Math.min(endIndex, totalItems));
+
+      const buildDescripcion = (value) => {
+        const raw = typeof value === 'string' && value.trim() ? value.trim() : 'Sin descripción';
+        const preview = raw.length > 160 ? `${raw.slice(0, 157)}...` : raw;
+        return escapeHtml(preview);
+      };
+
+      categoriasTable.innerHTML = pageItems.map((categoria) => {
+        const recetasCount = Number(categoria.recetasCount) || 0;
+        const premiumCount = Number(categoria.premiumCount) || 0;
+        const ultimaReceta = categoria.ultimaReceta ? formatDateTime(categoria.ultimaReceta) : 'Sin registro';
+        const detallesHref = typeof categoria.id !== 'undefined'
+          ? `/administracion/categorias?id=${encodeURIComponent(categoria.id)}`
+          : '/administracion/categorias';
+        return `
+          <tr>
+            <td class="px-4 py-3">${categoria.id ?? '-'}</td>
+            <td class="px-4 py-3">${escapeHtml(categoria.nombre || 'Sin nombre')}</td>
+            <td class="px-4 py-3">${buildDescripcion(categoria.descripcion)}</td>
+            <td class="px-4 py-3">${recetasCount.toLocaleString('es-MX')}</td>
+            <td class="px-4 py-3">${premiumCount.toLocaleString('es-MX')}</td>
+            <td class="px-4 py-3">${escapeHtml(ultimaReceta)}</td>
+            <td class="px-4 py-3">
+              <a href="${detallesHref}"
+                class="inline-flex items-center justify-center px-3 py-1 text-sm bg-indigo-500 hover:bg-indigo-600 text-white rounded-md transition">
+                Ver detalles
+              </a>
+            </td>
+          </tr>`;
+      }).join('');
+
+      if (categoriasPagination) categoriasPagination.style.display = totalItems === 0 ? 'none' : 'flex';
+      if (categoriasPageInfo) {
+        categoriasPageInfo.textContent = `Mostrando ${displayStart}-${displayEnd} de ${totalItems}`;
+      }
+
+      const disablePrev = usingAll || categoriasPage <= 1;
+      const disableNext = usingAll || categoriasPage >= totalPages;
+      if (categoriasPrev) {
+        categoriasPrev.disabled = disablePrev;
+        categoriasPrev.classList.toggle('opacity-50', disablePrev);
+        categoriasPrev.classList.toggle('cursor-not-allowed', disablePrev);
+      }
+      if (categoriasNext) {
+        categoriasNext.disabled = disableNext;
+        categoriasNext.classList.toggle('opacity-50', disableNext);
+        categoriasNext.classList.toggle('cursor-not-allowed', disableNext);
+      }
+    };
+
+    const loadCategorias = async (force = false) => {
+      if (!categoriasTable) return;
+
+      if (categoriasLoaded && !force) {
+        renderCategorias();
+        return;
+      }
+
+      const attachEventsOnThisRun = !categoriasLoaded;
+
+      const setMessage = (message) => setCategoriasTableMessage(message);
+
+      try {
+        setMessage('Cargando categorías...');
+        const response = await fetch('/api/administracion/categorias', { credentials: 'include' });
+        if (response.status === 401) {
+          setMessage('Sesión expirada. Vuelve a iniciar sesión.');
+          return;
+        }
+        if (response.status === 403) {
+          setMessage('No tienes permisos para ver esta información.');
+          return;
+        }
+        if (!response.ok) {
+          throw new Error(`Estado inesperado: ${response.status}`);
+        }
+
+        const data = await response.json();
+        categoriasData = Array.isArray(data) ? data : [];
+        categoriasLoaded = true;
+
+        if (!categoriasData.length) {
+          setMessage('No hay categorías registradas.');
+        } else {
+          renderCategorias();
+        }
+
+        if (attachEventsOnThisRun) {
+          categoriasHeadings.forEach((th) => {
+            th.addEventListener('click', () => {
+              const key = th.getAttribute('data-sort');
+              if (!key) return;
+              if (categoriasSortState.key === key) {
+                categoriasSortState.direction = categoriasSortState.direction === 'asc' ? 'desc' : 'asc';
+              } else {
+                categoriasSortState = { key, direction: key === 'fecha' ? 'desc' : 'asc' };
+              }
+              categoriasPage = 1;
+              renderCategorias();
+            });
+          });
+
+          if (searchCategoriasInput) {
+            searchCategoriasInput.addEventListener('input', (event) => {
+              categoriasFilter = event.target.value || '';
+              categoriasPage = 1;
+              renderCategorias();
+            });
+          }
+
+          if (categoriasPageSize) {
+            categoriasPageSize.addEventListener('change', (event) => {
+              const value = event.target.value;
+              categoriasPageSizeValue = value === 'all' ? 'all' : Number(value);
+              categoriasPage = 1;
+              renderCategorias();
+            });
+          }
+
+          if (categoriasPrev) {
+            categoriasPrev.addEventListener('click', () => {
+              if (categoriasPage <= 1 || categoriasPageSizeValue === 'all') return;
+              categoriasPage -= 1;
+              renderCategorias();
+            });
+          }
+
+          if (categoriasNext) {
+            categoriasNext.addEventListener('click', () => {
+              if (categoriasPageSizeValue === 'all') return;
+              categoriasPage += 1;
+              renderCategorias();
+            });
+          }
+        }
+      } catch (err) {
+        console.error('Error cargando categorías:', err);
+        setMessage('Ocurrió un error al cargar las categorías. Intenta más tarde.');
+      }
+    };
+
+    if (reloadRecetasBtn) {
+      reloadRecetasBtn.addEventListener('click', () => loadRecetas(true));
+    }
+
+    if (reloadCategoriasBtn) {
+      reloadCategoriasBtn.addEventListener('click', () => loadCategorias(true));
+    }
+
+    if (reloadUsuariosBtn) {
+      reloadUsuariosBtn.addEventListener('click', () => loadUsuarios(true));
+    }
+    if (reloadComentariosBtn) {
+      reloadComentariosBtn.addEventListener('click', () => loadComentarios(true));
+    }
+
+    if (reloadReportesBtn) {
+      reloadReportesBtn.addEventListener('click', () => loadReportes(true));
+    }
+
+
+
+    function showSection(id) {
+      const targetSection = document.getElementById(id) || document.getElementById('inicio');
+      if (!targetSection) return;
+
+      document.querySelectorAll('main section').forEach((section) => section.classList.add('hidden'));
+      targetSection.classList.remove('hidden');
+      const selectedId = targetSection.id;
+
+      const sectionTitle = document.getElementById('section-title');
+      if (sectionTitle) {
+        sectionTitle.innerText = selectedId.charAt(0).toUpperCase() + selectedId.slice(1);
+      }
+
+      try {
+        localStorage.setItem(SECTION_STORAGE_KEY, selectedId);
+      } catch (storageError) {
+        // Ignorar errores de almacenamiento (modo incógnito, etc.)
+      }
+
+      if (selectedId === 'usuarios' && !usuariosLoaded) {
+        loadUsuarios();
+      }
+      if (selectedId === 'recetas' && !recetasLoaded) {
+        loadRecetas();
+      }
+      if (selectedId === 'categorias' && !categoriasLoaded) {
+        loadCategorias();
+      }
+      if (selectedId === 'comentarios' && !comentariosLoaded) {
+        loadComentarios();
+      }
+      if (selectedId === 'reportes' && !reportesLoaded) {
+        loadReportes();
+      }
+    }
+
+    const renderRecetas = () => {
+      if (!recetasTable) return;
+
+      const { key, direction } = recetasSortState;
+      const factor = direction === 'asc' ? 1 : -1;
+      const sorted = [...recetasData];
+
+      sorted.sort((a, b) => {
+        switch (key) {
+          case 'id':
+            return (Number(a.id) - Number(b.id)) * factor;
+          case 'titulo':
+            return String(a.titulo || '').localeCompare(String(b.titulo || ''), 'es', { sensitivity: 'base' }) * factor;
+          case 'autor':
+            return String(a.autorNombre || '').localeCompare(String(b.autorNombre || ''), 'es', { sensitivity: 'base' }) * factor;
+          case 'categoria':
+            return String(a.categoriaNombre || '').localeCompare(String(b.categoriaNombre || ''), 'es', { sensitivity: 'base' }) * factor;
+          case 'dificultad': {
+            const diffA = Number(a.dificultad);
+            const diffB = Number(b.dificultad);
+            const safeA = Number.isFinite(diffA) ? diffA : -Infinity;
+            const safeB = Number.isFinite(diffB) ? diffB : -Infinity;
+            return (safeA - safeB) * factor;
+          }
+          case 'fecha':
+          default: {
+            const getTime = (receta) => {
+              const value = receta.fechaPublicacion;
+              const normalizedValue = typeof value === 'string' ? value.replace(' ', 'T') : value;
+              const date = new Date(normalizedValue);
+              return Number.isNaN(date.getTime()) ? 0 : date.getTime();
+            };
+            return (getTime(a) - getTime(b)) * factor;
+          }
+        }
+      });
+
+      recetasHeadings.forEach((th) => {
+        const headingKey = th.getAttribute('data-sort');
+        th.classList.remove('text-indigo-600');
+        th.removeAttribute('data-direction');
+        if (headingKey === recetasSortState.key) {
+          th.classList.add('text-indigo-600');
+          th.setAttribute('data-direction', recetasSortState.direction);
+        }
+      });
+
+      if (recetasSortInfo) {
+        const labels = {
+          id: 'ID',
+          titulo: 'Título',
+          autor: 'Autor',
+          categoria: 'Categoría',
+          fecha: 'Fecha publicación',
+          dificultad: 'Dificultad'
+        };
+        const directionLabel = recetasSortState.direction === 'asc' ? 'asc' : 'desc';
+        recetasSortInfo.textContent = `Orden actual: ${labels[recetasSortState.key] || 'Fecha publicación'} (${directionLabel})`;
+      }
+
+      const filterLower = recetasFilter.trim().toLowerCase();
+      const filtered = filterLower
+        ? sorted.filter((receta) => {
+          const values = [
+            receta.titulo,
+            receta.autorNombre,
+            receta.categoriaNombre,
+            formatDifficulty(receta.dificultad),
+            formatDate(receta.fechaPublicacion)
+          ].join(' ').toLowerCase();
+          return values.includes(filterLower);
+        })
+        : sorted;
+
+      if (!filtered.length) {
+        recetasTable.innerHTML = `
+          <tr>
+            <td colspan="7" class="px-4 py-3 text-center text-gray-500">No se encontraron recetas con los filtros actuales.</td>
+          </tr>`;
+        if (recetasPagination) recetasPagination.style.display = 'none';
+        if (recetasPageInfo) recetasPageInfo.textContent = 'Sin resultados';
+        return;
+      }
+
+      const usingAll = recetasPageSizeValue === 'all';
+      const totalItems = filtered.length;
+      const pageSize = usingAll ? (totalItems || 1) : (Number(recetasPageSizeValue) || 10);
+      const totalPages = usingAll ? 1 : Math.max(1, Math.ceil(totalItems / pageSize));
+      if (recetasPage > totalPages) recetasPage = totalPages;
+      if (recetasPage < 1) recetasPage = 1;
+
+      const startIndex = usingAll ? 0 : (recetasPage - 1) * pageSize;
+      const endIndex = usingAll ? totalItems : startIndex + pageSize;
+      const pageItems = usingAll ? filtered : filtered.slice(startIndex, endIndex);
+      const displayStart = startIndex + 1;
+      const displayEnd = usingAll ? totalItems : Math.min(endIndex, totalItems);
+
+      recetasTable.innerHTML = pageItems.map((receta) => {
+        const recipeHref = `/administracion/recetas/${encodeURIComponent(receta.id)}`;
+        return `
+        <tr>
+          <td class="px-4 py-3">${receta.id}</td>
+          <td class="px-4 py-3">${receta.titulo || ''}</td>
+          <td class="px-4 py-3">${receta.autorNombre || 'Sin autor'}</td>
+          <td class="px-4 py-3">${receta.categoriaNombre || 'Sin categoría'}</td>
+          <td class="px-4 py-3">${formatDate(receta.fechaPublicacion)}</td>
+          <td class="px-4 py-3">${formatDifficulty(receta.dificultad)}</td>
+          <td class="px-4 py-3">
+            <a href="${recipeHref}"
+               class="inline-flex items-center justify-center px-3 py-1 text-sm bg-indigo-500 hover:bg-indigo-600 text-white rounded-md transition">
+              Ver detalles
+            </a>
+          </td>
+        </tr>`;
+      }).join('');
+
+      if (recetasPagination) recetasPagination.style.display = totalItems === 0 ? 'none' : 'flex';
+      if (recetasPageInfo) {
+        recetasPageInfo.textContent = `Mostrando ${displayStart}-${displayEnd} de ${totalItems}`;
+      }
+      const disablePrev = usingAll || recetasPage <= 1;
+      const disableNext = usingAll || recetasPage >= totalPages;
+      if (recetasPrev) {
+        recetasPrev.disabled = disablePrev;
+        recetasPrev.classList.toggle('opacity-50', disablePrev);
+        recetasPrev.classList.toggle('cursor-not-allowed', disablePrev);
+      }
+      if (recetasNext) {
+        recetasNext.disabled = disableNext;
+        recetasNext.classList.toggle('opacity-50', disableNext);
+        recetasNext.classList.toggle('cursor-not-allowed', disableNext);
+      }
+    };
+
+    const renderComentarios = () => {
+      if (!comentariosTable) return;
+
+      const { key, direction } = comentariosSortState;
+      const factor = direction === 'asc' ? 1 : -1;
+      const sorted = [...comentariosData];
+
+      sorted.sort((a, b) => {
+        switch (key) {
+          case 'comentario': {
+            return String(a.comentario || '').localeCompare(String(b.comentario || ''), 'es', { sensitivity: 'base' }) * factor;
+          }
+          case 'usuario': {
+            const left = `${a.usuarioNombre || ''} ${a.usuarioAlias || ''}`.trim();
+            const right = `${b.usuarioNombre || ''} ${b.usuarioAlias || ''}`.trim();
+            return left.localeCompare(right, 'es', { sensitivity: 'base' }) * factor;
+          }
+          case 'receta': {
+            return String(a.recetaTitulo || '').localeCompare(String(b.recetaTitulo || ''), 'es', { sensitivity: 'base' }) * factor;
+          }
+          case 'id':
+          default:
+            return (Number(a.id) - Number(b.id)) * factor;
+        }
+      });
+
+      comentariosHeadings.forEach((th) => {
+        const headingKey = th.getAttribute('data-sort');
+        th.classList.remove('text-indigo-600');
+        th.removeAttribute('data-direction');
+        if (headingKey === comentariosSortState.key) {
+          th.classList.add('text-indigo-600');
+          th.setAttribute('data-direction', comentariosSortState.direction);
+        }
+      });
+
+      if (comentariosSortInfo) {
+        const labels = {
+          id: 'ID',
+          comentario: 'Comentario',
+          usuario: 'Usuario',
+          receta: 'Receta'
+        };
+        const directionLabel = comentariosSortState.direction === 'asc' ? 'asc' : 'desc';
+        comentariosSortInfo.textContent = `Orden actual: ${labels[comentariosSortState.key] || 'ID'} (${directionLabel})`;
+      }
+
+      const normalizedFilter = comentariosFilter.trim().toLowerCase();
+      const filtered = normalizedFilter
+        ? sorted.filter((item) => {
+          const content = [
+            item.comentario,
+            item.usuarioNombre,
+            item.usuarioAlias,
+            item.usuarioTipoNombre,
+            item.recetaTitulo,
+            item.usuarioId,
+            item.recetaId
+          ].map((value) => (value == null ? '' : String(value).toLowerCase()));
+          return content.some((segment) => segment.includes(normalizedFilter));
+        })
+        : sorted;
+
+      if (!filtered.length) {
+        comentariosTable.innerHTML = `
+          <tr>
+            <td colspan="5" class="px-4 py-3 text-center text-gray-500">No se encontraron comentarios con los filtros actuales.</td>
+          </tr>`;
+        if (comentariosPagination) comentariosPagination.style.display = 'none';
+        if (comentariosPageInfo) comentariosPageInfo.textContent = 'Sin resultados';
+        return;
+      }
+
+      const usingAll = comentariosPageSizeValue === 'all';
+      const totalItems = filtered.length;
+      const pageSize = usingAll ? (totalItems || 1) : (Number(comentariosPageSizeValue) || 10);
+      const totalPages = usingAll ? 1 : Math.max(1, Math.ceil(totalItems / pageSize));
+      if (comentariosPage > totalPages) comentariosPage = totalPages;
+      if (comentariosPage < 1) comentariosPage = 1;
+
+      const startIndex = usingAll ? 0 : (comentariosPage - 1) * pageSize;
+      const endIndex = usingAll ? totalItems : startIndex + pageSize;
+      const pageItems = usingAll ? filtered : filtered.slice(startIndex, endIndex);
+      const displayStart = startIndex + 1;
+      const displayEnd = usingAll ? totalItems : Math.min(endIndex, totalItems);
+
+      comentariosTable.innerHTML = pageItems.map((item) => {
+        const commentSafe = escapeHtml(item.comentario || '');
+        const commentTitle = commentSafe.replace(/\n/g, '&#10;');
+        const commentDisplay = commentSafe.replace(/\n/g, '<br>');
+        const userNameSafe = escapeHtml(item.usuarioNombre || 'Sin usuario');
+        const aliasLabel = item.usuarioAlias ? `@${item.usuarioAlias}` : (item.usuarioId ? `ID ${item.usuarioId}` : 'Sin alias');
+        const aliasSafe = escapeHtml(aliasLabel);
+        const roleSafe = item.usuarioTipoNombre ? `<span class=\"text-xs text-indigo-600 font-medium\">${escapeHtml(item.usuarioTipoNombre)}</span>` : '';
+        const recipeSafe = escapeHtml(item.recetaTitulo || 'Sin receta');
+        const recipeIdLabel = item.recetaId ? `<span class=\"text-xs text-gray-500\">ID ${escapeHtml(String(item.recetaId))}</span>` : '';
+        const recipeId = Number(item.recetaId);
+        const userId = Number(item.usuarioId);
+        const commentId = Number(item.id);
+        const recipeHref = Number.isFinite(recipeId) ? `/administracion/recetas/${encodeURIComponent(recipeId)}` : null;
+        const commentHref = Number.isFinite(commentId) ? `/administracion/comentarios/${encodeURIComponent(commentId)}` : null;
+        const userHref = Number.isFinite(userId) ? `/administracion/usuarios/${encodeURIComponent(userId)}` : null;
+        const actionButtons = [];
+        if (commentHref) {
+          actionButtons.push(`<a href="${commentHref}" class="px-3 py-1 text-sm bg-purple-500 hover:bg-purple-600 text-white rounded-md transition">Ver detalles</a>`);
+        }
+        const actionsHtml = actionButtons.length
+          ? `<div class=\"flex flex-row gap-2 items-center justify-center\">${actionButtons.join('')}</div>`
+          : '<span class=\"text-xs text-gray-500\">Sin acciones</span>';
+        return `
+          <tr>
+            <td class=\"px-4 py-3 text-center font-medium\">${item.id}</td>
+            <td class=\"px-4 py-3 whitespace-pre-wrap break-words align-top\" title=\"${commentTitle}\">${commentDisplay || 'Sin comentario'}</td>
+            <td class=\"px-4 py-3 align-top\">
+              <div class=\"flex flex-col gap-0.5\">
+                <span class=\"font-medium text-gray-800\">${userNameSafe}</span>
+                <span class=\"text-xs text-gray-500\">${aliasSafe}</span>
+                ${roleSafe}
+              </div>
+            </td>
+            <td class=\"px-4 py-3 align-top\">
+              <div class=\"flex flex-col gap-0.5\">
+                <span class=\"font-medium text-gray-800\">${recipeSafe}</span>
+                ${recipeIdLabel}
+              </div>
+            </td>
+            <td class=\"px-4 py-3 text-center align-middle\">
+              ${actionsHtml}
+            </td>
+          </tr>`;
+      }).join('');
+      if (comentariosPagination) comentariosPagination.style.display = totalItems === 0 ? 'none' : 'flex';
+      if (comentariosPageInfo) {
+        comentariosPageInfo.textContent = `Mostrando ${displayStart}-${displayEnd} de ${totalItems}`;
+      }
+      const disablePrev = usingAll || comentariosPage <= 1;
+      const disableNext = usingAll || comentariosPage >= totalPages;
+      if (comentariosPrev) {
+        comentariosPrev.disabled = disablePrev;
+        comentariosPrev.classList.toggle('opacity-50', disablePrev);
+        comentariosPrev.classList.toggle('cursor-not-allowed', disablePrev);
+      }
+      if (comentariosNext) {
+        comentariosNext.disabled = disableNext;
+        comentariosNext.classList.toggle('opacity-50', disableNext);
+        comentariosNext.classList.toggle('cursor-not-allowed', disableNext);
+      }
+    };
+
+    const loadComentarios = async (force = false) => {
+      if (!comentariosTable) return;
+
+      if (comentariosLoaded && !force) {
+        renderComentarios();
+        return;
+      }
+
+      const attachEventsOnThisRun = !comentariosLoaded;
+
+      const setTableMessage = (message) => {
+        comentariosTable.innerHTML = `
+          <tr>
+            <td colspan="5" class="px-4 py-3 text-center text-gray-500">${message}</td>
+          </tr>`;
+        if (comentariosPagination) comentariosPagination.style.display = 'none';
+        if (comentariosPageInfo) comentariosPageInfo.textContent = message;
+      };
+
+      try {
+        setTableMessage('Cargando comentarios...');
+        const response = await fetch('/api/administracion/comentarios', { credentials: 'include' });
+        if (response.status === 401) {
+          setTableMessage('Sesión expirada. Vuelve a iniciar sesión.');
+          return;
+        }
+        if (response.status === 403) {
+          setTableMessage('No tienes permisos para ver esta información.');
+          return;
+        }
+        if (!response.ok) {
+          throw new Error(`Estado inesperado: ${response.status}`);
+        }
+
+        comentariosData = await response.json();
+        if (!Array.isArray(comentariosData) || comentariosData.length === 0) {
+          setTableMessage('No hay comentarios registrados.');
+          comentariosLoaded = true;
+          return;
+        }
+
+        renderComentarios();
+        comentariosLoaded = true;
+
+        if (attachEventsOnThisRun) {
+          comentariosHeadings.forEach((th) => {
+            th.addEventListener('click', () => {
+              const key = th.getAttribute('data-sort');
+              if (!key) return;
+              if (comentariosSortState.key === key) {
+                comentariosSortState.direction = comentariosSortState.direction === 'asc' ? 'desc' : 'asc';
+              } else {
+                comentariosSortState = { key, direction: key === 'id' ? 'desc' : 'asc' };
+              }
+              comentariosPage = 1;
+              renderComentarios();
+            });
+          });
+
+          if (resetComentariosSort) {
+            resetComentariosSort.addEventListener('click', () => {
+              comentariosSortState = { key: 'id', direction: 'desc' };
+              comentariosFilter = '';
+              comentariosPageSizeValue = 10;
+              comentariosPage = 1;
+              if (searchComentariosInput) searchComentariosInput.value = '';
+              if (comentariosPageSize) comentariosPageSize.value = '10';
+              renderComentarios();
+            });
+          }
+
+          if (searchComentariosInput) {
+            searchComentariosInput.addEventListener('input', (event) => {
+              comentariosFilter = event.target.value || '';
+              comentariosPage = 1;
+              renderComentarios();
+            });
+          }
+
+          if (comentariosPageSize) {
+            comentariosPageSize.addEventListener('change', (event) => {
+              const value = event.target.value;
+              comentariosPageSizeValue = value === 'all' ? 'all' : Number(value);
+              comentariosPage = 1;
+              renderComentarios();
+            });
+          }
+
+          if (comentariosPrev) {
+            comentariosPrev.addEventListener('click', () => {
+              if (comentariosPage <= 1 || comentariosPageSizeValue === 'all') return;
+              comentariosPage -= 1;
+              renderComentarios();
+            });
+          }
+
+          if (comentariosNext) {
+            comentariosNext.addEventListener('click', () => {
+              if (comentariosPageSizeValue === 'all') return;
+              comentariosPage += 1;
+              renderComentarios();
+            });
+          }
+        }
+      } catch (err) {
+        console.error('Error cargando comentarios:', err);
+        setTableMessage('Ocurrió un error al cargar los comentarios. Intenta más tarde.');
+      }
+    };
+
+    const renderReportes = () => {
+      if (!reportesTable) return;
+
+      const { key, direction } = reportesSortState;
+      const factor = direction === 'asc' ? 1 : -1;
+      const sorted = [...reportesData];
+
+      sorted.sort((a, b) => {
+        switch (key) {
+          case 'id':
+            return (Number(a.id) - Number(b.id)) * factor;
+          case 'tipo':
+            return String(a.tipo || '').localeCompare(String(b.tipo || ''), 'es', { sensitivity: 'base' }) * factor;
+          case 'objeto':
+            return String(a.objetoNombre || '').localeCompare(String(b.objetoNombre || ''), 'es', { sensitivity: 'base' }) * factor;
+          case 'motivo':
+            return String(a.motivo || '').localeCompare(String(b.motivo || ''), 'es', { sensitivity: 'base' }) * factor;
+          case 'reportante': {
+            const left = `${a.reportante?.nombre || ''} ${a.reportante?.alias || ''}`.trim();
+            const right = `${b.reportante?.nombre || ''} ${b.reportante?.alias || ''}`.trim();
+            return left.localeCompare(right, 'es', { sensitivity: 'base' }) * factor;
+          }
+          case 'estado':
+            return String(a.estado || '').localeCompare(String(b.estado || ''), 'es', { sensitivity: 'base' }) * factor;
+          case 'fecha':
+          default: {
+            const timeA = new Date(a.fecha || '').getTime();
+            const timeB = new Date(b.fecha || '').getTime();
+            const safeA = Number.isNaN(timeA) ? 0 : timeA;
+            const safeB = Number.isNaN(timeB) ? 0 : timeB;
+            return (safeA - safeB) * factor;
+          }
+        }
+      });
+
+      reportesHeadings.forEach((th) => {
+        const headingKey = th.getAttribute('data-sort');
+        th.classList.remove('text-indigo-600');
+        th.removeAttribute('data-direction');
+        if (headingKey === reportesSortState.key) {
+          th.classList.add('text-indigo-600');
+          th.setAttribute('data-direction', reportesSortState.direction);
+        }
+      });
+
+      if (reportesSortInfo) {
+        const labels = {
+          id: 'ID',
+          tipo: 'Tipo',
+          objeto: 'Objeto',
+          motivo: 'Motivo',
+          reportante: 'Reportado por',
+          fecha: 'Fecha',
+          estado: 'Estado'
+        };
+        const directionLabel = reportesSortState.direction === 'asc' ? 'asc' : 'desc';
+        reportesSortInfo.textContent = `Orden actual: ${labels[reportesSortState.key] || 'Fecha'} (${directionLabel})`;
+      }
+
+      const normalizedFilter = reportesFilter.trim().toLowerCase();
+      const filtered = normalizedFilter
+        ? sorted.filter((item) => {
+          const segments = [
+            item.tipo,
+            item.objetoNombre,
+            item.motivo,
+            item.estado,
+            item.reportante.email
+          ].map((value) => (value == null ? '' : String(value).toLowerCase()));
+          return segments.some((segment) => segment.includes(normalizedFilter));
+        })
+        : sorted;
+
+      const estadoFilter = (reportesEstadoFilterValue || 'all').toLowerCase();
+      const estadoFiltered = estadoFilter === 'all'
+        ? filtered
+        : filtered.filter((item) => (item.estado || '').toLowerCase() === estadoFilter);
+
+      if (!estadoFiltered.length) {
+        reportesTable.innerHTML = `
+          <tr>
+            <td colspan="8" class="px-4 py-3 text-center text-gray-500">No se encontraron reportes con los filtros actuales.</td>
+          </tr>`;
+        if (reportesPagination) reportesPagination.style.display = 'none';
+        if (reportesPageInfo) reportesPageInfo.textContent = 'Sin resultados';
+        return;
+      }
+
+      const usingAll = reportesPageSizeValue === 'all';
+      const totalItems = estadoFiltered.length;
+      const pageSize = usingAll ? (totalItems || 1) : (Number(reportesPageSizeValue) || 10);
+      const totalPages = usingAll ? 1 : Math.max(1, Math.ceil(totalItems / pageSize));
+      if (reportesPage > totalPages) reportesPage = totalPages;
+      if (reportesPage < 1) reportesPage = 1;
+
+      const startIndex = usingAll ? 0 : (reportesPage - 1) * pageSize;
+      const endIndex = usingAll ? totalItems : startIndex + pageSize;
+      const pageItems = usingAll ? estadoFiltered : estadoFiltered.slice(startIndex, endIndex);
+      const displayStart = startIndex + 1;
+      const displayEnd = usingAll ? totalItems : Math.min(endIndex, totalItems);
+
+      reportesTable.innerHTML = pageItems.map((item) => {
+        const tipoSafe = escapeHtml(item.tipo || '');
+        const objetoSafe = escapeHtml(item.objetoNombre || '');
+        const motivoSafe = escapeHtml(item.motivo || '');
+        const estadoMeta = resolveReportEstadoMeta(item.estado);
+        const estadoBadge = `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${estadoMeta.classes}">${escapeHtml(estadoMeta.label)}</span>`;
+        const fechaFormatted = formatDateTime(item.fecha);
+        const reportanteNombre = escapeHtml(item.reportante?.nombre || '');
+        const reportanteAlias = item.reportante?.alias ? escapeHtml(item.reportante.alias.startsWith('@') ? item.reportante.alias : `@${item.reportante.alias}`) : '';
+        const reportanteEmail = item.reportante?.email ? escapeHtml(item.reportante.email) : '';
+        const reporterLines = [
+          reportanteNombre,
+          reportanteAlias,
+          reportanteEmail
+        ].filter(Boolean).map((segment) => `<span class="block text-sm text-gray-600">${segment}</span>`).join('');
+        const reportIdAttr = escapeHtml(String(item.id ?? ''));
+
+        const reportDetailHref = `/administracion/reportes/${encodeURIComponent(item.id)}`;
+        const detalleBtn = `<a href="${reportDetailHref}" data-admin-link="${reportDetailHref}" data-report-id="${reportIdAttr}" class="px-3 py-1 text-sm bg-purple-500 hover:bg-purple-600 text-white rounded-md transition ver-reporte-detalle" target="_self">Ver detalle</a>`;
+
+        return `
+          <tr data-report-id="${reportIdAttr}">
+            <td class="px-4 py-3">${item.id}</td>
+            <td class="px-4 py-3 capitalize">${tipoSafe || '-'}</td>
+            <td class="px-4 py-3 max-w-xs">
+              <div class="text-sm text-gray-800 truncate" title="${objetoSafe}">${objetoSafe || '-'}</div>
+              <span class="block text-xs text-gray-500">ID ${escapeHtml(String(item.objetoId || '-'))}</span>
+            </td>
+            <td class="px-4 py-3 max-w-xs">
+              <div class="text-sm text-gray-700 whitespace-pre-wrap">${motivoSafe || '-'}</div>
+            </td>
+            <td class="px-4 py-3">
+              ${reporterLines || '<span class="text-xs text-gray-500">Sin datos</span>'}
+            </td>
+            <td class="px-4 py-3">${fechaFormatted}</td>
+            <td class="px-4 py-3">
+              ${estadoBadge}
+            </td>
+            <td class="px-4 py-3">
+              <div class="flex flex-wrap gap-2">
+                ${detalleBtn}
+              </div>
+            </td>
+          </tr>`;
+      }).join('');
+
+      if (reportesPagination) reportesPagination.style.display = totalItems === 0 ? 'none' : 'flex';
+      if (reportesPageInfo) {
+        reportesPageInfo.textContent = `Mostrando ${displayStart}-${displayEnd} de ${totalItems}`;
+      }
+      const disablePrev = usingAll || reportesPage <= 1;
+      const disableNext = usingAll || reportesPage >= totalPages;
+      if (reportesPrev) {
+        reportesPrev.disabled = disablePrev;
+        reportesPrev.classList.toggle('opacity-50', disablePrev);
+        reportesPrev.classList.toggle('cursor-not-allowed', disablePrev);
+      }
+      if (reportesNext) {
+        reportesNext.disabled = disableNext;
+        reportesNext.classList.toggle('opacity-50', disableNext);
+        reportesNext.classList.toggle('cursor-not-allowed', disableNext);
+      }
+    };
+
+    const loadReportes = async () => {
+      if (!reportesTable) return;
+
+      const setTableMessage = (message) => {
+        reportesTable.innerHTML = `
+          <tr>
+            <td colspan="8" class="px-4 py-3 text-center text-gray-500">${message}</td>
+          </tr>`;
+        if (reportesPagination) reportesPagination.style.display = 'none';
+        if (reportesPageInfo) reportesPageInfo.textContent = message;
+      };
+
+      try {
+        setTableMessage('Cargando reportes...');
+        const response = await fetch('/api/administracion/reportes', { credentials: 'include' });
+        if (response.status === 401) {
+          setTableMessage('Sesión expirada. Vuelve a iniciar sesión.');
+          return;
+        }
+        if (response.status === 403) {
+          setTableMessage('No tienes permisos para ver esta información.');
+          return;
+        }
+        if (!response.ok) {
+          throw new Error(`Estado inesperado: ${response.status}`);
+        }
+
+        reportesData = await response.json();
+        if (!Array.isArray(reportesData) || reportesData.length === 0) {
+          setTableMessage('No hay reportes registrados.');
+          reportesLoaded = true;
+          return;
+        }
+
+        renderReportes();
+        reportesLoaded = true;
+
+        reportesHeadings.forEach((th) => {
+          th.addEventListener('click', () => {
+            const key = th.getAttribute('data-sort');
+            if (!key) return;
+            if (reportesSortState.key === key) {
+              reportesSortState.direction = reportesSortState.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+              reportesSortState = { key, direction: key === 'fecha' ? 'desc' : 'asc' };
+            }
+            reportesPage = 1;
+            renderReportes();
+          });
+        });
+
+        if (resetReportesSort) {
+          resetReportesSort.addEventListener('click', () => {
+            reportesSortState = { key: 'fecha', direction: 'desc' };
+            reportesFilter = '';
+            reportesEstadoFilterValue = 'all';
+            reportesPageSizeValue = 10;
+            reportesPage = 1;
+            if (searchReportesInput) searchReportesInput.value = '';
+            if (reportesEstadoFilterSelect) reportesEstadoFilterSelect.value = 'all';
+            if (reportesPageSize) reportesPageSize.value = '10';
+            renderReportes();
+          });
+        }
+
+        if (searchReportesInput) {
+          searchReportesInput.addEventListener('input', (event) => {
+            reportesFilter = event.target.value || '';
+            reportesPage = 1;
+            renderReportes();
+          });
+        }
+
+        if (reportesEstadoFilterSelect) {
+          reportesEstadoFilterSelect.addEventListener('change', (event) => {
+            reportesEstadoFilterValue = (event.target.value || 'all').toLowerCase();
+            reportesPage = 1;
+            renderReportes();
+          });
+        }
+
+        if (reportesPageSize) {
+          reportesPageSize.addEventListener('change', (event) => {
+            const value = event.target.value;
+            reportesPageSizeValue = value === 'all' ? 'all' : Number(value);
+            reportesPage = 1;
+            renderReportes();
+          });
+        }
+
+        if (reportesPrev) {
+          reportesPrev.addEventListener('click', () => {
+            if (reportesPage <= 1 || reportesPageSizeValue === 'all') return;
+            reportesPage -= 1;
+            renderReportes();
+          });
+        }
+
+        if (reportesNext) {
+          reportesNext.addEventListener('click', () => {
+            if (reportesPageSizeValue === 'all') return;
+            reportesPage += 1;
+            renderReportes();
+          });
+        }
+
+        if (reportesTable) {
+          reportesTable.addEventListener('click', (event) => {
+            const detailBtn = event.target.closest('.ver-reporte-detalle');
+            if (detailBtn) {
+              event.preventDefault();
+              const reportIdValue = Number(detailBtn.dataset.reportId || detailBtn.closest('tr')?.dataset.reportId);
+              if (Number.isFinite(reportIdValue) && reportIdValue > 0) {
+                try {
+                  sessionStorage.setItem('adminReportLastId', String(reportIdValue));
+                } catch (storageErr) {
+                  console.warn('No se pudo guardar el ID del reporte seleccionado:', storageErr);
+                }
+              }
+              const targetHref = detailBtn.dataset.adminLink || detailBtn.getAttribute('href');
+              if (targetHref) {
+                window.location.href = targetHref;
+              }
+            }
+          });
+        }
+      } catch (err) {
+        console.error('Error cargando reportes:', err);
+        setTableMessage('Ocurrió un error al cargar los reportes. Intenta más tarde.');
+      }
+    };
+
+    const loadRecetas = async (force = false) => {
+      if (!recetasTable) return;
+
+      if (recetasLoaded && !force) {
+        renderRecetas();
+        return;
+      }
+
+      const attachEventsOnThisRun = !recetasLoaded;
+
+      const setTableMessage = (message) => {
+        recetasTable.innerHTML = `
+          <tr>
+            <td colspan="7" class="px-4 py-3 text-center text-gray-500">${message}</td>
+          </tr>`;
+        if (recetasPagination) recetasPagination.style.display = 'none';
+        if (recetasPageInfo) recetasPageInfo.textContent = message;
+      };
+
+      try {
+        setTableMessage('Cargando recetas...');
+        const response = await fetch('/api/administracion/recetas', { credentials: 'include' });
+        if (response.status === 401) {
+          setTableMessage('Sesión expirada. Vuelve a iniciar sesión.');
+          return;
+        }
+        if (response.status === 403) {
+          setTableMessage('No tienes permisos para ver esta información.');
+          return;
+        }
+        if (!response.ok) {
+          throw new Error(`Estado inesperado: ${response.status}`);
+        }
+
+        recetasData = await response.json();
+        if (!Array.isArray(recetasData) || recetasData.length === 0) {
+          setTableMessage('No hay recetas registradas.');
+          recetasLoaded = true;
+          return;
+        }
+
+        renderRecetas();
+        recetasLoaded = true;
+
+        if (attachEventsOnThisRun) {
+          recetasHeadings.forEach((th) => {
+            th.addEventListener('click', () => {
+              const key = th.getAttribute('data-sort');
+              if (recetasSortState.key === key) {
+                recetasSortState.direction = recetasSortState.direction === 'asc' ? 'desc' : 'asc';
+              } else {
+                recetasSortState = { key, direction: key === 'fecha' ? 'desc' : 'asc' };
+              }
+              recetasPage = 1;
+              renderRecetas();
+            });
+          });
+
+          if (resetRecetasSort) {
+            resetRecetasSort.addEventListener('click', () => {
+              recetasSortState = { key: 'fecha', direction: 'desc' };
+              recetasFilter = '';
+              if (searchRecetasInput) searchRecetasInput.value = '';
+              recetasPage = 1;
+              renderRecetas();
+            });
+          }
+
+          if (searchRecetasInput) {
+            searchRecetasInput.addEventListener('input', (event) => {
+              recetasFilter = event.target.value || '';
+              recetasPage = 1;
+              renderRecetas();
+            });
+          }
+
+          if (recetasPageSize) {
+            recetasPageSize.addEventListener('change', (event) => {
+              const value = event.target.value;
+              recetasPageSizeValue = value === 'all' ? 'all' : Number(value);
+              recetasPage = 1;
+              renderRecetas();
+            });
+          }
+
+          if (recetasPrev) {
+            recetasPrev.addEventListener('click', () => {
+              if (recetasPage <= 1 || recetasPageSizeValue === 'all') return;
+              recetasPage -= 1;
+              renderRecetas();
+            });
+          }
+
+          if (recetasNext) {
+            recetasNext.addEventListener('click', () => {
+              if (recetasPageSizeValue === 'all') return;
+              recetasPage += 1;
+              renderRecetas();
+            });
+          }
+        }
+
+      } catch (err) {
+        console.error('Error cargando recetas:', err);
+        setTableMessage('Ocurrió un error al cargar las recetas. Intenta más tarde.');
+      }
+    };
+
+    async function loadUsuarios() {
+      if (!usuariosTable) return;
+
+      const setTableMessage = (message) => {
+        usuariosTable.innerHTML = `
+          <tr>
+            <td colspan="7" class="px-4 py-3 text-center text-gray-500">${message}</td>
+          </tr>`;
+        if (usuariosPagination) usuariosPagination.style.display = 'none';
+        if (usuariosPageInfo) usuariosPageInfo.textContent = message;
+      };
+
+      try {
+        setTableMessage('Cargando usuarios...');
+        const response = await fetch('/api/administracion/usuarios', { credentials: 'include' });
+        if (response.status === 401) {
+          setTableMessage('Sesión expirada. Vuelve a iniciar sesión.');
+          return;
+        }
+        if (response.status === 403) {
+          setTableMessage('No tienes permisos para ver esta información.');
+          return;
+        }
+        if (!response.ok) {
+          throw new Error(`Estado inesperado: ${response.status}`);
+        }
+
+        usuariosData = await response.json();
+        if (Array.isArray(usuariosData)) {
+          console.groupCollapsed('[Admin] Debug Usu_Activo');
+          usuariosData.forEach((user, index) => {
+            const rawUsuActivo = user?.Usu_Activo ?? user?.Usu_activo ?? user?.UsuActivo;
+            const resolvedEstado = resolveUserEstado(user);
+            console.log(`Usuario ${user?.id ?? index + 1}:`, {
+              rawUsuActivo,
+              estado: user?.estado,
+              Usu_Activo: user?.Usu_Activo,
+              resolvedEstado
+            });
+          });
+          console.groupEnd();
+        }
+        if (!Array.isArray(usuariosData) || usuariosData.length === 0) {
+          setTableMessage('No hay usuarios registrados (excluyendo administradores).');
+          usuariosLoaded = true;
+          return;
+        }
+
+        const render = () => {
+          const sorted = [...usuariosData];
+          sorted.sort((a, b) => {
+            const { key, direction } = sortState;
+            const factor = direction === 'asc' ? 1 : -1;
+            switch (key) {
+              case 'id':
+                return (Number(a.id) - Number(b.id)) * factor;
+              case 'nombre':
+                return String(a.nombre || '').localeCompare(String(b.nombre || ''), 'es', { sensitivity: 'base' }) * factor;
+              case 'email':
+                return String(a.email || '').localeCompare(String(b.email || ''), 'es', { sensitivity: 'base' }) * factor;
+              case 'rol':
+                return resolveMembershipLabel(a).localeCompare(
+                  resolveMembershipLabel(b),
+                  'es',
+                  { sensitivity: 'base' }
+                ) * factor;
+              case 'estado': {
+                const estadoA = resolveUserEstado(a);
+                const estadoB = resolveUserEstado(b);
+                return (estadoA - estadoB) * factor;
+              }
+              case 'fecha':
+              default: {
+                const getTime = (user) => {
+                  const value = user.fechaRegistro;
+                  const normalizedValue = typeof value === 'string' ? value.replace(' ', 'T') : value;
+                  const date = new Date(normalizedValue);
+                  return Number.isNaN(date.getTime()) ? 0 : date.getTime();
+                };
+                return (getTime(a) - getTime(b)) * factor;
+              }
+            }
+          });
+
+          // Filtro de búsqueda
+          const filterLower = (window.usuariosFilter || '').trim().toLowerCase();
+          const filtered = filterLower
+            ? sorted.filter((user) => {
+              const estadoValor = resolveUserEstado(user);
+              const values = [
+                String(user.nombre || '').toLowerCase(),
+                String(user.email || '').toLowerCase(),
+                String(user.tipoNombre || '').toLowerCase(),
+                String(user.alias || '').toLowerCase(),
+                String(user.id || '').toLowerCase(),
+                String(estadoValor).toLowerCase(),
+                (estadoValor === 1 ? 'activo' : 'inactivo')
+              ];
+              return values.some((v) => v.includes(filterLower));
+            })
+            : sorted;
+
+          const membershipFilter = (usuariosRolFilterValue || 'all').toLowerCase();
+          const filteredByRole = membershipFilter === 'all'
+            ? filtered
+            : filtered.filter((user) => (membershipFilter === 'premium' ? isPremiumUser(user) : !isPremiumUser(user)));
+
+          const estadoFilterValue = usuariosEstadoFilterValue;
+          const filteredByEstado = estadoFilterValue === 'all'
+            ? filteredByRole
+            : filteredByRole.filter((user) => {
+              const isActive = resolveUserEstado(user) === 1;
+              return estadoFilterValue === 'activos' ? isActive : !isActive;
+            });
+
+          const finalDataset = filteredByEstado;
+
+          usuariosHeadings.forEach((th) => {
+            const key = th.getAttribute('data-sort');
+            th.classList.remove('text-indigo-600');
+            th.removeAttribute('data-direction');
+            if (key === sortState.key) {
+              th.classList.add('text-indigo-600');
+              th.setAttribute('data-direction', sortState.direction);
+            }
+          });
+
+          if (usuariosSortInfo) {
+            const directionLabel = sortState.direction === 'asc' ? 'asc' : 'desc';
+            const labels = {
+              id: 'ID',
+              nombre: 'Nombre',
+              email: 'Correo',
+              rol: 'Rol',
+              estado: 'Estado',
+              fecha: 'Fecha Registro'
+            };
+            usuariosSortInfo.textContent = `Orden actual: ${labels[sortState.key] || 'Fecha Registro'} (${directionLabel})`;
+          }
+
+          const usingAll = usuariosPageSizeValue === 'all';
+          const totalItems = finalDataset.length;
+          const pageSize = usingAll ? (totalItems || 1) : (Number(usuariosPageSizeValue) || 10);
+          const totalPages = usingAll ? 1 : Math.max(1, Math.ceil(totalItems / pageSize));
+          if (usuariosPage > totalPages) usuariosPage = totalPages;
+          if (usuariosPage < 1) usuariosPage = 1;
+
+          const startIndex = usingAll ? 0 : (usuariosPage - 1) * pageSize;
+          const endIndex = usingAll ? totalItems : startIndex + pageSize;
+          const pageData = usingAll ? finalDataset : finalDataset.slice(startIndex, endIndex);
+          const displayStart = totalItems === 0 ? 0 : startIndex + 1;
+          const displayEnd = totalItems === 0 ? 0 : (usingAll ? totalItems : Math.min(endIndex, totalItems));
+
+          usuariosTable.innerHTML = pageData.map(user => {
+            const rol = resolveMembershipLabel(user);
+            const estadoValor = resolveUserEstado(user);
+            const isActive = estadoValor === 1;
+            const estadoLabel = isActive ? 'Activo' : 'Inactivo';
+            const estadoBadgeClass = isActive
+              ? 'bg-emerald-100 text-emerald-700'
+              : 'bg-rose-100 text-rose-700';
+            return `
+              <tr>
+                <td class="px-4 py-3">${user.id}</td>
+                <td class="px-4 py-3">${user.nombre || ''}</td>
+                <td class="px-4 py-3">${user.email || ''}</td>
+                <td class="px-4 py-3">${rol}</td>
+                <td class="px-4 py-3">
+                  <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold ${estadoBadgeClass}">
+                    ${estadoLabel}
+                  </span>
+                </td>
+                <td class="px-4 py-3">${formatDate(user.fechaRegistro)}</td>
+                <td class="px-4 py-3">
+                  <a href="/administracion/usuarios/${encodeURIComponent(user.id)}"
+                     class="inline-flex items-center justify-center px-3 py-1 text-sm bg-indigo-500 hover:bg-indigo-600 text-white rounded-md transition">
+                    Ver detalles
+                  </a>
+                </td>
+              </tr>`;
+          }).join('');
+
+          if (usuariosPagination) usuariosPagination.style.display = totalItems === 0 ? 'none' : 'flex';
+          if (usuariosPageInfo) {
+            usuariosPageInfo.textContent = totalItems === 0
+              ? 'Sin usuarios'
+              : `Mostrando ${displayStart}-${displayEnd} de ${totalItems}`;
+          }
+          const disablePrev = usingAll || usuariosPage <= 1;
+          const disableNext = usingAll || usuariosPage >= totalPages;
+          if (usuariosPrev) {
+            usuariosPrev.disabled = disablePrev;
+            usuariosPrev.classList.toggle('opacity-50', disablePrev);
+            usuariosPrev.classList.toggle('cursor-not-allowed', disablePrev);
+          }
+          if (usuariosNext) {
+            usuariosNext.disabled = disableNext;
+            usuariosNext.classList.toggle('opacity-50', disableNext);
+            usuariosNext.classList.toggle('cursor-not-allowed', disableNext);
+          }
+        };
+        // Evento para el filtro de búsqueda
+        window.usuariosFilter = '';
+        const searchUsuariosInput = document.getElementById('searchUsuarios');
+        if (searchUsuariosInput && !searchUsuariosInput._listenerAdded) {
+          searchUsuariosInput.addEventListener('input', (e) => {
+            window.usuariosFilter = e.target.value;
+            render();
+          });
+          searchUsuariosInput._listenerAdded = true;
+        }
+
+        render();
+        usuariosLoaded = true;
+
+        usuariosHeadings.forEach((th) => {
+          th.addEventListener('click', () => {
+            const key = th.getAttribute('data-sort');
+            if (sortState.key === key) {
+              sortState.direction = sortState.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+              sortState = { key, direction: key === 'fecha' ? 'desc' : 'asc' };
+            }
+            usuariosPage = 1;
+            render();
+          });
+        });
+        if (resetUsuariosSort) {
+          resetUsuariosSort.addEventListener('click', () => {
+            sortState = { key: 'fecha', direction: 'desc' };
+            window.usuariosFilter = '';
+            if (searchUsuariosInput) searchUsuariosInput.value = '';
+            usuariosRolFilterValue = 'all';
+            if (usuariosRolFilterSelect) usuariosRolFilterSelect.value = 'all';
+            usuariosEstadoFilterValue = 'all';
+            if (usuariosEstadoFilterSelect) usuariosEstadoFilterSelect.value = 'all';
+            usuariosPageSizeValue = 10;
+            if (usuariosPageSize) usuariosPageSize.value = '10';
+            usuariosPage = 1;
+            render();
+          });
+        }
+
+        if (usuariosRolFilterSelect && !usuariosRolFilterSelect._listenerAdded) {
+          usuariosRolFilterSelect.addEventListener('change', (event) => {
+            usuariosRolFilterValue = (event.target.value || 'all').toLowerCase();
+            usuariosPage = 1;
+            render();
+          });
+          usuariosRolFilterSelect._listenerAdded = true;
+        }
+
+        if (usuariosEstadoFilterSelect && !usuariosEstadoFilterSelect._listenerAdded) {
+          usuariosEstadoFilterSelect.addEventListener('change', (event) => {
+            usuariosEstadoFilterValue = (event.target.value || 'all').toLowerCase();
+            usuariosPage = 1;
+            render();
+          });
+          usuariosEstadoFilterSelect._listenerAdded = true;
+        }
+
+        if (usuariosPageSize) {
+          usuariosPageSize.addEventListener('change', (event) => {
+            const value = event.target.value;
+            usuariosPageSizeValue = value === 'all' ? 'all' : Number(value);
+            usuariosPage = 1;
+            render();
+          });
+        }
+
+        if (usuariosPrev) {
+          usuariosPrev.addEventListener('click', () => {
+            if (usuariosPage <= 1 || usuariosPageSizeValue === 'all') return;
+            usuariosPage -= 1;
+            render();
+          });
+        }
+
+        if (usuariosNext) {
+          usuariosNext.addEventListener('click', () => {
+            if (usuariosPageSizeValue === 'all') return;
+            usuariosPage += 1;
+            render();
+          });
+        }
+
+      } catch (err) {
+        console.error('Error cargando usuarios:', err);
+        setTableMessage('Ocurrió un error al cargar los usuarios. Intenta más tarde.');
+      }
+    }
+
+    const initialSectionId = (() => {
+      try {
+        const stored = localStorage.getItem(SECTION_STORAGE_KEY);
+        if (stored && document.getElementById(stored)) {
+          return stored;
+        }
+      } catch (storageError) {
+        // Ignorar errores al leer almacenamiento local
+      }
+      return 'inicio';
+    })();
+
+    showSection(initialSectionId);
+
+
+  </script>
+</body>
+
+</html>

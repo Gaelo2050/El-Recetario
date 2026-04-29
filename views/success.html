@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pago completado — El Recetario®</title>
+  <link rel="shortcut icon" href="../Imagenes/Logo/favicon.ico">
+  <link href="../css/output.css" rel="stylesheet">
+  <script src="/js/userSession.js"></script>
+</head>
+
+<body class="font-sans bg-gray-50 text-gray-800">
+  <script src="/js/loadHeader.js" defer></script>
+  <div id="headerContainer"></div>
+
+  <main class="min-h-screen flex items-center justify-center px-4 py-12">
+    <div class="max-w-3xl w-full bg-white rounded-2xl shadow-md p-8 text-center">
+      <span class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mx-auto">
+        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+      </span>
+      <h1 class="text-2xl font-semibold mt-4">Pago completado</h1>
+      <p class="text-gray-600 mt-3">Gracias por suscribirte. Tu pago se realizó correctamente.</p>
+
+      <div class="mt-4 text-sm text-gray-500" id="sessionInfo">Recuperando información de la sesión...</div>
+
+      <div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+        <a href="/perfil"
+          class="inline-block bg-purple-600 text-white px-5 py-2 rounded-lg font-medium hover:opacity-90">Ir a mi
+          perfil</a>
+        <a href="/recetas"
+          class="inline-block border border-gray-200 px-5 py-2 rounded-lg text-gray-700 hover:bg-gray-50">Ver
+          recetas</a>
+        <a href="/" class="inline-block text-sm text-gray-500 mt-2 sm:mt-0">Volver al inicio</a>
+      </div>
+
+      <hr class="my-6">
+      <p class="text-xs text-gray-400">Si necesitas ayuda con tu suscripción, contáctanos desde la página de soporte.
+      </p>
+    </div>
+  </main>
+
+  <script src="/js/loadFooter.js" defer></script>
+  <div id="footerContainer"></div>
+
+  <script>
+    // Mostrar session_id que Stripe añade en la query string
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      const sid = params.get('session_id');
+      const el = document.getElementById('sessionInfo');
+      if (!sid) {
+        el.textContent = 'No se recibió session_id en la URL.';
+        return;
+      }
+      el.innerHTML = `ID de sesión: <code class="bg-gray-100 text-sm px-2 py-1 rounded">${sid}</code>`;
+    })();
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const sessionModule = window.UserSession;
+      const statusEl = document.getElementById('sessionInfo');
+      if (!sessionModule || typeof sessionModule.refresh !== 'function') return;
+      try {
+        const updatedUser = await sessionModule.refresh();
+        if (updatedUser && Number(updatedUser.Tipo_Usu_ID) === 3 && statusEl) {
+          const premiumNotice = document.createElement('p');
+          premiumNotice.className = 'mt-3 text-sm text-green-600 font-medium';
+          premiumNotice.textContent = 'Tu cuenta se actualizó a Premium automáticamente. ¡Disfruta las funciones exclusivas!';
+          statusEl.appendChild(premiumNotice);
+        }
+      } catch (error) {
+        console.warn('No se pudo refrescar la sesión tras el pago:', error);
+      }
+    });
+  </script>
+</body>
+
+</html>

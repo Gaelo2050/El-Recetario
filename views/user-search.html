@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscar usuarios - El Recetario®</title>
+  <link rel="shortcut icon" href="../Imagenes/Logo/favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <link href="../css/output.css" rel="stylesheet">
+  <script src="/js/userSession.js"></script>
+</head>
+
+<body class="font-sans bg-gray-50 text-gray-800">
+  <script src="/js/loadHeader.js" defer></script>
+  <div id="headerContainer"></div>
+
+  <main class="max-w-7xl mx-auto px-4 py-8 space-y-16">
+    <!-- Hero Section -->
+    <section class="relative bg-gradient-to-br from-orange-50 via-white to-purple-50 rounded-3xl shadow-xl overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-purple-500/10"></div>
+      <div class="relative z-10 p-8 md:p-12 lg:p-16">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-12">
+          <div class="space-y-6 max-w-3xl">
+
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-orange-600 to-purple-600 bg-clip-text text-transparent leading-tight">
+              Descubre a la Comunidad
+            </h1>
+            <p class="text-gray-700 text-xl leading-relaxed">
+Conecta con personas apasionadas por la cocina y una comunidad que comparte tu mismo gusto por crear y disfrutar recetas. Encuentra inspiración, ideas y preparaciones únicas dentro de este espacio vibrante.            </p>
+          </div>
+          <div class="lg:w-1/3">
+            <form id="userSearchForm" class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg p-6 space-y-6" autocomplete="off">
+              <div class="space-y-4">
+                <div class="relative">
+                  <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl">search</span>
+                  <input type="search" id="userSearchInput" name="q" placeholder="Buscar por nombre, especialidad o ubicación..."
+                    class="w-full pl-12 pr-4 py-4 text-lg rounded-xl border-2 border-gray-200 focus:border-orange-400 focus:ring-4 focus:ring-orange-200 outline-none transition-all duration-300">
+                </div>
+              </div>
+              <button type="submit"
+                class="w-full inline-flex items-center justify-center gap-3 px-6 py-4 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
+                <span class="material-symbols-outlined text-xl">person_search</span>
+                Buscar Usuarios
+              </button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </section>
+    <!-- Search Results Section -->
+    <section class="space-y-8">
+      <div class="text-center space-y-4">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Resultados de Búsqueda</h2>
+        <p class="text-gray-600 text-lg" id="userSearchSummary">Ingresa un término de búsqueda para encontrar usuarios perfectos para ti.</p>
+      </div>
+      <div id="userResults" class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" aria-live="polite">
+        <div class="col-span-full bg-white rounded-3xl shadow-lg p-12 text-center text-gray-400 border border-gray-100">
+          <span class="material-symbols-outlined text-8xl mb-6 text-gray-300">search</span>
+          <h3 class="text-2xl font-bold mb-2">¡Comienza tu búsqueda!</h3>
+          <p class="text-lg">Ingresa un término arriba para encontrar usuarios increíbles en nuestra comunidad.</p>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- Featured Users Section -->
+    <section class="space-y-8">
+      <div class="text-center space-y-4">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-100 to-orange-100 text-purple-700 font-semibold">
+          <span class="material-symbols-outlined">star</span>
+          Usuarios Destacados
+        </div>
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Inspiración de la Comunidad</h2>
+        <p class="text-gray-600 text-lg max-w-2xl mx-auto">Descubre perfiles seleccionados por su creatividad, expertise y contribución a nuestra comunidad culinaria.</p>
+      </div>
+      <div id="featuredUsers" class="relative">
+        <button type="button" class="hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white text-orange-500 shadow-lg rounded-full p-3 border border-orange-100 hover:bg-orange-50 focus:outline-none focus-visible:ring-4 focus-visible:ring-orange-200 transition disabled:opacity-30 disabled:cursor-not-allowed" aria-label="Ver anteriores" data-carousel-prev>
+          <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+        <div class="flex gap-6 overflow-x-auto pb-6 px-2" aria-live="polite" id="featuredUsersCarousel" style="scrollbar-width: none; -ms-overflow-style: none;">
+          <article class="min-w-[280px] bg-white rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 text-center text-gray-400 border border-gray-100">
+            <div class="animate-pulse">
+              <div class="w-20 h-20 bg-gray-200 rounded-full mx-auto mb-4"></div>
+              <div class="h-4 bg-gray-200 rounded mb-2"></div>
+              <div class="h-3 bg-gray-200 rounded mb-4"></div>
+              <div class="h-8 bg-gray-200 rounded"></div>
+            </div>
+          </article>
+        </div>
+        <button type="button" class="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white text-orange-500 shadow-lg rounded-full p-3 border border-orange-100 hover:bg-orange-50 focus:outline-none focus-visible:ring-4 focus-visible:ring-orange-200 transition disabled:opacity-30 disabled:cursor-not-allowed" aria-label="Ver siguientes" data-carousel-next>
+          <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+      </div>
+    </section>
+  </main>
+
+    <script src="/js/loadFooter.js" defer></script>
+    <div id="footerContainer"></div>
+
+  <script>
+    const mobileNavToggle = document.querySelector('[data-mobile-nav-toggle]');
+    const mobileNav = document.getElementById('mobileNav');
+
+    const closeMobileNav = () => {
+      if (!mobileNav) return;
+      mobileNav.classList.add('hidden');
+      if (mobileNavToggle) mobileNavToggle.setAttribute('aria-expanded', 'false');
+    };
+
+    const openMobileNav = () => {
+      if (!mobileNav) return;
+      mobileNav.classList.remove('hidden');
+      if (mobileNavToggle) mobileNavToggle.setAttribute('aria-expanded', 'true');
+    };
+
+    if (mobileNavToggle && mobileNav) {
+      mobileNavToggle.addEventListener('click', () => {
+        const isHidden = mobileNav.classList.contains('hidden');
+        if (isHidden) {
+          openMobileNav();
+        } else {
+          closeMobileNav();
+        }
+      });
+
+      mobileNav.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => {
+          if (window.innerWidth < 768) closeMobileNav();
+        });
+      });
+    }
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 768) closeMobileNav();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && window.innerWidth < 768) {
+        closeMobileNav();
+      }
+    });
+  </script>
+
+  <script>
+    const userResults = document.getElementById('userResults');
+    const userSearchSummary = document.getElementById('userSearchSummary');
+    const featuredUsersSection = document.getElementById('featuredUsers');
+    const featuredUsersWrapper = document.getElementById('featuredUsersCarousel');
+    const carouselPrevBtn = featuredUsersSection ? featuredUsersSection.querySelector('[data-carousel-prev]') : null;
+    const carouselNextBtn = featuredUsersSection ? featuredUsersSection.querySelector('[data-carousel-next]') : null;
+    const searchForm = document.getElementById('userSearchForm');
+    const searchInput = document.getElementById('userSearchInput');
+    const filterSelect = document.getElementById('userSearchFilter');
+
+    const fallbackFeaturedUsers = [
+      {
+        id: 1,
+        name: 'Alejandra Ruiz',
+        alias: '@alerychef',
+        role: 'Chef profesional',
+        specialty: 'Cocina mexicana contemporánea',
+        city: 'Guadalajara, MX',
+        followers: 18500,
+        recipes: 128,
+        avatar: '/Imagenes/Usuarios/0.png'
+      },
+      {
+        id: 2,
+        name: 'Marco Hernández',
+        alias: '@mealprep.marco',
+        role: 'Entrenador nutricional',
+        specialty: 'Planificación semanal saludable',
+        city: 'Monterrey, MX',
+        followers: 12600,
+        recipes: 84,
+        avatar: '/Imagenes/Usuarios/1.png'
+      },
+      {
+        id: 3,
+        name: 'Sofía Delgado',
+        alias: '@dulcesofia',
+        role: 'Creadora de contenido',
+        specialty: 'Postres y panadería creativa',
+        city: 'Ciudad de México, MX',
+        followers: 21200,
+        recipes: 96,
+        avatar: '/Imagenes/Usuarios/2.png'
+      }
+    ];
+
+    const fallbackSearchUsers = [
+      {
+        id: 4,
+        name: 'Carlos Mendoza',
+        alias: '@carlosfit',
+        role: 'Miembro premium',
+        specialty: 'Recetas altas en proteína',
+        city: 'Querétaro, MX',
+        followers: 7200,
+        recipes: 54,
+        avatar: '/Imagenes/Usuarios/3.png'
+      },
+      {
+        id: 5,
+        name: 'Lucía Fernández',
+        alias: '@lucia.glutenfree',
+        role: 'Creadora de contenido',
+        specialty: 'Cocina sin gluten',
+        city: 'Puebla, MX',
+        followers: 9800,
+        recipes: 67,
+        avatar: '/Imagenes/Usuarios/4.png'
+      }
+    ];
+
+    const getCarouselStep = () => {
+      if (!featuredUsersWrapper) return 0;
+      return Math.max(featuredUsersWrapper.clientWidth * 0.85, 320);
+    };
+
+    const updateCarouselNavState = () => {
+      if (!featuredUsersWrapper || !carouselPrevBtn || !carouselNextBtn) return;
+      const { scrollLeft, scrollWidth, clientWidth } = featuredUsersWrapper;
+      const canScroll = scrollWidth > clientWidth + 1;
+
+      carouselPrevBtn.classList.toggle('hidden', !canScroll);
+      carouselNextBtn.classList.toggle('hidden', !canScroll);
+
+      if (!canScroll) return;
+
+      const atStart = scrollLeft <= 4;
+      const atEnd = scrollLeft + clientWidth >= scrollWidth - 4;
+
+      const setButtonState = (button, disabled) => {
+        button.disabled = disabled;
+        button.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+      };
+
+      setButtonState(carouselPrevBtn, atStart);
+      setButtonState(carouselNextBtn, atEnd);
+    };
+
+    const scrollFeaturedCarousel = (direction) => {
+      if (!featuredUsersWrapper) return;
+      const amount = getCarouselStep() * direction;
+      featuredUsersWrapper.scrollBy({ left: amount, behavior: 'smooth' });
+    };
+
+    const attachCarouselListeners = () => {
+      if (!featuredUsersWrapper || !carouselPrevBtn || !carouselNextBtn) return;
+      carouselPrevBtn.addEventListener('click', () => scrollFeaturedCarousel(-1));
+      carouselNextBtn.addEventListener('click', () => scrollFeaturedCarousel(1));
+      featuredUsersWrapper.addEventListener('scroll', () => requestAnimationFrame(updateCarouselNavState), { passive: true });
+      window.addEventListener('resize', () => requestAnimationFrame(updateCarouselNavState));
+      updateCarouselNavState();
+    };
+
+    attachCarouselListeners();
+
+    const formatFollowers = (total) => {
+      if (!Number.isFinite(total)) return '-';
+      if (total >= 1000000) return `${(total / 1000000).toFixed(1)}M`;
+      if (total >= 1000) return `${(total / 1000).toFixed(1)}K`;
+      return String(total);
+    };
+
+    const escapeHtml = (value) => {
+      if (value === null || value === undefined) return '';
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    };
+
+    const renderUserCard = (user, variant = 'grid') => {
+      const roleColors = {
+        'Chef profesional': 'bg-orange-100 text-orange-700',
+        'Entrenador nutricional': 'bg-green-100 text-green-700',
+        'Creadora de contenido': 'bg-purple-100 text-purple-700',
+        'Miembro premium': 'bg-yellow-100 text-yellow-700',
+        default: 'bg-gray-100 text-gray-700'
+      };
+      const roleClass = roleColors[user.role] || roleColors.default;
+
+      const containerBase = 'bg-white rounded-3xl shadow-lg border border-gray-100 transition-all duration-300 flex flex-col items-center text-center';
+      const variantClasses = variant === 'carousel'
+        ? 'min-w-[280px] px-6 py-8 hover:shadow-xl hover:-translate-y-1'
+        : 'w-full p-6 hover:shadow-2xl hover:-translate-y-2';
+
+      return `
+        <article class="${containerBase} ${variantClasses}">
+          <div class="relative">
+            <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-lg bg-gradient-to-br from-orange-100 to-purple-100">
+              <img src="${escapeHtml(user.avatar || '/Imagenes/Usuarios/0.png')}" alt="${escapeHtml(user.name || 'Usuario')}" class="w-full h-full object-cover">
+            </div>
+            ${user.role === 'Miembro premium' ? '<div class="absolute -top-1 -right-1 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center"><span class="material-symbols-outlined text-xs text-white">star</span></div>' : ''}
+          </div>
+          <div class="w-full flex flex-col gap-4 mt-6">
+            <div>
+              <h3 class="text-xl font-bold text-gray-900">${escapeHtml(user.name || 'Usuario')}</h3>
+              <p class="text-sm text-orange-600 font-semibold">${escapeHtml(user.alias || '')}</p>
+            </div>
+            <div class="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-semibold ${roleClass}">
+              ${escapeHtml(user.role || 'Miembro de la comunidad')}
+            </div>
+            <div class="space-y-2 text-sm text-gray-600">
+              <p class="flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-base text-teal-500">restaurant_menu</span>
+                ${escapeHtml(user.specialty || 'Recetas variadas')}
+              </p>
+            </div>
+            <div class="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500">
+              <span class="flex items-center gap-1">
+                <span class="material-symbols-outlined text-base text-yellow-500">group</span>
+                <span class="font-semibold">${formatFollowers(user.followers)}</span> seguidores
+              </span>
+              <span class="flex items-center gap-1">
+                <span class="material-symbols-outlined text-base text-pink-500">menu_book</span>
+                <span class="font-semibold">${user.recipes || 0}</span> recetas
+              </span>
+            </div>
+            <a href="${user.alias ? `/perfil/${encodeURIComponent(user.alias.replace('@', ''))}` : '#'}"
+              class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-purple-600 text-white font-semibold hover:from-orange-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+              Ver Perfil
+              <span class="material-symbols-outlined text-base">arrow_outward</span>
+            </a>
+          </div>
+        </article>`;
+    };
+
+    const showFeaturedUsers = (users) => {
+      if (!featuredUsersWrapper) return;
+      featuredUsersWrapper.innerHTML = '';
+      if (!users || !users.length) {
+        featuredUsersWrapper.innerHTML = '<article class="min-w-[260px] bg-white rounded-2xl shadow p-6 text-center text-gray-400">No hay usuarios destacados disponibles.</article>';
+        updateCarouselNavState();
+        return;
+      }
+      users.forEach((user) => {
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = renderUserCard(user, 'carousel');
+        featuredUsersWrapper.appendChild(wrapper.firstElementChild);
+      });
+      requestAnimationFrame(updateCarouselNavState);
+    };
+
+    const updateResults = (users, query) => {
+      if (!userResults) return;
+      userResults.innerHTML = '';
+      const list = Array.isArray(users) ? users : [];
+      if (!list.length) {
+        userResults.innerHTML = '<div class="bg-white rounded-2xl shadow p-8 text-center text-gray-400">No se encontraron usuarios que coincidan con la búsqueda.</div>';
+        if (userSearchSummary) userSearchSummary.textContent = query ? `0 resultados para "${query}".` : 'Sin filtros aplicados.';
+        return;
+      }
+      const fragment = document.createDocumentFragment();
+      list.forEach((user) => {
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = renderUserCard(user, 'grid');
+        fragment.appendChild(wrapper.firstElementChild);
+      });
+      userResults.appendChild(fragment);
+      if (userSearchSummary) {
+        userSearchSummary.textContent = `${list.length} resultado${list.length === 1 ? '' : 's'} encontrados${query ? ` para "${query}"` : ''}.`;
+      }
+    };
+
+    const requestFeaturedUsers = async () => {
+      try {
+        const response = await fetch('/api/usuarios/destacados', { credentials: 'include' });
+        if (!response.ok) throw new Error(`Estado inesperado: ${response.status}`);
+        const data = await response.json();
+        showFeaturedUsers(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.warn('Fallo al cargar usuarios destacados, usando datos locales:', error);
+        showFeaturedUsers(fallbackFeaturedUsers);
+      }
+    };
+
+    const requestUserSearch = async (query, filter) => {
+      if (!query) {
+        updateResults([], '');
+        return;
+      }
+      if (userResults) {
+        userResults.innerHTML = `
+          <div class="col-span-full bg-white rounded-3xl shadow-lg p-12 text-center text-gray-400 border border-gray-100">
+            <div class="animate-spin w-12 h-12 border-4 border-orange-200 border-t-orange-500 rounded-full mx-auto mb-4"></div>
+            <p class="text-lg font-medium">Buscando usuarios...</p>
+            <p class="text-sm">Explorando nuestra comunidad culinaria</p>
+          </div>`;
+      }
+      try {
+        const params = new URLSearchParams();
+        params.set('q', query);
+        if (filter) params.set('role', filter);
+        const response = await fetch(`/api/usuarios/buscar?${params.toString()}`, { credentials: 'include' });
+        if (!response.ok) throw new Error(`Estado inesperado: ${response.status}`);
+        const data = await response.json();
+        updateResults(Array.isArray(data) ? data : [], query);
+      } catch (error) {
+        console.warn('Fallo la búsqueda, usando datos locales:', error);
+        // Filtra datos locales para mantener feedback razonable.
+        const normalized = fallbackSearchUsers.filter((user) => {
+          const target = `${user.name} ${user.alias} ${user.specialty} ${user.role}`.toLowerCase();
+          const matchesQuery = target.includes(query.toLowerCase());
+          const matchesRole = !filter || user.role.toLowerCase().includes(filter.toLowerCase());
+          return matchesQuery && matchesRole;
+        });
+        updateResults(normalized, query);
+      }
+    };
+
+    requestFeaturedUsers();
+
+    if (searchForm && searchInput) {
+      searchForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const query = searchInput.value.trim();
+        const filter = filterSelect ? filterSelect.value : '';
+        requestUserSearch(query, filter);
+      });
+    }
+
+    document.querySelectorAll('[data-quick-tag]').forEach((button) => {
+      button.addEventListener('click', () => {
+        if (!searchInput) return;
+        const tag = button.getAttribute('data-quick-tag') || '';
+        searchInput.value = tag;
+        if (filterSelect) filterSelect.value = '';
+        requestUserSearch(tag, '');
+      });
+    });
+  </script>
+</body>
+
+</html>

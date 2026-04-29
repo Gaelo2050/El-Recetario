@@ -1,0 +1,731 @@
+﻿<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <title>El Recetario®</title>
+  <link rel="shortcut icon" href="../Imagenes/Logo/favicon.ico">
+  <link href="../css/output.css" rel="stylesheet">
+  <script src="/js/userSession.js"></script>
+</head>
+
+<body class="font-sans bg-gray-50 text-gray-800">
+  <!-- Header -->
+  <script src="/js/loadHeader.js" defer></script>
+  <div id="headerContainer"></div>
+
+  <!-- Sección de portada principal -->
+  <section class="relative bg-cover bg-center min-h-[440px] sm:min-h-[520px]"
+    style="background-image: url('/Imagenes/Fondos/Fondo.jpg');">
+    <div class="absolute inset-0 bg-black/40"></div>
+
+    <div class="relative z-10 max-w-3xl mx-auto px-4 pt-16 pb-14 text-center text-white sm:pt-20 sm:pb-20">
+      <h1 class="text-3xl font-bold leading-tight sm:text-4xl">¿Qué hay en tu cocina?</h1>
+      <p class="mt-3 text-sm text-white/90 sm:text-base">Introduce tus ingredientes y descubre recetas increíbles que
+        puedes preparar ahora mismo.</p>
+
+      <!-- Buscador -->
+      <form id="heroSearchForm"
+        class="mx-auto mt-8 w-full max-w-xl rounded-2xl bg-white/95 p-5 shadow-xl ring-1 ring-white/50 backdrop-blur sm:max-w-3xl sm:p-6">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-stretch">
+          <label for="heroSearchInput" class="sr-only">Buscar por ingredientes</label>
+          <div
+            class="flex flex-1 items-center gap-2 rounded-xl border border-white/60 bg-gray-50 px-3 py-2 shadow-inner transition focus-within:border-orange-200 focus-within:ring-2 focus-within:ring-orange-200/60">
+            <span class="material-symbols-outlined text-lg text-orange-400">search</span>
+            <input id="heroSearchInput" name="q" type="text" placeholder="Introduce ingredientes (pollo, tomate...)"
+              class="flex-1 bg-transparent px-1 py-2 text-sm text-gray-700 outline-none sm:text-base"
+              autocomplete="off">
+          </div>
+          <button type="submit"
+            class="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:shadow-lg sm:px-6 sm:py-3 sm:text-base">
+            <span class="material-symbols-outlined text-base sm:text-lg">dinner_dining</span>
+            Buscar recetas
+          </button>
+        </div>
+
+        <div class="flex gap-2 mt-4 flex-wrap">
+          <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold">Popular:</span>
+          <button type="button" data-hero-tag="Pollo"
+            class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm hover:bg-yellow-200 transition">Pollo</button>
+          <button type="button" data-hero-tag="Pasta"
+            class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm hover:bg-yellow-200 transition">Pasta</button>
+          <button type="button" data-hero-tag="Vegetales"
+            class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm hover:bg-yellow-200 transition">Vegetales</button>
+        </div>
+      </form>
+
+      <div class="mt-10 flex justify-center">
+        <a href="/crear-receta"
+          class="group flex w-full max-w-xl flex-col items-center justify-between gap-3 rounded-2xl bg-white/95 px-6 py-5 text-center shadow-xl ring-1 ring-white/60 backdrop-blur transition hover:-translate-y-1 hover:shadow-2xl sm:max-w-2xl sm:flex-row sm:gap-4">
+          <span
+            class="inline-flex items-center gap-2 rounded-full bg-orange-100 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-orange-600">Comparte
+            tu talento</span>
+          <span class="flex items-center gap-2 text-sm font-semibold text-orange-500 sm:text-base">
+            <span class="material-symbols-outlined text-base sm:text-lg">restaurant</span>
+            Publicar receta ahora
+          </span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección de recetas destacadas -->
+  <section class="py-12 max-w-6xl mx-auto px-4">
+    <h2 class="text-2xl font-bold text-center mb-6">Recetas destacadas</h2>
+    <p class="text-center text-gray-600 mb-10">Descubre las recetas de moda que le encantan a nuestra comunidad.</p>
+
+    <div id="featuredRecipes" class="grid md:grid-cols-3 gap-8">
+      <!-- Placeholder while loading -->
+      <div class="col-span-1 bg-white shadow-md rounded-xl overflow-hidden p-8 text-center text-gray-400">
+        Cargando recetas...
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección de comunidad -->
+  <section class="relative py-20">
+    <div class="absolute inset-0 bg-gradient-to-b from-gray-50 via-gray-100/70 to-gray-900"></div>
+
+    <div class="relative max-w-6xl mx-auto px-4 lg:px-8 bg-white rounded-3xl py-12">
+
+      <div class="space-y-6">
+        <span
+          class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-1 text-xs font-semibold uppercase tracking-wide text-orange-600 shadow-sm">
+          <span class="material-symbols-outlined text-base">emoji_food_beverage</span>
+          Comunidad activa
+        </span>
+
+        <h2 class="text-3xl font-bold text-gray-800 leading-tight">
+          Conecta con cocineros apasionados como tú
+        </h2>
+
+        <p class="text-base text-gray-600 leading-relaxed">
+          Cada día cientos de creadores comparten recetas, consejos y reseñas para que nunca te falten ideas en la
+          cocina. Únete a la conversación, guarda tus favoritas y colabora con la comunidad que hace crecer El
+          Recetario®.
+        </p>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <a href="/comunidad"
+            class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:shadow-lg">
+            <span class="material-symbols-outlined text-base">diversity_3</span>
+            Explorar comunidad
+          </a>
+
+          <span class="flex items-center gap-2 text-sm text-gray-500">
+            <span class="material-symbols-outlined text-base text-orange-500">verified</span>
+            Contenido moderado y seguro
+          </span>
+        </div>
+      </div>
+
+      <!-- COMENTARIOS EN FILA HORIZONTAL -->
+      <div class="mt-10">
+        <div id="communityContainer" class="grid grid-cols-1 gap-6 md:grid-cols-2" aria-live="polite" aria-busy="true">
+          <div class="rounded-2xl border border-gray-200 bg-white px-6 py-5 text-center text-gray-400 shadow-sm">
+            Cargando historias de la comunidad…
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección de precios -->
+  <section id="subscriptionPlansSection" class="bg-gray-900 text-white py-20">
+    <div class="max-w-6xl mx-auto px-6 text-center">
+      <span class="material-symbols-outlined text-5xl text-white-400">crown</span>
+      <h2 class="text-4xl font-bold mt-2 mb-4">Elige el plan perfecto para ti</h2>
+      <p class="text-gray-400 max-w-2xl mx-auto mb-12">
+        Accede a recetas exclusivas de chefs, planificación de comidas y una experiencia sin anuncios.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Plan mensual -->
+        <div class="bg-gray-900 rounded-2xl p-8 shadow-lg border border-gray-700 flex flex-col justify-between">
+          <div>
+            <h3 class="text-indigo-400 font-semibold mb-2">Mensual</h3>
+            <p class="text-4xl font-bold mb-1">$200 MXN<span class="text-lg font-normal text-gray-400">/mes</span></p>
+            <ul class="text-gray-300 space-y-2 mb-8 text-left">
+              <li>✓ Sin anuncios</li>
+              <li>✓ Más de 500 recetas premium</li>
+              <li>✓ Herramientas para planificar las comidas</li>
+            </ul>
+          </div>
+          <form class="lookup-form" method="POST" action="/crear-sesion-pago">
+            <input type="hidden" name="lookup_key" value="Plan_Mensual_-fd32f04">
+            <button type="submit"
+              class="w-full bg-indigo-600 hover:bg-indigo-700 transition-colors text-white font-medium py-3 rounded-md">
+              Comienza hoy
+            </button>
+          </form>
+        </div>
+
+        <!-- Plan anual -->
+        <div class="bg-gray-900 rounded-2xl p-8 shadow-lg border border-gray-700 flex flex-col justify-between">
+          <div>
+            <h3 class="text-indigo-400 font-semibold mb-2">Anual</h3>
+            <p class="text-4xl font-bold mb-1">$2,000 MXN<span class="text-lg font-normal text-gray-400">/año</span></p>
+            <ul class="text-gray-300 space-y-2 mb-8 text-left">
+              <li>✓ Más de 1000 recetas premium</li>
+              <li>✓ Asistencia prioritaria</li>
+              <li>✓ Funciones de acceso anticipado</li>
+            </ul>
+          </div>
+          <form class="lookup-form" method="POST" action="/crear-sesion-pago">
+            <input type="hidden" name="lookup_key" value="Plan_Anual-e6ed0b8">
+            <button type="submit"
+              class="w-full bg-indigo-600 hover:bg-indigo-700 transition-colors text-white font-medium py-3 rounded-md">
+              Comienza hoy
+            </button>
+          </form>
+        </div>
+      </div>
+      <div class="mt-10 flex flex-col items-center gap-2 text-sm text-gray-400">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-lg">verified_user</span>
+          Pagos seguros procesados por Stripe
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-lg">schedule</span>
+          Cancela en cualquier momento desde tu perfil
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="/js/loadFooter.js" defer></script>
+  <div id="footerContainer"></div>
+
+  <script>
+    function setupPlanSync() {
+      const radios = document.querySelectorAll('input[name="plan"]');
+      const hidden = document.getElementById('price_id_input');
+      const label = document.getElementById('selectedPlanLabel');
+      const form = document.getElementById('checkoutForm');
+
+      if (!radios.length || !hidden) return;
+
+      const updateSelection = () => {
+        const checked = [...radios].find((radio) => radio.checked) || radios[0];
+        if (!checked) return;
+        hidden.value = checked.value;
+        if (label) label.textContent = checked.dataset.label || checked.value;
+      };
+
+      radios.forEach((radio) => radio.addEventListener('change', updateSelection));
+      if (form) form.addEventListener('submit', updateSelection);
+      updateSelection();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const session = window.UserSession;
+      const forms = Array.from(document.querySelectorAll('form.lookup-form'));
+      const subscriptionSection = document.getElementById('subscriptionPlansSection');
+      const originalDisplay = subscriptionSection ? (subscriptionSection.style.display || '') : '';
+      const ADMIN_TYPE = 1;
+      const PREMIUM_TYPE = 3;
+
+      const shouldHideSubscription = (tipo) => {
+        const numeric = Number(tipo);
+        return Number.isFinite(numeric) && (numeric === ADMIN_TYPE || numeric === PREMIUM_TYPE);
+      };
+
+      const applySubscriptionVisibility = (tipo) => {
+        if (!subscriptionSection) return;
+        const hide = shouldHideSubscription(tipo);
+        if (!subscriptionSection.dataset.originalDisplay) {
+          subscriptionSection.dataset.originalDisplay = originalDisplay;
+        }
+        subscriptionSection.style.display = hide ? 'none' : (subscriptionSection.dataset.originalDisplay || '');
+        if (hide) {
+          subscriptionSection.setAttribute('aria-hidden', 'true');
+        } else {
+          subscriptionSection.removeAttribute('aria-hidden');
+        }
+      };
+
+      const parseUserCookie = () => {
+        const raw = document.cookie.split('; ').find((cookie) => cookie.startsWith('userInfo='));
+        if (!raw) return null;
+        try {
+          return JSON.parse(decodeURIComponent(raw.split('=').slice(1).join('=')));
+        } catch (error) {
+          console.warn('userInfo cookie inválida', error);
+          return null;
+        }
+      };
+
+      applySubscriptionVisibility(parseUserCookie()?.Tipo_Usu_ID);
+
+      if (session && typeof session.subscribe === 'function') {
+        session.subscribe((user) => applySubscriptionVisibility(user?.Tipo_Usu_ID));
+      }
+
+      const fallbackRequireLogin = () => {
+        const hasUserInfoCookie = () => document.cookie.split('; ').some((cookie) => cookie.indexOf('userInfo=') === 0);
+        forms.forEach((form) => {
+          form.addEventListener('submit', (event) => {
+            if (hasUserInfoCookie()) return;
+            event.preventDefault();
+            window.location.href = '/iniciar-sesion';
+          });
+        });
+      };
+
+      if (session && typeof session.exigirAutenticacion === 'function') {
+        session.exigirAutenticacion({ selector: 'form.lookup-form', redirectTo: '/iniciar-sesion' });
+      } else {
+        fallbackRequireLogin();
+      }
+
+      setupPlanSync();
+    });
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('heroSearchForm');
+      const input = document.getElementById('heroSearchInput');
+      if (form && input) {
+        form.addEventListener('submit', (event) => {
+          const value = input.value.trim();
+          if (!value) {
+            event.preventDefault();
+            input.focus();
+            return;
+          }
+          event.preventDefault();
+          const params = new URLSearchParams();
+          params.set('q', value);
+          window.location.href = `/recetas?${params.toString()}`;
+        });
+      }
+
+      const quickButtons = document.querySelectorAll('[data-hero-tag]');
+      quickButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          if (!input) return;
+          input.value = button.dataset.heroTag || '';
+          form && form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: false }));
+        });
+      });
+    });
+  </script>
+
+  <script>
+    const getCookie = (name) => {
+      if (window.UserSession && typeof window.UserSession.obtenerCookie === 'function') {
+        return window.UserSession.obtenerCookie(name);
+      }
+      const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+      return match ? decodeURIComponent(match[1]) : null;
+    };
+
+    const formatPrepTimeLabel = (value) => {
+      if (!value && value !== 0) return 'Sin tiempo';
+      const parts = String(value).split(':').map((part) => Number.parseInt(part, 10));
+      if (parts.length >= 2 && parts.slice(0, 2).every((n) => Number.isFinite(n))) {
+        const [hours = 0, minutes = 0] = parts;
+        if (hours <= 0 && minutes <= 0) return '0 min';
+        if (hours <= 0) return `${minutes} min`;
+        if (minutes <= 0) return `${hours} h`;
+        return `${hours} h ${minutes} min`;
+      }
+      return String(value);
+    };
+
+    const resolveRecipeImage = (raw) => {
+      const fallback = '/Imagenes/Platillos/platillo (1).png';
+      if (!raw) return fallback;
+      const parts = String(raw)
+        .split(',')
+        .map((value) => value.trim())
+        .filter(Boolean);
+      if (!parts.length) return fallback;
+      const primary = parts[0];
+      if (/^https?:\/\//i.test(primary) || primary.startsWith('data:')) {
+        return primary;
+      }
+      return primary.startsWith('/') ? primary : `/${primary.replace(/^\/+/, '')}`;
+    };
+
+    const updateFavoriteButtonState = (button, isFavorite, isLoggedIn) => {
+      if (!button) return;
+      const baseClasses = [
+        'favorite-toggle-btn',
+        'rounded-full',
+        'p-2',
+        'transition',
+        'focus-visible:outline',
+        'focus-visible:outline-2',
+        'focus-visible:outline-offset-2',
+        'focus-visible:outline-orange-500',
+      ];
+      button.className = baseClasses.join(' ');
+      button.dataset.favorite = isFavorite ? '1' : '0';
+      button.setAttribute('aria-pressed', isFavorite ? 'true' : 'false');
+      const label = isFavorite
+        ? 'Quitar de tus favoritos'
+        : (isLoggedIn ? 'Guardar en tus favoritos' : 'Inicia sesión para guardar esta receta');
+      button.setAttribute('aria-label', label);
+      button.title = label;
+      if (isFavorite) {
+        button.classList.add('bg-orange-100', 'text-orange-600', 'shadow-inner');
+      } else {
+        button.classList.add('text-gray-400', 'hover:text-orange-500', 'hover:bg-orange-50');
+      }
+      button.innerHTML = `<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' ${isFavorite ? 1 : 0}, 'wght' 600;">favorite</span>`;
+    };
+
+    const setFavoriteButtonLoading = (button, loading) => {
+      if (!button) return;
+      if (loading) {
+        button.dataset.loading = '1';
+        button.disabled = true;
+        button.classList.add('opacity-60', 'cursor-wait');
+        button.innerHTML = '<span class="material-symbols-outlined text-xl animate-spin">progress_activity</span>';
+        button.title = 'Guardando…';
+      } else {
+        button.dataset.loading = '0';
+        button.disabled = false;
+        button.classList.remove('opacity-60', 'cursor-wait');
+      }
+    };
+
+    const buildLoginRedirect = (recipeId) => `/iniciar-sesion?returnTo=${encodeURIComponent(`/receta/${recipeId}`)}`;
+
+    // Fetch latest 3 recipes and render into #featuredRecipes
+    async function loadLatestRecipes() {
+      const featuredContainer = document.getElementById('featuredRecipes');
+      const trendingContainer = document.getElementById('trendingRecipes');
+      if (!featuredContainer && !trendingContainer) return;
+
+      const isLoggedIn = Boolean(getCookie('userInfo'));
+
+      try {
+        const res = await fetch('/api/recetas-recientes', { credentials: 'include' });
+        if (!res.ok) throw new Error('Network response not ok');
+        const rows = await res.json();
+        if (featuredContainer) featuredContainer.innerHTML = '';
+        if (trendingContainer) trendingContainer.innerHTML = '';
+
+        if (!rows || rows.length === 0) {
+          if (featuredContainer) {
+            featuredContainer.innerHTML = '<div class="col-span-1 bg-white shadow-md rounded-xl overflow-hidden p-8 text-center text-gray-400">No hay recetas recientes.</div>';
+          }
+          if (trendingContainer) {
+            trendingContainer.innerHTML = '<div class="min-w-[240px] bg-white shadow-md rounded-xl p-6 text-center text-gray-400">No hay tendencias disponibles.</div>';
+          }
+          return;
+        }
+
+        rows.forEach((r, index) => {
+          const recipeId = Number(r.Rec_ID);
+          const imageUrl = resolveRecipeImage(r.Img_Rutas);
+          const timeLabel = formatPrepTimeLabel(r.Rec_Tiempo_Prep);
+          const safeTimeLabel = escapeHtml(timeLabel);
+          const title = r.Rec_Nombre || 'Receta sin título';
+          const desc = r.Rec_Descripcion || '';
+          const preview = desc.length > 120 ? `${desc.slice(0, 120)}…` : desc;
+          const trendingPreview = desc.length > 90 ? `${desc.slice(0, 90)}…` : desc;
+
+          const ratingCount = Number.isFinite(Number(r.ratingsCount)) ? Number(r.ratingsCount) : 0;
+          const avgCandidate = r.avgRating != null ? Number(r.avgRating) : null;
+          const hasRatings = ratingCount > 0 && avgCandidate != null && Number.isFinite(avgCandidate);
+          const ratingValue = hasRatings ? avgCandidate : null;
+          const ratingBadgeText = hasRatings ? ratingValue.toFixed(1) : '—';
+          const ratingBadgeSafe = escapeHtml(ratingBadgeText);
+          const ratingCountMarkup = hasRatings ? ` <span class="text-xs text-gray-400">(${ratingCount})</span>` : '';
+          const ratingSummaryText = hasRatings
+            ? `${ratingValue.toFixed(1)} · ${ratingCount} ${ratingCount === 1 ? 'calificación' : 'calificaciones'}`
+            : 'Sin calificaciones';
+          const ratingSummarySafe = escapeHtml(ratingSummaryText);
+          const ratingIcon = hasRatings ? 'star' : 'grade';
+
+          const safeTitle = escapeHtml(title);
+          const safePreview = escapeHtml(preview);
+          const safeTrendingPreview = escapeHtml(trendingPreview);
+          const safeImageUrl = escapeHtml(imageUrl);
+
+          const recipeData = {
+            id: recipeId,
+            isFavorite: Boolean(r.isFavorite),
+          };
+
+          if (featuredContainer) {
+            const featuredCard = document.createElement('article');
+            featuredCard.className = 'bg-white shadow-md rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-orange-200';
+            featuredCard.innerHTML = `
+              <img src="${safeImageUrl}" alt="${safeTitle}" class="w-full h-48 object-cover">
+              <div class="p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="bg-yellow-100 text-yellow-600 text-xs font-medium px-3 py-1 rounded-full">${safeTimeLabel}</span>
+                  <span class="text-sm text-gray-600 flex items-center gap-1" title="${ratingSummarySafe}">
+                    <span class="material-symbols-outlined text-yellow-500 text-base">${ratingIcon}</span>
+                    ${ratingBadgeSafe}${ratingCountMarkup}
+                  </span>
+                </div>
+                <h3 class="text-lg font-semibold">${safeTitle}</h3>
+                <p class="text-gray-600 text-sm mt-1 min-h-[4.5rem] leading-relaxed">${safePreview}</p>
+                <div class="flex items-center justify-between mt-4">
+                  <span class="text-sm text-teal-600 font-medium">Ver receta</span>
+                  <button type="button" class="favorite-toggle-btn" data-action="toggle-favorite" data-recipe-id="${recipeId}" aria-label="Guardar receta" aria-pressed="false"></button>
+                </div>
+              </div>`;
+
+            const favoriteButton = featuredCard.querySelector('[data-action="toggle-favorite"]');
+            if (favoriteButton) {
+              updateFavoriteButtonState(favoriteButton, recipeData.isFavorite, isLoggedIn);
+              if (!recipeId) {
+                favoriteButton.disabled = true;
+              }
+            }
+
+            if (recipeId) {
+              const navigateToRecipe = () => { window.location.href = `/receta/${recipeId}`; };
+              featuredCard.style.cursor = 'pointer';
+              featuredCard.setAttribute('role', 'link');
+              featuredCard.tabIndex = 0;
+              featuredCard.addEventListener('click', navigateToRecipe);
+              featuredCard.addEventListener('keydown', (event) => {
+                if ((event.key === 'Enter' || event.key === ' ') && event.target === featuredCard) {
+                  event.preventDefault();
+                  navigateToRecipe();
+                }
+              });
+
+              if (favoriteButton) {
+                favoriteButton.addEventListener('click', async (event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  if (!isLoggedIn) {
+                    window.location.href = buildLoginRedirect(recipeId);
+                    return;
+                  }
+                  if (favoriteButton.dataset.loading === '1') return;
+
+                  setFavoriteButtonLoading(favoriteButton, true);
+
+                  try {
+                    const method = recipeData.isFavorite ? 'DELETE' : 'POST';
+                    const response = await fetch(`/api/recetas/${encodeURIComponent(recipeId)}/favorita`, {
+                      method,
+                      credentials: 'include',
+                    });
+
+                    if (response.status === 401) {
+                      window.location.href = buildLoginRedirect(recipeId);
+                      return;
+                    }
+                    if (!response.ok) {
+                      throw new Error(`favorite_toggle_failed_${response.status}`);
+                    }
+
+                    const payload = await response.json();
+                    const newFavorite = typeof payload.isFavorite !== 'undefined'
+                      ? Boolean(payload.isFavorite)
+                      : !recipeData.isFavorite;
+                    recipeData.isFavorite = newFavorite;
+                  } catch (err) {
+                    console.error('No se pudo actualizar el favorito de la receta %s:', recipeId, err);
+                  } finally {
+                    setFavoriteButtonLoading(favoriteButton, false);
+                    updateFavoriteButtonState(favoriteButton, recipeData.isFavorite, isLoggedIn);
+                  }
+                });
+              }
+            }
+
+            featuredContainer.appendChild(featuredCard);
+          }
+
+          if (trendingContainer && index < 6) {
+            const trendingCard = document.createElement('article');
+            trendingCard.className = 'min-w-[240px] max-w-xs bg-white shadow-md rounded-2xl overflow-hidden flex-shrink-0 focus-within:ring-2 focus-within:ring-orange-200';
+            const ratingSummaryLine = hasRatings
+              ? `${ratingValue.toFixed(1)} · ${ratingCount} ${ratingCount === 1 ? 'calificación' : 'calificaciones'}`
+              : 'Sin calificaciones';
+            const safeRatingSummaryLine = escapeHtml(ratingSummaryLine);
+            trendingCard.innerHTML = `
+              <img src="${safeImageUrl}" alt="${safeTitle}" class="w-full h-36 object-cover">
+              <div class="p-4 flex flex-col gap-2">
+                <span class="text-xs font-medium text-orange-500">Tendencia #${index + 1}</span>
+                <h3 class="text-base font-semibold text-gray-800">${safeTitle}</h3>
+                <p class="text-sm text-gray-600">${safeTrendingPreview}</p>
+                <p class="flex items-center gap-1 text-sm text-gray-600" title="${safeRatingSummaryLine}">
+                  <span class="material-symbols-outlined text-base text-yellow-500">${ratingIcon}</span>
+                  ${safeRatingSummaryLine}
+                </p>
+                <div class="flex items-center justify-between pt-2 text-xs text-gray-500">
+                  <span class="flex items-center gap-1">
+                    <span class="material-symbols-outlined text-base text-orange-500">local_fire_department</span>
+                    Popular
+                  </span>
+                  <span>${safeTimeLabel}</span>
+                </div>
+              </div>`;
+
+            if (recipeId) {
+              const navigateToRecipe = () => { window.location.href = `/receta/${recipeId}`; };
+              trendingCard.style.cursor = 'pointer';
+              trendingCard.setAttribute('role', 'link');
+              trendingCard.tabIndex = 0;
+              trendingCard.addEventListener('click', navigateToRecipe);
+              trendingCard.addEventListener('keydown', (event) => {
+                if ((event.key === 'Enter' || event.key === ' ') && event.target === trendingCard) {
+                  event.preventDefault();
+                  navigateToRecipe();
+                }
+              });
+            }
+
+            trendingContainer.appendChild(trendingCard);
+          }
+        });
+      } catch (err) {
+        console.error('Failed to load latest recipes:', err);
+        if (featuredContainer) {
+          featuredContainer.innerHTML = '<div class="col-span-1 bg-white shadow-md rounded-xl overflow-hidden p-8 text-center text-gray-400">Error cargando recetas.</div>';
+        }
+        if (trendingContainer) {
+          trendingContainer.innerHTML = '<div class="min-w-[240px] bg-white shadow-md rounded-xl p-6 text-center text-gray-400">Error cargando tendencias.</div>';
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadLatestRecipes);
+  </script>
+
+  <script>
+    // Load latest comments into Comunidad section
+    async function loadLatestComments() {
+      const container = document.getElementById('communityContainer');
+      if (!container) return;
+      try {
+        const res = await fetch('/api/comentarios-recientes');
+        if (!res.ok) throw new Error('Network response not ok');
+        const rows = await res.json();
+        container.innerHTML = '';
+        if (!rows || rows.length === 0) {
+          container.innerHTML = '<div class="rounded-2xl border border-gray-200 bg-white px-6 py-5 text-center text-gray-400 shadow-sm">No hay comentarios aún. ¡Sé la primera persona en comentar!</div>';
+          return;
+        }
+
+        const randomSet = rows
+          .map((item) => ({ item, sortKey: Math.random() }))
+          .sort((a, b) => a.sortKey - b.sortKey)
+          .slice(0, 2)
+          .map((entry) => entry.item);
+
+        randomSet.forEach((r) => {
+          const author = r.Usu_Nombre || `Usuario ${r.Usu_ID || ''}`;
+          const text = r.Com_Comentario || '';
+          const recipeName = r.Rec_Nombre || 'Receta destacada';
+          const recipeUrl = r.recipeUrl || (r.Rec_ID != null ? `/receta/${r.Rec_ID}` : null);
+          const profileUrl = r.profileUrl || (r.Usu_ID != null ? `/perfil/${r.Usu_ID}` : null);
+          const initials = author
+            .replace(/\s+/g, ' ')
+            .trim()
+            .split(' ')
+            .slice(0, 2)
+            .map((word) => word.charAt(0))
+            .join('')
+            .toUpperCase() || 'ER';
+
+          const card = document.createElement('article');
+          // Provide a brighter testimonial card that keeps focus on community voices while matching the lighter palette.
+          card.className = 'rounded-2xl border border-gray-200 bg-white p-5 shadow-md flex h-full flex-col gap-4';
+          card.setAttribute('role', 'group');
+
+          const safeComment = escapeHtml(text);
+          const safeAuthor = escapeHtml(author);
+          const safeRecipeName = escapeHtml(recipeName);
+          const safeInitials = escapeHtml(initials);
+          const safeRecipeUrl = recipeUrl ? escapeHtml(recipeUrl) : '';
+          const safeProfileUrl = profileUrl ? escapeHtml(profileUrl) : '';
+
+          card.innerHTML = `
+              <div class="flex items-center justify-between gap-3">
+                <div class="inline-flex items-center gap-2 rounded-full bg-orange-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-orange-500">
+                  <span class="material-symbols-outlined text-sm">format_quote</span>
+                  Comentario destacado
+                </div>
+                <span class="inline-flex items-center gap-1 text-[10px] uppercase tracking-wide text-gray-400">
+                  <span class="material-symbols-outlined text-xs">shuffle</span>
+                  Aleatorio
+                </span>
+              </div>
+              <div class="flex flex-col gap-4 md:flex-row md:items-start md:gap-6">
+                <div class="flex-1 space-y-4">
+                  <div class="rounded-xl border border-gray-200 bg-gray-100 px-4 py-3 shadow-inner">
+                    <p class="text-[15px] leading-relaxed text-gray-700 sm:text-base">${safeComment}</p>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class="flex h-11 w-11 items-center justify-center rounded-full bg-orange-100 text-orange-500 font-semibold">${safeInitials}</span>
+                    <div class="leading-tight">
+                      <p class="font-semibold text-gray-900">${safeAuthor}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="w-full md:w-[220px] flex flex-col gap-3 text-xs font-semibold">
+                  ${recipeUrl ? `<span class="inline-flex items-center gap-2 rounded-lg border border-orange-100 bg-orange-50 px-3 py-2 text-orange-600"><span class="material-symbols-outlined text-sm">restaurant_menu</span>${safeRecipeName}</span>` : ''}
+                  <div class="flex flex-col gap-2">
+                    ${recipeUrl ? `<a href="${safeRecipeUrl}" class="inline-flex items-center justify-between gap-2 rounded-full border border-orange-200 bg-white px-4 py-1.5 text-orange-600 transition hover:bg-orange-50">Ver receta<span class="material-symbols-outlined text-sm">arrow_outward</span></a>` : ''}
+                    ${profileUrl ? `<a href="${safeProfileUrl}" class="inline-flex items-center justify-between gap-2 rounded-full border border-purple-200 bg-white px-4 py-1.5 text-purple-600 transition hover:bg-purple-50">Ver perfil<span class="material-symbols-outlined text-sm">person</span></a>` : ''}
+                  </div>
+                </div>
+              </div>
+            `;
+
+          container.appendChild(card);
+        });
+      } catch (err) {
+        console.error('Failed to load comments:', err);
+        container.innerHTML = '<div class="rounded-2xl border border-rose-200 bg-rose-50 px-6 py-5 text-center text-rose-600 shadow-sm">Error cargando comentarios. Intenta nuevamente en unos instantes.</div>';
+      }
+
+    }
+
+    // Minimal helper to avoid injecting raw HTML
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, function (m) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": "&#39;" })[m]; });
+    }
+
+    document.addEventListener('DOMContentLoaded', loadLatestComments);
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggle = document.getElementById('mobileMenuToggle');
+      const menu = document.getElementById('mobileMenu');
+      if (!toggle || !menu) return;
+
+      const icon = toggle.querySelector('.material-symbols-outlined');
+      const closeMenu = () => {
+        if (!menu.classList.contains('hidden')) {
+          menu.classList.add('hidden');
+          toggle.setAttribute('aria-expanded', 'false');
+          if (icon) icon.textContent = 'menu';
+        }
+      };
+
+      toggle.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const willOpen = menu.classList.contains('hidden');
+        menu.classList.toggle('hidden');
+        toggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        if (icon) icon.textContent = willOpen ? 'close' : 'menu';
+      });
+
+      document.addEventListener('click', (event) => {
+        if (!menu.contains(event.target) && event.target !== toggle && !toggle.contains(event.target)) {
+          closeMenu();
+        }
+      });
+    });
+  </script>
+
+</body>
+
+</html>

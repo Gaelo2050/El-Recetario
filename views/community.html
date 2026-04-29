@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <title>Comunidad - El Recetario</title>
+  <link rel="shortcut icon" href="../Imagenes/Logo/favicon.ico">
+  <link href="../css/output.css" rel="stylesheet">
+  <script src="/js/userSession.js"></script>
+</head>
+
+<body class="bg-gray-50 text-gray-900 min-h-screen">
+  <script src="/js/loadHeader.js" defer></script>
+  <div id="headerContainer"></div>
+
+  <main class="max-w-7xl mx-auto px-4 py-8 lg:py-12 space-y-8">
+    <section class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-600 via-fuchsia-600 to-orange-500 px-6 py-8 text-white shadow-xl">
+      <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <div class="space-y-4 max-w-2xl">
+          <p class="text-sm uppercase tracking-[0.2em] text-white/70">La cocina nos une</p>
+          <h1 class="text-3xl font-semibold leading-tight lg:text-4xl">Bienvenido a la comunidad de El Recetario</h1>
+          <p class="text-white/80 leading-relaxed">
+            Explora las creaciones más recientes, descubre a los chefs que marcan tendencia y comparte tus propios logros con miles de entusiastas culinarios.
+          </p>
+          <div class="flex flex-wrap gap-3 text-sm">
+            <span class="inline-flex items-center gap-1 rounded-full bg-white/15 px-3 py-1 font-medium">
+              <span class="material-symbols-outlined text-base">restaurant_menu</span>
+              Recetas del mes
+            </span>
+            <span class="inline-flex items-center gap-1 rounded-full bg-white/15 px-3 py-1 font-medium">
+              <span class="material-symbols-outlined text-base">emoji_events</span>
+              Creadores destacados
+            </span>
+          </div>
+        </div>
+        <div id="communityStats" class="grid w-full gap-4 sm:grid-cols-2 lg:w-auto">
+          <div class="rounded-2xl bg-white/15 px-4 py-3 backdrop-blur">
+            <p class="text-sm text-white/70">Recetas del mes</p>
+            <p id="statRecipes" class="text-3xl font-semibold">—</p>
+          </div>
+          <div class="rounded-2xl bg-white/15 px-4 py-3 backdrop-blur">
+            <p class="text-sm text-white/70">Chefs destacados</p>
+            <p id="statChefs" class="text-3xl font-semibold">—</p>
+          </div>
+          <div class="rounded-2xl bg-white/15 px-4 py-3 backdrop-blur">
+            <p class="text-sm text-white/70">Categorías activas</p>
+            <p id="statCategories" class="text-3xl font-semibold">—</p>
+          </div>
+          <div class="rounded-2xl bg-white/15 px-4 py-3 backdrop-blur">
+            <p class="text-sm text-white/70">Comentarios recientes</p>
+            <p id="statComments" class="text-3xl font-semibold">—</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)]">
+      <section class="space-y-6">
+        <article class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+          <div class="flex flex-col gap-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xs font-semibold uppercase tracking-wide text-purple-600">Comparte tu progreso</p>
+                <h2 class="text-xl font-semibold text-gray-900">¿Qué estás cocinando hoy?</h2>
+              </div>
+              <button type="button" class="hidden items-center gap-2 rounded-xl border border-white/30 bg-purple-50 px-4 py-2 text-sm font-semibold text-purple-600 transition hover:bg-purple-100 sm:inline-flex" onclick="window.location.href='/crear-receta'">
+                <span class="material-symbols-outlined text-base">restaurant</span>
+                Crear receta
+              </button>
+            </div>
+            <form id="quickShareForm" class="space-y-4">
+              <textarea id="shareMessage" rows="3" maxlength="280" class="w-full rounded-2xl border border-gray-200 bg-gray-50/80 px-4 py-3 text-sm text-gray-700 shadow-inner focus:border-purple-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-200" placeholder="Comparte un tip, logro o ingrediente que estás probando..."></textarea>
+              <div class="flex flex-col gap-3 text-sm text-gray-500 sm:flex-row sm:items-center sm:justify-between">
+                <span id="shareHint">Tu actualización se mostrará al instante en el feed.</span>
+                <div class="flex items-center gap-3">
+                  <button type="button" class="inline-flex items-center gap-1 rounded-xl border border-gray-200 px-3 py-2 text-sm font-medium text-gray-600 transition hover:border-purple-300 hover:text-purple-600" onclick="window.location.href='/crear-receta'">
+                    <span class="material-symbols-outlined text-base">add_photo_alternate</span>
+                    Agregar fotos
+                  </button>
+                  <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-purple-700">
+                    <span class="material-symbols-outlined text-base">send</span>
+                    Publicar
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </article>
+
+        <article class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wide text-purple-600">Actividad</p>
+              <h2 class="text-xl font-semibold text-gray-900">Recetas del mes</h2>
+            </div>
+            <button id="refreshCommunity" type="button" class="inline-flex items-center gap-2 rounded-xl border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 transition hover:border-purple-300 hover:text-purple-600">
+              <span class="material-symbols-outlined text-base">refresh</span>
+              Actualizar
+            </button>
+          </div>
+          <div id="communityFeed" class="mt-6 space-y-4">
+            <div class="animate-pulse rounded-2xl border border-dashed border-gray-200 p-6 text-center text-sm text-gray-500">
+              Cargando actividad de la comunidad...
+            </div>
+          </div>
+        </article>
+
+        <article class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wide text-purple-600">Conversaciones</p>
+              <h2 class="text-xl font-semibold text-gray-900">Comentarios recientes</h2>
+            </div>
+            <span class="text-xs font-semibold text-amber-500">Tiempo real</span>
+          </div>
+          <ul id="commentsCarousel" class="mt-6 space-y-4"></ul>
+        </article>
+      </section>
+
+      <aside class="space-y-6">
+        <div class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+          <h3 class="text-lg font-semibold text-gray-900">Buscar en la comunidad</h3>
+          <p class="mt-1 text-sm text-gray-500">Encuentra creadores por nombre, alias o especialidad.</p>
+          <div class="mt-4 flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 shadow-sm focus-within:border-purple-400 focus-within:ring-2 focus-within:ring-purple-100">
+            <span class="material-symbols-outlined text-base text-gray-400">search</span>
+            <input id="communitySearch" type="search" placeholder="Ej. postres veganos" class="w-full border-0 bg-transparent text-sm text-gray-700 focus:outline-none" />
+          </div>
+          <div id="communitySearchResults" class="mt-4 space-y-3 text-sm"></div>
+        </div>
+
+        <div class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-gray-900">Categorías activas</h3>
+            <span id="categoriesBadge" class="rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold text-purple-600">—</span>
+          </div>
+          <ul id="categoriesList" class="mt-4 space-y-3"></ul>
+        </div>
+
+        <div class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-gray-900">Chefs recomendados</h3>
+            <a href="/buscar-usuarios" class="text-sm font-semibold text-purple-600 hover:text-purple-700">Ver todos</a>
+          </div>
+          <ul id="featuredChefsList" class="mt-4 space-y-4"></ul>
+        </div>
+
+        <div class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-gray-900">Tendencias</h3>
+            <button id="shuffleTrending" type="button" class="text-sm font-semibold text-gray-500 hover:text-purple-600">Aleatorio</button>
+          </div>
+          <ul id="trendingList" class="mt-4 space-y-4"></ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script src="/js/loadFooter.js" defer></script>
+  <div id="footerContainer"></div>
+
+  <script>
+    (function () {
+      const endpoints = {
+        recipes: '/api/recetas-recientes',
+        comments: '/api/comentarios-recientes',
+        categories: '/api/categorias',
+        featured: '/api/usuarios/destacados',
+      };
+
+      const selectors = {
+        feed: document.getElementById('communityFeed'),
+        comments: document.getElementById('commentsCarousel'),
+        categories: document.getElementById('categoriesList'),
+        categoriesBadge: document.getElementById('categoriesBadge'),
+        featured: document.getElementById('featuredChefsList'),
+        trending: document.getElementById('trendingList'),
+        searchInput: document.getElementById('communitySearch'),
+        searchResults: document.getElementById('communitySearchResults'),
+        statRecipes: document.getElementById('statRecipes'),
+        statChefs: document.getElementById('statChefs'),
+        statCategories: document.getElementById('statCategories'),
+        statComments: document.getElementById('statComments'),
+        shareForm: document.getElementById('quickShareForm'),
+        shareMessage: document.getElementById('shareMessage'),
+        shareHint: document.getElementById('shareHint'),
+        refreshBtn: document.getElementById('refreshCommunity'),
+        shuffleTrending: document.getElementById('shuffleTrending'),
+      };
+
+      const state = {
+        feed: [],
+        comments: [],
+        categories: [],
+        featured: [],
+        trending: [],
+        searchDebounce: null,
+        favoriteSet: new Set(),
+      };
+
+      document.addEventListener('DOMContentLoaded', () => {
+        bootstrapCommunity();
+        attachHandlers();
+      });
+
+      function attachHandlers() {
+        if (selectors.refreshBtn) {
+          selectors.refreshBtn.addEventListener('click', bootstrapCommunity);
+        }
+
+        if (selectors.shareForm) {
+          selectors.shareForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const message = (selectors.shareMessage?.value || '').trim();
+            if (!message) {
+              selectors.shareHint.textContent = 'Escribe un mensaje antes de publicar.';
+              selectors.shareHint.classList.add('text-red-500');
+              return;
+            }
+            selectors.shareHint.textContent = '¡Gracias! Tu actualización es visible solo para ti por ahora.';
+            selectors.shareHint.classList.remove('text-red-500');
+            prependLocalPost(message);
+            selectors.shareForm.reset();
+          });
+        }
+
+        if (selectors.searchInput) {
+          selectors.searchInput.addEventListener('input', (event) => {
+            const value = event.target.value.trim();
+            if (state.searchDebounce) clearTimeout(state.searchDebounce);
+            if (!value) {
+              selectors.searchResults.innerHTML = '';
+              return;
+            }
+            state.searchDebounce = setTimeout(() => runCommunitySearch(value), 250);
+          });
+        }
+
+        if (selectors.shuffleTrending) {
+          selectors.shuffleTrending.addEventListener('click', () => {
+            state.trending = shuffleArray([...state.feed]);
+            renderTrending();
+          });
+        }
+      }
+
+      async function bootstrapCommunity() {
+        setFeedLoading(true);
+        try {
+          const [recipes, comments, categories, featured] = await Promise.all([
+            fetchJson(endpoints.recipes, []),
+            fetchJson(endpoints.comments, []),
+            fetchJson(endpoints.categories, []),
+            fetchJson(endpoints.featured, []),
+          ]);
+
+          state.feed = (recipes || []).map(normalizeRecipeCard);
+          state.comments = comments || [];
+          state.categories = categories || [];
+          state.featured = featured || [];
+          state.trending = deriveTrending(state.feed);
+          state.favoriteSet = new Set(state.feed.filter((item) => item.isFavorite).map((item) => String(item.id)));
+
+          renderAll();
+        } catch (error) {
+          console.error('Error al cargar la comunidad:', error);
+          renderError(selectors.feed, 'No pudimos cargar la actividad. Intenta nuevamente.');
+        } finally {
+          setFeedLoading(false);
+        }
+      }
+
+      function renderAll() {
+        renderStats();
+        renderFeed();
+        renderComments();
+        renderCategories();
+        renderFeatured();
+        renderTrending();
+      }
+
+      function renderStats() {
+        setText(selectors.statRecipes, state.feed.length);
+        setText(selectors.statChefs, state.featured.length);
+        setText(selectors.statCategories, state.categories.length);
+        setText(selectors.statComments, state.comments.length);
+      }
+
+      function renderFeed() {
+        if (!selectors.feed) return;
+        selectors.feed.innerHTML = '';
+        if (!state.feed.length) {
+          renderEmpty(selectors.feed, 'Aún no hay actividad en este periodo. Sé el primero en compartir.');
+          return;
+        }
+        state.feed.forEach((item) => {
+          if (item.type === 'note') {
+            selectors.feed.appendChild(buildNoteCard(item));
+          } else {
+            selectors.feed.appendChild(buildRecipeCard(item));
+          }
+        });
+      }
+
+      function renderComments() {
+        if (!selectors.comments) return;
+        selectors.comments.innerHTML = '';
+        if (!state.comments.length) {
+          renderEmpty(selectors.comments, 'Aún no hay comentarios recientes.');
+          return;
+        }
+        state.comments.forEach((comment) => {
+          const li = document.createElement('li');
+          li.className = 'rounded-2xl border border-gray-100 bg-gray-50/60 px-4 py-3 text-sm shadow-sm';
+          li.innerHTML = `
+            <div class="flex items-center justify-between text-xs text-gray-500">
+              <a href="${comment.profileUrl || '#'}" class="font-semibold text-purple-600 hover:text-purple-700">${escapeHtml(comment.Usu_Nombre || comment.Usu_Alias || 'Usuario')}</a>
+              <a href="${comment.recipeUrl || '#'}" class="text-gray-400 hover:text-purple-500">${escapeHtml(comment.Rec_Nombre || '')}</a>
+            </div>
+            <p class="mt-2 text-gray-700">${escapeHtml(comment.Com_Comentario || '')}</p>
+          `;
+          selectors.comments.appendChild(li);
+        });
+      }
+
+      function renderCategories() {
+        if (!selectors.categories) return;
+        selectors.categories.innerHTML = '';
+        if (!state.categories.length) {
+          renderEmpty(selectors.categories, 'No hay categorías disponibles.');
+          setText(selectors.categoriesBadge, '0');
+          return;
+        }
+        setText(selectors.categoriesBadge, state.categories.length);
+        state.categories.slice(0, 6).forEach((category) => {
+          const li = document.createElement('li');
+          li.className = 'flex items-center justify-between rounded-2xl bg-gray-50 px-4 py-3 text-sm';
+          li.innerHTML = `
+            <div>
+              <p class="font-semibold text-gray-800">${escapeHtml(category.nombre || 'Sin nombre')}</p>
+              <p class="text-xs text-gray-500">${Number(category.recetas_count || 0)} recetas · ${Number(category.premium_count || 0)} premium</p>
+            </div>
+            <a href="/buscar?category=${encodeURIComponent((category.nombre || '').toLowerCase())}" class="text-purple-600 hover:text-purple-700">
+              <span class="material-symbols-outlined text-base">trending_flat</span>
+            </a>
+          `;
+          selectors.categories.appendChild(li);
+        });
+      }
+
+      function renderFeatured() {
+        if (!selectors.featured) return;
+        selectors.featured.innerHTML = '';
+        if (!state.featured.length) {
+          renderEmpty(selectors.featured, 'No encontramos chefs destacados.');
+          return;
+        }
+        state.featured.slice(0, 5).forEach((user) => {
+          const li = document.createElement('li');
+          li.className = 'flex items-center justify-between rounded-2xl border border-gray-100 px-4 py-3';
+          li.innerHTML = `
+            <div class="flex items-center gap-3">
+              <div class="h-12 w-12 overflow-hidden rounded-full bg-gray-100">
+                <img src="${escapeHtml(user.avatar || '/Imagenes/Usuarios/0.png')}" alt="${escapeHtml(user.name || 'Chef')}" class="h-full w-full object-cover" loading="lazy">
+              </div>
+              <div>
+                <p class="font-semibold text-gray-900">${escapeHtml(user.name || 'Chef')}</p>
+                <p class="text-xs text-gray-500">${escapeHtml(user.specialty || 'Creador')}</p>
+              </div>
+            </div>
+            <a href="${user.profileUrl || '#'}" class="inline-flex items-center gap-1 rounded-xl border border-purple-200 px-3 py-1 text-sm font-semibold text-purple-600 hover:bg-purple-50">
+              Ver perfil
+            </a>
+          `;
+          selectors.featured.appendChild(li);
+        });
+      }
+
+      function renderTrending() {
+        if (!selectors.trending) return;
+        selectors.trending.innerHTML = '';
+        if (!state.trending.length) {
+          renderEmpty(selectors.trending, 'Aún no hay tendencias.');
+          return;
+        }
+        state.trending.slice(0, 4).forEach((recipe) => {
+          const li = document.createElement('li');
+          li.className = 'flex items-center gap-3 rounded-2xl border border-gray-100 p-3';
+          li.innerHTML = `
+            <div class="h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl bg-gray-100">
+              <img src="${escapeHtml(recipe.image || '/Imagenes/Recetas/1.png')}" alt="${escapeHtml(recipe.title)}" class="h-full w-full object-cover" loading="lazy">
+            </div>
+            <div class="flex-1 text-sm">
+              <p class="font-semibold text-gray-900 line-clamp-2">${escapeHtml(recipe.title)}</p>
+              <p class="text-xs text-gray-500">${recipe.ratingLabel || 'Sin calificar'} · ${recipe.timeLabel || '—'}</p>
+            </div>
+            <a href="/receta/${encodeURIComponent(recipe.id)}" class="text-purple-600 hover:text-purple-700">
+              <span class="material-symbols-outlined">arrow_outward</span>
+            </a>
+          `;
+          selectors.trending.appendChild(li);
+        });
+      }
+
+      async function runCommunitySearch(term) {
+        if (!selectors.searchResults) return;
+        selectors.searchResults.innerHTML = '<p class="text-sm text-gray-400">Buscando…</p>';
+        try {
+          const data = await fetchJson(`/api/usuarios/buscar?q=${encodeURIComponent(term)}`, []);
+          if (!data.length) {
+            selectors.searchResults.innerHTML = '<p class="text-sm text-gray-500">No encontramos coincidencias.</p>';
+            return;
+          }
+          selectors.searchResults.innerHTML = '';
+          data.slice(0, 4).forEach((user) => {
+            const card = document.createElement('div');
+            card.className = 'rounded-2xl border border-gray-100 p-3 shadow-sm';
+            card.innerHTML = `
+              <div class="flex items-center gap-3">
+                <div class="h-10 w-10 overflow-hidden rounded-full bg-gray-100">
+                  <img src="${escapeHtml(user.avatar || '/Imagenes/Usuarios/0.png')}" alt="${escapeHtml(user.name || 'Usuario')}" class="h-full w-full object-cover" loading="lazy">
+                </div>
+                <div class="flex-1 text-sm">
+                  <p class="font-semibold text-gray-900">${escapeHtml(user.name || 'Usuario')}</p>
+                  <p class="text-xs text-gray-500">${escapeHtml(user.specialty || '')}</p>
+                </div>
+                <a href="${user.profileUrl || '#'}" class="text-purple-600 hover:text-purple-700">
+                  <span class="material-symbols-outlined">arrow_outward</span>
+                </a>
+              </div>
+            `;
+            selectors.searchResults.appendChild(card);
+          });
+        } catch (error) {
+          console.error('Error al buscar en la comunidad:', error);
+          selectors.searchResults.innerHTML = '<p class="text-sm text-red-500">No se pudo completar la búsqueda.</p>';
+        }
+      }
+
+      function prependLocalPost(message) {
+        const localPost = {
+          id: `local-${Date.now()}`,
+          type: 'note',
+          text: message,
+          createdAt: new Date(),
+        };
+        state.feed.unshift(localPost);
+        renderFeed();
+      }
+
+      async function fetchJson(url, fallback) {
+        const response = await fetch(url, { credentials: 'same-origin' });
+        if (!response.ok) throw new Error(`Status ${response.status}`);
+        const data = await response.json();
+        return data ?? fallback;
+      }
+
+      function normalizeRecipeCard(recipe) {
+        const id = recipe.Rec_ID ?? recipe.id;
+        const title = recipe.Rec_Nombre || 'Receta sin título';
+        const description = recipe.Rec_Descripcion || 'Sin descripción disponible.';
+        const image = selectRecipeImage(recipe.Img_Rutas);
+        const difficulty = resolveDifficulty(recipe.Rec_Dificultad);
+        const timeLabel = formatTime(recipe.Rec_Tiempo_Prep);
+        const ratingLabel = buildRatingLabel(recipe.avgRating, recipe.ratingsCount);
+        const isFavorite = recipe.isFavorite === 1 || recipe.isFavorite === true || recipe.isFavorite === '1';
+
+        return {
+          id: id != null ? String(id) : '',
+          title,
+          description,
+          image,
+          difficulty,
+          timeLabel,
+          ratingLabel,
+          isFavorite,
+          categoryId: recipe.Cat_ID,
+          publishedAt: recipe.Rec_Fecha_Publicacion,
+        };
+      }
+
+      function buildRecipeCard(recipe) {
+        const card = document.createElement('article');
+        card.className = 'flex flex-col gap-4 rounded-2xl border border-gray-100 p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md';
+        card.innerHTML = `
+          <div class="flex items-center gap-4">
+            <div class="hidden h-24 w-24 overflow-hidden rounded-2xl bg-gray-100 sm:block">
+              <img src="${escapeHtml(recipe.image)}" alt="${escapeHtml(recipe.title)}" class="h-full w-full object-cover" loading="lazy">
+            </div>
+            <div class="flex-1">
+              <h3 class="text-lg font-semibold text-gray-900">${escapeHtml(recipe.title)}</h3>
+              <p class="mt-1 text-sm text-gray-600 line-clamp-2">${escapeHtml(recipe.description)}</p>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-3 text-xs text-gray-500">
+            <span class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 font-medium">
+              <span class="material-symbols-outlined text-base">schedule</span>
+              ${recipe.timeLabel || 'Sin tiempo'}
+            </span>
+            <span class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 font-medium">
+              <span class="material-symbols-outlined text-base">science</span>
+              ${recipe.difficulty}
+            </span>
+            <span class="inline-flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 font-medium">
+              <span class="material-symbols-outlined text-base">star</span>
+              ${recipe.ratingLabel}
+            </span>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <a href="/receta/${encodeURIComponent(recipe.id)}" class="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-600">
+              Ver receta
+              <span class="material-symbols-outlined text-base">arrow_outward</span>
+            </a>
+            <button type="button" class="inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-purple-500" data-recipe-id="${recipe.id}">
+              ${favoriteContent(recipe.isFavorite)}
+            </button>
+          </div>
+        `;
+        const favoriteButton = card.querySelector('button[data-recipe-id]');
+        if (favoriteButton) {
+          favoriteButton.addEventListener('click', () => toggleFavorite(recipe, favoriteButton));
+          updateFavoriteVisual(favoriteButton, recipe.isFavorite);
+        }
+        return card;
+      }
+
+      function buildNoteCard(note) {
+        const card = document.createElement('article');
+        card.className = 'rounded-2xl border border-dashed border-purple-200 bg-purple-50/50 p-4 text-sm text-purple-900';
+        card.innerHTML = `
+          <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-purple-500">
+            <span class="material-symbols-outlined text-base">campaign</span>
+            Tu actualización
+          </div>
+          <p class="mt-2 whitespace-pre-line text-base">${escapeHtml(note.text)}</p>
+          <p class="mt-2 text-xs text-purple-500">${note.createdAt instanceof Date ? note.createdAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Reciente'}</p>
+        `;
+        return card;
+      }
+
+      async function toggleFavorite(recipe, button) {
+        if (!recipe || !button) return;
+        const recipeId = recipe.id;
+        if (!recipeId) return;
+        const isActive = state.favoriteSet.has(String(recipeId));
+        try {
+          button.disabled = true;
+          button.classList.add('opacity-70');
+          const response = await fetch(`/api/recetas/${encodeURIComponent(recipeId)}/favorita`, {
+            method: isActive ? 'DELETE' : 'POST',
+            credentials: 'same-origin',
+          });
+          if (response.status === 401) {
+            window.location.href = `/iniciar-sesion?returnTo=${encodeURIComponent(window.location.pathname)}`;
+            return;
+          }
+          if (!response.ok) throw new Error('favorite_failed');
+          if (isActive) {
+            state.favoriteSet.delete(String(recipeId));
+          } else {
+            state.favoriteSet.add(String(recipeId));
+          }
+          recipe.isFavorite = !isActive;
+          updateFavoriteVisual(button, recipe.isFavorite);
+        } catch (error) {
+          console.error('No se pudo actualizar favoritos:', error);
+        } finally {
+          button.disabled = false;
+          button.classList.remove('opacity-70');
+        }
+      }
+
+      function updateFavoriteVisual(button, isFavorite) {
+        if (!button) return;
+        if (isFavorite) {
+          button.className = 'inline-flex items-center gap-2 rounded-xl border border-purple-600 bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow';
+        } else {
+          button.className = 'inline-flex items-center gap-2 rounded-xl border border-purple-200 bg-white px-4 py-2 text-sm font-semibold text-purple-600 hover:border-purple-400 hover:bg-purple-50';
+        }
+        button.innerHTML = favoriteContent(isFavorite);
+      }
+
+      function favoriteContent(isFavorite) {
+        return isFavorite
+          ? '<span class="material-symbols-outlined text-base">bookmark_added</span> Guardada'
+          : '<span class="material-symbols-outlined text-base">bookmark_add</span> Guardar';
+      }
+
+      function buildRatingLabel(avg, count) {
+        const rating = Number(avg);
+        const total = Number(count) || 0;
+        if (!Number.isFinite(rating) || rating <= 0) return 'Sin calificaciones';
+        return `${rating.toFixed(1)} (${total})`;
+      }
+
+      function resolveDifficulty(value) {
+        const numeric = Number(value);
+        if (Number.isFinite(numeric)) {
+          if (numeric <= 1) return 'Fácil';
+          if (numeric >= 10) return 'Avanzada';
+          return 'Intermedia';
+        }
+        const text = (value || '').toString().toLowerCase();
+        if (text.includes('facil')) return 'Fácil';
+        if (text.includes('media')) return 'Intermedia';
+        if (text.includes('avanz')) return 'Avanzada';
+        return 'Sin datos';
+      }
+
+      function selectRecipeImage(raw) {
+        if (!raw) return '/Imagenes/Recetas/1.png';
+        const first = String(raw).split(',').map((item) => item.trim()).find(Boolean);
+        if (!first) return '/Imagenes/Recetas/1.png';
+        if (/^https?:\/\//i.test(first)) return first;
+        return first.startsWith('/') ? first : `/${first}`;
+      }
+
+      function formatTime(value) {
+        if (value == null) return 'Sin tiempo';
+        if (typeof value === 'number' && Number.isFinite(value)) {
+          if (value < 60) return `${value} min`;
+          const hours = Math.floor(value / 60);
+          const minutes = value % 60;
+          if (!minutes) return `${hours} h`;
+          return `${hours} h ${minutes} min`;
+        }
+        const text = String(value);
+        if (text.includes(':')) {
+          const [h = '0', m = '0'] = text.split(':');
+          const hours = Number(h) || 0;
+          const minutes = Number(m) || 0;
+          if (!hours) return `${minutes} min`;
+          return `${hours} h ${minutes ? minutes + ' min' : ''}`.trim();
+        }
+        return `${text} min`;
+      }
+
+      function deriveTrending(feed) {
+        if (!Array.isArray(feed)) return [];
+        return [...feed]
+          .filter((item) => item.type !== 'note')
+          .sort((a, b) => {
+            const ratingA = parseFloat(a.ratingLabel) || 0;
+            const ratingB = parseFloat(b.ratingLabel) || 0;
+            return ratingB - ratingA;
+          });
+      }
+
+      function shuffleArray(list) {
+        for (let i = list.length - 1; i > 0; i -= 1) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [list[i], list[j]] = [list[j], list[i]];
+        }
+        return list;
+      }
+
+      function setFeedLoading(isLoading) {
+        if (!selectors.feed) return;
+        if (isLoading) {
+          selectors.feed.innerHTML = '<div class="animate-pulse rounded-2xl border border-dashed border-gray-200 p-6 text-center text-sm text-gray-500">Cargando actividad de la comunidad...</div>';
+        }
+      }
+
+      function renderEmpty(container, message) {
+        if (!container) return;
+        const div = document.createElement('div');
+        div.className = 'rounded-2xl border border-dashed border-gray-200 px-4 py-6 text-center text-sm text-gray-500';
+        div.textContent = message;
+        container.appendChild(div);
+      }
+
+      function renderError(container, message) {
+        if (!container) return;
+        container.innerHTML = '';
+        const div = document.createElement('div');
+        div.className = 'rounded-2xl border border-red-200 bg-red-50 px-4 py-6 text-center text-sm text-red-600';
+        div.textContent = message;
+        container.appendChild(div);
+      }
+
+      function setText(el, value) {
+        if (!el) return;
+        el.textContent = value != null ? value : '—';
+      }
+
+      function escapeHtml(value) {
+        return String(value || '').replace(/[&<>"']/g, (char) => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          '\'': '&#39;',
+        })[char] || char);
+      }
+    })();
+  </script>
+</body>
+
+</html>

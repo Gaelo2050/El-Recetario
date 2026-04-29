@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <title>Categorías - El Recetario®</title>
+  <link rel="shortcut icon" href="../Imagenes/Logo/favicon.ico">
+  <link href="../css/output.css" rel="stylesheet">
+  <script src="/js/userSession.js"></script>
+</head>
+  <!-- Header -->
+  <script src="/js/loadHeader.js" defer></script>
+  <div id="headerContainer"></div>
+    <div id="mobileNav" class="md:hidden hidden border-t border-gray-200 bg-white">
+      <nav class="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-3 text-gray-600 font-medium">
+        <a href="/" class="hover:text-orange-500">Inicio</a>
+        <a href="/recetas" class="hover:text-orange-500">Recetas</a>
+        <a href="/comunidad" class="hover:text-orange-500">Comunidad</a>
+        <a href="/buscar-usuarios" class="hover:text-orange-500">Usuarios</a>
+        <a href="/categorias" class="text-orange-500 font-semibold">Categorías</a>
+        <a href="/iniciar-sesion" class="hover:text-purple-600">Iniciar sesión</a>
+        <a href="/registro"
+          class="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2 rounded-lg shadow hover:opacity-90 transition">
+          <span class="material-symbols-outlined text-base">person_add</span>
+          Crear cuenta
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-10 space-y-12">
+    <section class="bg-white rounded-3xl shadow-lg p-8 md:p-10">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+        <div class="space-y-4 max-w-2xl">
+          <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-100 text-teal-700 text-sm font-semibold">
+            <span class="material-symbols-outlined text-base">category</span>
+            Explora el recetario
+          </span>
+          <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Encuentra recetas por categoría</h1>
+          <p class="text-gray-600 text-lg">Busca platos por tipo de comida, nivel de dificultad o inspiración culinaria. Filtra rápidamente y descubre nuevas ideas para tu próxima comida.</p>
+        </div>
+        <form id="categorySearchForm" class="flex-1 space-y-4" autocomplete="off">
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+            <input type="search" id="categorySearchInput" name="q" placeholder="Buscar categorías (postres, vegano, bebidas...)"
+              class="w-full pl-12 pr-4 py-3 rounded-2xl border border-gray-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-200 outline-none transition">
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="space-y-4">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <h2 class="text-2xl font-semibold text-gray-900">Todas las categorías</h2>
+        <div class="flex flex-wrap items-center gap-3">
+          <p class="text-gray-500" id="categoryResultsSummary">Cargando categorías...</p>
+          <a id="categoryAdminButton" href="/administracion/categorias"
+            class="hidden items-center gap-2 rounded-full border border-orange-200 px-4 py-2 text-sm font-semibold text-orange-600 shadow-sm transition hover:bg-orange-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500">
+            <span class="material-symbols-outlined text-base">admin_panel_settings</span>
+            Administrar categorías
+          </a>
+        </div>
+      </div>
+      <div id="categoriesGrid" class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3" aria-live="polite">
+        <article class="bg-white rounded-2xl shadow p-8 text-center text-gray-400">Preparando listado...</article>
+      </div>
+    </section>
+
+    <section class="space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <h2 class="text-2xl font-semibold text-gray-900">Colecciones destacadas</h2>
+        <p class="text-gray-500" id="featuredCollectionsSummary">Basado en actividad reciente.</p>
+      </div>
+      <div id="featuredCollections" class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <article class="bg-gradient-to-r from-orange-500 to-pink-500 text-white rounded-2xl p-6 shadow">
+          <div class="flex items-start gap-3">
+            <span class="material-symbols-outlined text-4xl">trophy</span>
+            <div>
+              <h3 class="text-xl font-semibold">Destacando lo mejor</h3>
+              <p class="text-sm opacity-90">Estamos analizando las categorías favoritas de la comunidad.</p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script src="/js/loadFooter.js" defer></script>
+  <div id="footerContainer"></div>
+
+  <script>
+    const mobileNavToggle = document.querySelector('[data-mobile-nav-toggle]');
+    const mobileNav = document.getElementById('mobileNav');
+
+    const closeMobileNav = () => {
+      if (!mobileNav) return;
+      mobileNav.classList.add('hidden');
+      if (mobileNavToggle) mobileNavToggle.setAttribute('aria-expanded', 'false');
+    };
+
+    const openMobileNav = () => {
+      if (!mobileNav) return;
+      mobileNav.classList.remove('hidden');
+      if (mobileNavToggle) mobileNavToggle.setAttribute('aria-expanded', 'true');
+    };
+
+    if (mobileNavToggle && mobileNav) {
+      mobileNavToggle.addEventListener('click', () => {
+        const isHidden = mobileNav.classList.contains('hidden');
+        if (isHidden) {
+          openMobileNav();
+        } else {
+          closeMobileNav();
+        }
+      });
+
+      mobileNav.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => {
+          if (window.innerWidth < 768) closeMobileNav();
+        });
+      });
+    }
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 768) closeMobileNav();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && window.innerWidth < 768) {
+        closeMobileNav();
+      }
+    });
+  </script>
+
+  <script>
+    const categoriesGrid = document.getElementById('categoriesGrid');
+    const categoryResultsSummary = document.getElementById('categoryResultsSummary');
+    const categorySearchInput = document.getElementById('categorySearchInput');
+    const categorySearchForm = document.getElementById('categorySearchForm');
+    const categoryQuickFilters = document.getElementById('categoryQuickFilters');
+    const featuredCollections = document.getElementById('featuredCollections');
+    const featuredCollectionsSummary = document.getElementById('featuredCollectionsSummary');
+    const categoryAdminButton = document.getElementById('categoryAdminButton');
+
+    let categoriesData = [];
+    let filteredData = [];
+
+    const fallbackCategories = [
+      { id: 1, nombre: 'Entrantes', recetas_count: 0, premium_count: 0, descripcion: 'Botanas y aperitivos para iniciar cualquier menú.' },
+      { id: 2, nombre: 'Sopas y Caldos', recetas_count: 0, premium_count: 0, descripcion: 'Preparaciones calientes y reconfortantes.' },
+      { id: 3, nombre: 'Ensaladas', recetas_count: 0, premium_count: 0, descripcion: 'Opciones frescas y equilibradas.' },
+      { id: 4, nombre: 'Carnes', recetas_count: 0, premium_count: 0, descripcion: 'Recetas con proteínas tradicionales.' },
+      { id: 5, nombre: 'Pescados y Mariscos', recetas_count: 0, premium_count: 0, descripcion: 'Sabores del mar para toda ocasión.' },
+      { id: 6, nombre: 'Pasta', recetas_count: 0, premium_count: 0, descripcion: 'Clásicos italianos y fusiones creativas.' },
+      { id: 7, nombre: 'Postres', recetas_count: 0, premium_count: 0, descripcion: 'Dulces para compartir momentos especiales.' },
+      { id: 8, nombre: 'Bebidas', recetas_count: 0, premium_count: 0, descripcion: 'Jugos, cafés y cocteles para refrescarte.' },
+      { id: 9, nombre: 'Panadería', recetas_count: 0, premium_count: 0, descripcion: 'Masas, panes artesanales y repostería.' },
+      { id: 10, nombre: 'Vegano', recetas_count: 0, premium_count: 0, descripcion: 'Sabor 100% vegetal para cada día.' }
+    ];
+
+    const categoryImages = {
+      entrantes: '/Imagenes/Categorias/1.jpg',
+      'sopas y caldos': '/Imagenes/Categorias/2.jpg',
+      ensaladas: '/Imagenes/Categorias/3.jpg',
+      carnes: '/Imagenes/Categorias/4.webp',
+      'pescados y mariscos': '/Imagenes/Categorias/5.jpg',
+      pasta: '/Imagenes/Categorias/6.jpg',
+      postres: '/Imagenes/Categorias/7.jpg',
+      bebidas: '/Imagenes/Categorias/8.jpg',
+      panadería: '/Imagenes/Categorias/9.jpg',
+      vegano: '/Imagenes/Categorias/10.jpg'
+    };
+
+    const normalizeText = (value) => {
+      return String(value || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .trim();
+    };
+
+    const normalizeToken = (value) => {
+      return normalizeText(value)
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    };
+
+    const buildCategoryHref = (name) => {
+      const slug = normalizeToken(name);
+      const normalizedFallback = normalizeText(name);
+      const slugValue = slug || normalizedFallback;
+      const labelParam = encodeURIComponent(String(name || '').trim());
+      const slugParam = slugValue ? encodeURIComponent(slugValue) : '';
+      const labelQuery = labelParam ? `&categoryLabel=${labelParam}` : '';
+      return `/recetas?category=${slugParam}${labelQuery}`;
+    };
+
+    const selectCategoryImage = (name) => {
+      if (!name) return '/Imagenes/Recetas/1.png';
+      const key = name.trim().toLowerCase();
+      return categoryImages[key] || '/Imagenes/Recetas/1.png';
+    };
+
+    const getCategoryImage = (category) => {
+      if (category && category.imagen) {
+        return category.imagen;
+      }
+      return selectCategoryImage(category && category.nombre);
+    };
+
+    const formatCount = (total) => {
+      if (!Number.isFinite(total)) return '0';
+      if (total >= 1000) return `${(total / 1000).toFixed(1)}k`;
+      return String(total);
+    };
+
+    const renderCategories = (data) => {
+      if (!categoriesGrid) return;
+      categoriesGrid.innerHTML = '';
+      if (!data.length) {
+        categoriesGrid.innerHTML = '<article class="bg-white rounded-2xl shadow p-8 text-center text-gray-400">No se encontraron categorías.</article>';
+        if (categoryResultsSummary) categoryResultsSummary.textContent = 'Sin resultados disponibles.';
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      data.forEach((category) => {
+        const card = document.createElement('article');
+        card.className = 'bg-white rounded-2xl shadow overflow-hidden flex flex-col hover:shadow-lg transition';
+        const image = getCategoryImage(category);
+        const categoryHref = buildCategoryHref(category.nombre);
+        const premiumBadge = Number(category.premium_count) > 0 ? `<span class="flex items-center gap-1 text-xs font-semibold text-purple-600 bg-purple-100 px-2 py-1 rounded-full"> <span class="material-symbols-outlined text-sm">diamond</span> Premium ${category.premium_count}</span>` : '';
+        card.innerHTML = `
+          <div class="relative h-40">
+            <img src="${image}" alt="${category.nombre}"
+              class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+            <div class="absolute bottom-4 left-4 text-white">
+              <h3 class="text-xl font-semibold">${category.nombre}</h3>
+              <p class="text-sm opacity-90">${formatCount(category.recetas_count)} recetas publicadas</p>
+            </div>
+          </div>
+          <div class="p-5 flex flex-col gap-3 text-sm text-gray-600">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="flex items-center gap-1 text-xs font-semibold text-orange-600 bg-orange-100 px-2 py-1 rounded-full">
+                <span class="material-symbols-outlined text-sm">menu_book</span>
+                ${category.recetas_count} recetas
+              </span>
+              ${premiumBadge}
+            </div>
+            <p>${category.descripcion || 'Inspiración seleccionada con preparaciones que la comunidad ama.'}</p>
+            <a href="${categoryHref}"
+              class="inline-flex items-center gap-2 text-sm font-semibold text-orange-500 hover:text-orange-600">
+              Ver recetas
+              <span class="material-symbols-outlined text-sm">arrow_outward</span>
+            </a>
+          </div>`;
+        fragment.appendChild(card);
+      });
+      categoriesGrid.appendChild(fragment);
+
+      if (categoryResultsSummary) {
+        categoryResultsSummary.textContent = `${data.length} categoría${data.length === 1 ? '' : 's'} visibles${data.length !== categoriesData.length ? ` de ${categoriesData.length}` : ''}.`;
+      }
+    };
+
+    const renderFeaturedCollections = (data) => {
+      if (!featuredCollections) return;
+      featuredCollections.innerHTML = '';
+      if (!data.length) {
+        featuredCollections.innerHTML = '<article class="bg-white rounded-2xl shadow p-6 text-center text-gray-400">Sin datos suficientes para destacar categorías.</article>';
+        if (featuredCollectionsSummary) featuredCollectionsSummary.textContent = 'Sin actividad reciente.';
+        return;
+      }
+
+      const topWithPremium = data
+        .filter((category) => Number(category.recetas_count) > 0)
+        .sort((a, b) => Number(b.recetas_count) - Number(a.recetas_count))
+        .slice(0, 3);
+
+      const fragment = document.createDocumentFragment();
+      topWithPremium.forEach((category, index) => {
+        const card = document.createElement('article');
+        card.className = 'bg-white rounded-2xl shadow p-6 flex flex-col gap-4 border border-orange-100';
+        const accent = index === 0 ? 'bg-orange-100 text-orange-600' : 'bg-purple-100 text-purple-600';
+        const exploreHref = buildCategoryHref(category.nombre);
+        card.innerHTML = `
+          <div class="flex items-start gap-3">
+            <span class="material-symbols-outlined text-3xl text-orange-500">local_fire_department</span>
+            <div>
+              <span class="inline-flex items-center gap-1 text-xs font-semibold ${accent} px-2 py-1 rounded-full">
+                Tendencia #${index + 1}
+              </span>
+              <h3 class="text-lg font-semibold text-gray-900 mt-2">${category.nombre}</h3>
+              <p class="text-sm text-gray-500">${formatCount(category.recetas_count)} recetas disponibles ${Number(category.premium_count) > 0 ? `· ${category.premium_count} premium` : ''}</p>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-sm text-gray-600">
+            <span class="flex items-center gap-1">
+              <span class="material-symbols-outlined text-base text-teal-500">timelapse</span>
+              Perfecto para planificar tu semana
+            </span>
+            <a href="${exploreHref}" class="inline-flex items-center gap-1 text-orange-500 font-semibold hover:text-orange-600">
+              Explorar
+              <span class="material-symbols-outlined text-sm">arrow_outward</span>
+            </a>
+          </div>`;
+        fragment.appendChild(card);
+      });
+      featuredCollections.appendChild(fragment);
+      if (featuredCollectionsSummary) featuredCollectionsSummary.textContent = 'Seleccionado según recetas publicadas y actividad reciente.';
+    };
+
+    const applyFilters = (query = '') => {
+      const normalized = normalizeText(query);
+      if (!normalized) {
+        filteredData = [...categoriesData];
+      } else {
+        filteredData = categoriesData.filter((category) => normalizeText(category.nombre).includes(normalized));
+      }
+      renderCategories(filteredData);
+    };
+
+    const handleQuickFilter = (filterKey) => {
+      if (!filterKey) {
+        applyFilters('');
+        if (categorySearchInput) categorySearchInput.value = '';
+        return;
+      }
+      if (!categoriesData.length) return;
+      let scoped = [...categoriesData];
+      switch (filterKey) {
+        case 'popular':
+          scoped.sort((a, b) => Number(b.recetas_count) - Number(a.recetas_count));
+          break;
+        case 'premium':
+          scoped = scoped.filter((item) => Number(item.premium_count) > 0);
+          break;
+        case 'rapido':
+          scoped = scoped.filter((item) => /ensalada|entrantes|vegano|bebidas/i.test(item.nombre));
+          break;
+        case 'saludable':
+          scoped = scoped.filter((item) => /ensalada|vegano|sopas/i.test(item.nombre));
+          break;
+        default:
+          break;
+      }
+      if (!scoped.length) {
+        categoriesGrid.innerHTML = '<article class="bg-white rounded-2xl shadow p-8 text-center text-gray-400">No se encontraron categorías para este filtro rápido.</article>';
+        if (categoryResultsSummary) categoryResultsSummary.textContent = 'Sin coincidencias para el filtro seleccionado.';
+        return;
+      }
+      renderCategories(scoped);
+      if (categorySearchInput) categorySearchInput.value = '';
+    };
+
+    const debounce = (fn, delay = 250) => {
+      let timeoutId;
+      return (...args) => {
+        window.clearTimeout(timeoutId);
+        timeoutId = window.setTimeout(() => fn(...args), delay);
+      };
+    };
+
+    const refreshDataFromApi = async () => {
+      try {
+        const response = await fetch('/api/categorias');
+        if (!response.ok) throw new Error(`Estado inesperado: ${response.status}`);
+        const data = await response.json();
+        categoriesData = Array.isArray(data) ? data : [];
+      } catch (error) {
+        console.warn('Fallo al cargar categorías, usando datos locales:', error);
+        categoriesData = fallbackCategories;
+      }
+      filteredData = categoriesData;
+      renderCategories(filteredData);
+      renderFeaturedCollections(categoriesData);
+    };
+
+    const parseUserInfoCookie = () => {
+      try {
+        const match = document.cookie.match(/(?:^|; )userInfo=([^;]+)/);
+        if (!match || match.length < 2) return null;
+        return JSON.parse(decodeURIComponent(match[1]));
+      } catch (error) {
+        return null;
+      }
+    };
+
+    const syncAdminButtonVisibility = (userData) => {
+      if (!categoryAdminButton) return;
+      const session = window.UserSession;
+      let tipo = null;
+      if (session && typeof session.obtenerTipoUsuario === 'function') {
+        tipo = session.obtenerTipoUsuario(userData);
+      } else if (userData && userData.Tipo_Usu_ID != null) {
+        const numeric = Number(userData.Tipo_Usu_ID);
+        if (Number.isFinite(numeric)) tipo = numeric;
+      } else {
+        const cookieUser = parseUserInfoCookie();
+        if (cookieUser && cookieUser.Tipo_Usu_ID != null) {
+          const numeric = Number(cookieUser.Tipo_Usu_ID);
+          if (Number.isFinite(numeric)) tipo = numeric;
+        }
+      }
+      if (tipo === 1) {
+        categoryAdminButton.classList.remove('hidden');
+      } else {
+        categoryAdminButton.classList.add('hidden');
+      }
+    };
+
+    const initAdminButton = () => {
+      syncAdminButtonVisibility();
+      if (window.UserSession && typeof window.UserSession.subscribe === 'function') {
+        window.UserSession.subscribe((user) => syncAdminButtonVisibility(user));
+      }
+    };
+
+    refreshDataFromApi();
+    initAdminButton();
+
+    if (categorySearchInput) {
+      categorySearchInput.addEventListener('input', debounce((event) => {
+        applyFilters(event.target.value);
+      }));
+    }
+
+    if (categorySearchForm) {
+      categorySearchForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        applyFilters(categorySearchInput ? categorySearchInput.value : '');
+      });
+    }
+
+    if (categoryQuickFilters) {
+      categoryQuickFilters.addEventListener('click', (event) => {
+        const button = event.target.closest('button[data-filter]');
+        if (!button) return;
+        const filterKey = button.getAttribute('data-filter');
+        handleQuickFilter(filterKey);
+      });
+    }
+  </script>
+</body>
+
+</html>

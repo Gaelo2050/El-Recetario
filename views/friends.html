@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil de la comunidad - El Recetario®</title>
+  <link rel="shortcut icon" href="../Imagenes/Logo/favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <link href="../css/output.css" rel="stylesheet">
+  <script src="/js/userSession.js"></script>
+</head>
+<body class="font-sans bg-gray-50 text-gray-800">
+
+  <!-- Header -->
+  <script src="/js/loadHeader.js" defer></script>
+  <div id="headerContainer"></div>
+        <main class="max-w-5xl mx-auto p-4 md:p-6 space-y-8">
+    <div id="profileMessage" class="hidden rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600"></div>
+
+    <section id="profileOverview" class="bg-white rounded-2xl shadow-lg overflow-hidden hidden">
+      <div class="relative h-48 bg-gradient-to-r from-pink-500 via-fuchsia-500 to-purple-600">
+        <img id="profileBanner" src="/Imagenes/Fondos/Fondo.jpg" alt="Banner del perfil"
+          class="w-full h-full object-cover opacity-30">
+        <div class="absolute left-1/2 transform -translate-x-1/2 bottom-[-64px] z-10">
+          <div class="w-32 h-32 rounded-full border-4 border-white overflow-hidden shadow-xl bg-white">
+            <img id="profileAvatar" src="/Imagenes/Usuarios/0.png" alt="Avatar del chef" class="w-full h-full object-cover">
+          </div>
+        </div>
+      </div>
+
+      <div class="px-6 pb-6 pt-20">
+        <div class="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
+          <div class="space-y-1">
+            <h1 class="text-3xl font-bold text-gray-900" id="profileName">Cargando...</h1>
+            <p class="text-sm text-gray-400" id="profileAlias"></p>
+            <p class="text-gray-500" id="profileTagline"></p>
+          </div>
+          <div class="flex w-full justify-end gap-3 md:w-auto">
+            <button id="btnFollow" hidden
+              class="bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white px-6 py-2 rounded-full font-semibold hover:opacity-90 transition flex items-center gap-2 shadow-md whitespace-nowrap">
+              <span class="material-symbols-outlined text-lg">person_add</span>
+              <span class="btn-follow-text">Seguir</span>
+            </button>
+            <button id="btnShare"
+              class="bg-gray-100 text-gray-700 w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-200 transition shadow-sm"
+              title="Compartir perfil">
+              <span class="material-symbols-outlined text-[22px]">share</span>
+            </button>
+            <button id="btnMore"
+              class="bg-gray-100 text-gray-700 w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-200 transition shadow-sm"
+              title="Más opciones">
+              <span class="material-symbols-outlined text-[22px]">more_vert</span>
+            </button>
+          </div>
+        </div>
+
+        <p class="text-gray-600 leading-relaxed pt-4" id="profileBio"></p>
+
+        <div id="badgeContainer" class="flex flex-wrap gap-2 mt-4"></div>
+
+        <div class="flex flex-wrap gap-x-8 gap-y-4 mt-6">
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-gray-800" id="statFollowers">0</span>
+            <span class="text-sm text-gray-500">Seguidores</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-gray-800" id="statFollowing">0</span>
+            <span class="text-sm text-gray-500">Siguiendo</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-gray-800" id="statRecipes">0</span>
+            <span class="text-sm text-gray-500">Recetas</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-yellow-500" id="statRatingValue">—</span>
+            <span class="text-sm text-gray-500" id="statRatingLabel">Rating</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t">
+        <nav class="flex flex-wrap gap-x-6 px-6">
+          <button data-tab="recipes"
+            class="tab-btn px-1 py-3 text-purple-600 border-b-2 border-purple-600 font-semibold transition">Recetas</button>
+          <button data-tab="collections" class="tab-btn px-1 py-3 text-gray-500 hover:text-gray-700 transition">Colecciones</button>
+          <button data-tab="followers" class="tab-btn px-1 py-3 text-gray-500 hover:text-gray-700 transition">Seguidores</button>
+        </nav>
+      </div>
+    </section>
+
+    <div id="profileLoading" class="flex items-center justify-center py-20 text-gray-400 text-sm">
+      Cargando perfil...
+    </div>
+
+    <section id="recipes" class="tab-content space-y-6 hidden">
+      <div id="recipesNotice"
+        class="hidden rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-700">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-base">lock</span>
+          <span>
+            Algunas recetas son exclusivas para suscriptores premium. Inicia sesión con tu cuenta premium o suscríbete
+            para verlas.
+          </span>
+        </div>
+      </div>
+      <div id="recipesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      <p id="recipesEmpty"
+        class="hidden rounded-2xl border border-dashed border-gray-200 bg-white p-8 text-center text-gray-400">
+        Este chef aún no ha publicado recetas.
+      </p>
+    </section>
+
+    <section id="collections" class="tab-content hidden space-y-6">
+      <div id="collectionsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      <p id="collectionsEmpty"
+        class="hidden rounded-2xl border border-dashed border-gray-200 bg-white p-8 text-center text-gray-400">
+        Sin colecciones disponibles todavía.
+      </p>
+    </section>
+
+    <section id="followers" class="tab-content hidden space-y-6">
+      <div id="followersGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      <p id="followersEmpty"
+        class="hidden rounded-2xl border border-dashed border-gray-200 bg-white p-8 text-center text-gray-400">
+        Aún no hay seguidores para mostrar.
+      </p>
+    </section>
+  </main>
+
+  <script src="/js/loadFooter.js" defer></script>
+  <div id="footerContainer"></div>
+
+  <script>
+    (() => {
+      const state = { identifier: null, profile: null, viewer: null, setActiveTab: null };
+
+      const elements = {
+        message: document.getElementById('profileMessage'),
+        overview: document.getElementById('profileOverview'),
+        loading: document.getElementById('profileLoading'),
+        banner: document.getElementById('profileBanner'),
+        avatar: document.getElementById('profileAvatar'),
+        name: document.getElementById('profileName'),
+        alias: document.getElementById('profileAlias'),
+        tagline: document.getElementById('profileTagline'),
+        bio: document.getElementById('profileBio'),
+        badgeContainer: document.getElementById('badgeContainer'),
+        statFollowers: document.getElementById('statFollowers'),
+        statFollowing: document.getElementById('statFollowing'),
+        statRecipes: document.getElementById('statRecipes'),
+        statRatingValue: document.getElementById('statRatingValue'),
+        statRatingLabel: document.getElementById('statRatingLabel'),
+        recipesGrid: document.getElementById('recipesGrid'),
+        recipesEmpty: document.getElementById('recipesEmpty'),
+        recipesNotice: document.getElementById('recipesNotice'),
+        collectionsGrid: document.getElementById('collectionsGrid'),
+        collectionsEmpty: document.getElementById('collectionsEmpty'),
+        followersGrid: document.getElementById('followersGrid'),
+        followersEmpty: document.getElementById('followersEmpty'),
+        btnFollow: document.getElementById('btnFollow'),
+        btnShare: document.getElementById('btnShare')
+      };
+
+      const normalizeIdentifier = (raw) => {
+        if (!raw) return '';
+        return String(raw).trim().replace(/^@+/, '');
+      };
+
+      const parseIdentifierFromLocation = () => {
+        const segments = window.location.pathname.split('/').filter(Boolean);
+        const perfilIndex = segments.indexOf('perfil');
+        if (perfilIndex !== -1 && segments.length > perfilIndex + 1) {
+          return normalizeIdentifier(decodeURIComponent(segments[perfilIndex + 1]));
+        }
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('id')) return normalizeIdentifier(params.get('id'));
+        return '';
+      };
+
+      const hideElement = (el) => {
+        if (!el) return;
+        el.classList.add('hidden');
+        el.setAttribute('hidden', '');
+      };
+      const showElement = (el) => {
+        if (!el) return;
+        el.classList.remove('hidden');
+        el.removeAttribute('hidden');
+      };
+
+      const getViewer = () => (state.profile && state.profile.viewer) ? state.profile.viewer : {};
+      const canViewerSeePremium = () => Boolean(getViewer().canSeePremium);
+      const recipeRequiresPremium = (recipe) => Boolean(recipe && recipe.premium && !canViewerSeePremium());
+      const buildReturnToPath = () => `${window.location.pathname}${window.location.search}`;
+      const redirectToLogin = () => {
+        window.location.href = `/iniciar-sesion?returnTo=${encodeURIComponent(buildReturnToPath())}`;
+      };
+      const showPremiumRestriction = () => {
+        showMessage('Esta receta es exclusiva del plan premium. Inicia sesión con tu cuenta premium o suscríbete para acceder.', 'error');
+      };
+      const updateRecipesNotice = (shouldShow) => {
+        if (!elements.recipesNotice) return;
+        if (shouldShow) {
+          showElement(elements.recipesNotice);
+        } else {
+          hideElement(elements.recipesNotice);
+        }
+      };
+      const updateBookmarkVisual = (button, isFavorite) => {
+        if (!button) return;
+        let icon = button.querySelector('.bookmark-icon');
+        if (!icon) {
+          icon = document.createElement('span');
+          icon.className = 'material-symbols-outlined text-2xl bookmark-icon drop-shadow-lg';
+          button.appendChild(icon);
+        }
+        icon.textContent = isFavorite ? 'bookmark_added' : 'bookmark';
+        button.classList.toggle('text-yellow-400', Boolean(isFavorite));
+        button.classList.toggle('text-white', !isFavorite);
+      };
+
+      const clearMessage = () => {
+        if (!elements.message) return;
+        elements.message.textContent = '';
+        hideElement(elements.message);
+      };
+
+      const showMessage = (text, type = 'error') => {
+        if (!elements.message) return;
+        elements.message.textContent = text;
+        elements.message.className = type === 'error'
+          ? 'rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600'
+          : 'rounded-xl border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-700';
+        showElement(elements.message);
+      };
+
+      const formatNumber = (value) => {
+        const num = Number(value) || 0;
+        if (num >= 1000) return `${(num / 1000).toFixed(1).replace(/\.0$/, '')}k`;
+        return String(num);
+      };
+
+      const formatRating = (rating, count) => {
+        const r = Number(rating) || 0;
+        if (!r && !count) return '—';
+        return `${r.toFixed(1)} ★`;
+      };
+
+      const formatTagline = (profile) => {
+        const parts = [];
+        if (profile.role && profile.role !== 'Miembro de la comunidad') parts.push(profile.role);
+        if (profile.specialty && profile.specialty !== 'Recetas variadas') parts.push(profile.specialty);
+        if (!parts.length && profile.memberSince) {
+          try {
+            const joined = new Date(profile.memberSince);
+            parts.push(`Miembro desde ${joined.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })}`);
+          } catch (err) {
+            /* ignore locale issues */
+          }
+        }
+        return parts.join(' · ');
+      };
+
+      const clearContainer = (container) => {
+        if (!container) return;
+        while (container.firstChild) container.removeChild(container.firstChild);
+      };
+
+      const createBadge = (label) => {
+        const span = document.createElement('span');
+        span.className = 'bg-purple-100 text-purple-800 text-xs px-3 py-1 rounded-full font-medium';
+        span.textContent = label;
+        return span;
+      };
+
+      const createRecipeCard = (recipe) => {
+        const article = document.createElement('article');
+        article.className = 'recipe-card bg-white rounded-xl shadow-lg hover:shadow-2xl overflow-hidden flex flex-col transition cursor-pointer';
+        article.dataset.recipeId = recipe.id;
+        const locked = recipeRequiresPremium(recipe);
+        const viewer = getViewer();
+        const isGuest = !viewer.isAuthenticated;
+        article.dataset.locked = locked ? 'true' : 'false';
+        article.dataset.href = `/receta/${encodeURIComponent(recipe.id)}`;
+
+        const figure = document.createElement('div');
+        figure.className = 'relative';
+
+        const img = document.createElement('img');
+        img.src = recipe.image;
+        img.alt = recipe.name || 'Receta publicada';
+        img.className = 'w-full h-48 object-cover transition duration-300 hover:scale-105';
+        figure.appendChild(img);
+
+        if (recipe.premium) {
+          const badge = document.createElement('div');
+          badge.className = 'absolute top-4 right-4';
+          badge.innerHTML = '<span class="bg-yellow-400 text-yellow-900 text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-sm">diamond</span> Premium</span>';
+          figure.appendChild(badge);
+        }
+
+        if (locked) {
+          const overlay = document.createElement('div');
+          overlay.className = 'absolute inset-0 bg-black/50 text-white flex flex-col items-center justify-center text-xs font-semibold text-center px-4';
+          overlay.innerHTML = '<span class="material-symbols-outlined mb-1">lock</span>Solo miembros premium';
+          figure.appendChild(overlay);
+        }
+
+        const bookmarkBtn = document.createElement('button');
+        bookmarkBtn.type = 'button';
+        bookmarkBtn.className = 'bookmark-btn absolute top-4 left-4 text-white hover:text-yellow-400 transition';
+        bookmarkBtn.dataset.recipeId = recipe.id;
+        bookmarkBtn.dataset.favorite = recipe.isFavorite ? 'true' : 'false';
+        bookmarkBtn.dataset.locked = locked ? 'true' : 'false';
+        if (locked) {
+          bookmarkBtn.classList.add('hidden');
+        } else {
+          bookmarkBtn.classList.add('drop-shadow-lg');
+          if (isGuest) {
+            bookmarkBtn.dataset.guest = 'true';
+            bookmarkBtn.classList.add('opacity-60', 'cursor-not-allowed');
+            bookmarkBtn.title = 'Inicia sesión para guardar';
+            bookmarkBtn.disabled = true;
+          } else {
+            bookmarkBtn.dataset.guest = 'false';
+          }
+          updateBookmarkVisual(bookmarkBtn, Boolean(recipe.isFavorite));
+        }
+        figure.appendChild(bookmarkBtn);
+
+        const content = document.createElement('div');
+        content.className = 'p-4 flex-1 flex flex-col gap-3';
+
+        const title = document.createElement('h3');
+        title.className = 'font-semibold text-lg';
+        title.textContent = recipe.name || 'Receta sin título';
+        content.appendChild(title);
+
+        const meta = document.createElement('div');
+        meta.className = 'flex items-center gap-4 text-sm text-gray-500 flex-wrap';
+
+        if (recipe.timeLabel) {
+          const time = document.createElement('span');
+          time.className = 'flex items-center gap-1';
+          time.innerHTML = `<span class="material-symbols-outlined text-base">schedule</span>${recipe.timeLabel}`;
+          meta.appendChild(time);
+        }
+
+        if (recipe.difficultyLabel) {
+          const difficulty = document.createElement('span');
+          difficulty.className = 'flex items-center gap-1';
+          difficulty.innerHTML = `<span class="material-symbols-outlined text-base">workspace_premium</span>${recipe.difficultyLabel}`;
+          meta.appendChild(difficulty);
+        }
+
+        content.appendChild(meta);
+
+        const footer = document.createElement('div');
+        footer.className = 'flex items-center justify-between mt-auto';
+
+        const ratingWrap = document.createElement('div');
+        ratingWrap.className = 'flex items-center gap-2 text-sm text-gray-500';
+
+        const ratingValue = document.createElement('span');
+        ratingValue.className = 'text-yellow-500 font-semibold';
+        ratingValue.textContent = Number(recipe.rating) ? recipe.rating.toFixed(1) : '—';
+        ratingWrap.appendChild(ratingValue);
+
+        if (recipe.ratingsCount) {
+          const ratingCount = document.createElement('span');
+          ratingCount.textContent = `(${formatNumber(recipe.ratingsCount)})`;
+          ratingWrap.appendChild(ratingCount);
+        }
+
+        footer.appendChild(ratingWrap);
+
+        content.appendChild(footer);
+
+        article.appendChild(figure);
+        article.appendChild(content);
+        return article;
+      };
+
+      const createCollectionCard = (collection) => {
+        const article = document.createElement('article');
+        article.className = 'bg-white rounded-xl shadow p-6 flex flex-col gap-3 border border-gray-100';
+
+        const title = document.createElement('h3');
+        title.className = 'text-lg font-semibold text-gray-900';
+        title.textContent = collection.name || 'Colección sin título';
+        article.appendChild(title);
+
+        const meta = document.createElement('div');
+        meta.className = 'flex items-center gap-3 text-sm text-gray-500 flex-wrap';
+
+        const total = document.createElement('span');
+        total.className = 'flex items-center gap-1';
+        total.innerHTML = `<span class="material-symbols-outlined text-base">restaurant_menu</span>${formatNumber(collection.totalRecipes)} recetas`;
+        meta.appendChild(total);
+
+        if (collection.premiumRecipes) {
+          const premium = document.createElement('span');
+          premium.className = 'flex items-center gap-1 text-purple-600';
+          premium.innerHTML = `<span class="material-symbols-outlined text-base">diamond</span>${formatNumber(collection.premiumRecipes)} premium`;
+          meta.appendChild(premium);
+        }
+
+        article.appendChild(meta);
+        return article;
+      };
+
+      const createFollowerCard = (follower) => {
+        const card = document.createElement('div');
+        card.className = 'bg-white p-4 rounded-xl shadow-sm flex items-center gap-4';
+
+        const avatar = document.createElement('img');
+        avatar.src = follower.avatar || '/Imagenes/Usuarios/0.png';
+        avatar.alt = follower.name || follower.alias || 'Seguidor';
+        avatar.className = 'w-12 h-12 rounded-full object-cover';
+        card.appendChild(avatar);
+
+        const info = document.createElement('div');
+        info.className = 'flex-1';
+
+        const name = document.createElement('h4');
+        name.className = 'font-semibold';
+        name.textContent = follower.name || follower.alias || 'Usuario';
+        info.appendChild(name);
+
+        if (follower.alias) {
+          const alias = document.createElement('p');
+          alias.className = 'text-xs text-gray-400';
+          alias.textContent = follower.alias;
+          info.appendChild(alias);
+        }
+
+        const stats = document.createElement('p');
+        stats.className = 'text-sm text-gray-500';
+        stats.textContent = `${formatNumber(follower.recipes)} recetas · ${formatNumber(follower.followers)} seguidores`;
+        info.appendChild(stats);
+
+        card.appendChild(info);
+
+        const action = document.createElement('a');
+        action.href = follower.profileUrl || `/perfil/${encodeURIComponent((follower.alias || '').replace(/^@/, '') || follower.id)}`;
+        action.className = 'text-purple-600 hover:bg-purple-50 p-2 rounded-lg transition flex items-center gap-1';
+        action.innerHTML = '<span class="material-symbols-outlined">north_east</span>';
+        card.appendChild(action);
+
+        return card;
+      };
+
+      const renderBadges = (badges = []) => {
+        clearContainer(elements.badgeContainer);
+        if (!badges || !badges.length) return;
+        badges.slice(0, 4).forEach((label) => {
+          elements.badgeContainer.appendChild(createBadge(label));
+        });
+      };
+
+      const renderRecipes = (recipes = []) => {
+        clearContainer(elements.recipesGrid);
+        const list = Array.isArray(recipes) ? recipes : [];
+        const canSeePremium = canViewerSeePremium();
+        const accessible = list.filter((recipe) => canSeePremium || !recipe.premium);
+        const hiddenPremium = !canSeePremium && list.some((recipe) => recipe.premium);
+
+        updateRecipesNotice(hiddenPremium);
+
+        if (!accessible.length) {
+          if (elements.recipesEmpty) {
+            elements.recipesEmpty.textContent = hiddenPremium
+              ? 'Las recetas de este chef son premium. Inicia sesión con tu plan premium o suscríbete para acceder.'
+              : 'Este chef aún no ha publicado recetas.';
+          }
+          showElement(elements.recipesEmpty);
+          return;
+        }
+
+        hideElement(elements.recipesEmpty);
+        accessible.forEach((recipe) => elements.recipesGrid.appendChild(createRecipeCard(recipe)));
+      };
+
+      const renderCollections = (collections = []) => {
+        clearContainer(elements.collectionsGrid);
+        if (!collections || !collections.length) {
+          showElement(elements.collectionsEmpty);
+          return;
+        }
+        hideElement(elements.collectionsEmpty);
+        collections.forEach((collection) => elements.collectionsGrid.appendChild(createCollectionCard(collection)));
+      };
+
+      const renderFollowers = (followers = []) => {
+        clearContainer(elements.followersGrid);
+        if (!followers || !followers.length) {
+          showElement(elements.followersEmpty);
+          return;
+        }
+        hideElement(elements.followersEmpty);
+        followers.forEach((follower) => elements.followersGrid.appendChild(createFollowerCard(follower)));
+      };
+
+      const toggleFavorite = async (button) => {
+        if (!button) return;
+        const recipeId = Number(button.dataset.recipeId);
+        if (!Number.isFinite(recipeId)) return;
+
+        const viewer = getViewer();
+        if (!viewer.isAuthenticated) {
+          redirectToLogin();
+          return;
+        }
+
+        if (button.dataset.loading === 'true') return;
+
+        const isFavorite = button.dataset.favorite === 'true';
+        const method = isFavorite ? 'DELETE' : 'POST';
+
+        button.dataset.loading = 'true';
+        button.classList.add('opacity-70', 'cursor-wait');
+
+        try {
+          const response = await fetch(`/api/recetas/${recipeId}/favorita`, {
+            method,
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' }
+          });
+
+          if (response.status === 401) {
+            redirectToLogin();
+            return;
+          }
+
+          if (!response.ok) {
+            throw new Error(`favorite_${response.status}`);
+          }
+
+          const nextState = !isFavorite;
+          button.dataset.favorite = String(nextState);
+          updateBookmarkVisual(button, nextState);
+        } catch (err) {
+          console.error('toggleFavorite error:', err);
+          showMessage('No pudimos actualizar tus favoritos. Intenta más tarde.', 'error');
+        } finally {
+          button.dataset.loading = 'false';
+          button.classList.remove('opacity-70', 'cursor-wait');
+        }
+      };
+
+      const updateFollowButton = () => {
+        const btn = elements.btnFollow;
+        if (!btn) return;
+
+        const viewer = state.profile?.viewer;
+        if (!viewer || !viewer.canFollow) {
+          hideElement(btn);
+          btn.dataset.loading = 'false';
+          return;
+        }
+
+        showElement(btn);
+        if (btn.dataset.loading === 'true') {
+          return;
+        }
+
+        const following = Boolean(viewer.isFollowing);
+        btn.dataset.following = following ? 'true' : 'false';
+        btn.disabled = false;
+        btn.classList.remove('opacity-70', 'cursor-wait');
+        btn.classList.toggle('bg-gray-200', following);
+        btn.classList.toggle('text-gray-800', following);
+        btn.classList.toggle('bg-gradient-to-r', !following);
+        btn.classList.toggle('from-pink-500', !following);
+        btn.classList.toggle('to-fuchsia-600', !following);
+        btn.classList.toggle('text-white', !following);
+        btn.innerHTML = following
+          ? '<span class="material-symbols-outlined text-lg">person_remove</span> <span class="btn-follow-text">Siguiendo</span>'
+          : '<span class="material-symbols-outlined text-lg">person_add</span> <span class="btn-follow-text">Seguir</span>';
+      };
+
+      const handleFollowClick = async (event) => {
+        if (event) event.preventDefault();
+        if (!state.profile || !state.profile.viewer || !state.profile.viewer.canFollow) return;
+
+        const btn = elements.btnFollow;
+        const identifier = state.identifier;
+        if (!btn || !identifier) return;
+        if (btn.dataset.loading === 'true') return;
+
+        const isFollowing = Boolean(state.profile.viewer.isFollowing);
+        const method = isFollowing ? 'DELETE' : 'POST';
+        const endpoint = `/api/usuario/perfil/${encodeURIComponent(identifier)}/seguir`;
+
+        btn.dataset.loading = 'true';
+        btn.disabled = true;
+        btn.classList.add('opacity-70', 'cursor-wait');
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<span class="material-symbols-outlined text-lg animate-spin">progress_activity</span> Procesando';
+
+        try {
+          const response = await fetch(endpoint, {
+            method,
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' }
+          });
+
+          if (response.status === 401) {
+            const redirect = `/iniciar-sesion?returnTo=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+            window.location.href = redirect;
+            return;
+          }
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+
+          const payload = await response.json();
+          state.profile.viewer.isFollowing = Boolean(payload.following);
+          if (typeof payload.followers === 'number' && !Number.isNaN(payload.followers)) {
+            state.profile.stats.followers = payload.followers;
+            elements.statFollowers.textContent = formatNumber(payload.followers);
+          }
+        } catch (err) {
+          console.error('handleFollowClick error:', err);
+          btn.innerHTML = originalHtml;
+          alert('No se pudo actualizar el seguimiento. Intenta más tarde.');
+        } finally {
+          btn.dataset.loading = 'false';
+          btn.disabled = false;
+          btn.classList.remove('opacity-70', 'cursor-wait');
+          updateFollowButton();
+        }
+      };
+
+      const handleShareClick = async () => {
+        const profile = state.profile;
+        const shareUrl = window.location.href;
+        const shareTitle = profile?.name ? `Perfil de ${profile.name}` : 'Perfil en El Recetario®';
+        const shareText = profile?.specialty ? `${profile.name} · ${profile.specialty}` : 'Descubre recetas en El Recetario®';
+
+        if (navigator.share) {
+          try {
+            await navigator.share({ title: shareTitle, text: shareText, url: shareUrl });
+            return;
+          } catch (err) {
+            if (err && err.name === 'AbortError') return;
+          }
+        }
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          try {
+            await navigator.clipboard.writeText(shareUrl);
+            alert('Enlace copiado al portapapeles.');
+            return;
+          } catch (err) {
+            console.debug('No se pudo copiar el enlace automáticamente:', err);
+          }
+        }
+
+        alert(`Comparte este perfil: ${shareUrl}`);
+      };
+
+      const handleRecipesClick = (event) => {
+        const bookmarkBtn = event.target.closest('.bookmark-btn');
+        if (bookmarkBtn) {
+          event.preventDefault();
+          if (bookmarkBtn.dataset.locked === 'true') {
+            showPremiumRestriction();
+            return;
+          }
+          if (bookmarkBtn.dataset.guest === 'true') {
+            redirectToLogin();
+            return;
+          }
+          toggleFavorite(bookmarkBtn);
+          return;
+        }
+
+        const card = event.target.closest('.recipe-card');
+        if (card) {
+          const isLocked = card.dataset.locked === 'true';
+          if (isLocked) {
+            event.preventDefault();
+            showPremiumRestriction();
+            return;
+          }
+          const href = card.dataset.href;
+          if (href) {
+            window.location.href = href;
+          }
+        }
+      };
+
+      const initTabs = () => {
+        const tabButtons = Array.from(document.querySelectorAll('.tab-btn'));
+        const contents = Array.from(document.querySelectorAll('.tab-content'));
+
+        const setActiveTab = (id) => {
+          tabButtons.forEach((btn) => {
+            const isActive = btn.dataset.tab === id;
+            btn.classList.toggle('text-purple-600', isActive);
+            btn.classList.toggle('border-purple-600', isActive);
+            btn.classList.toggle('border-b-2', isActive);
+            btn.classList.toggle('text-gray-500', !isActive);
+          });
+          contents.forEach((section) => {
+            if (section.id === id) showElement(section);
+            else hideElement(section);
+          });
+        };
+
+        tabButtons.forEach((btn) => {
+          btn.addEventListener('click', () => setActiveTab(btn.dataset.tab));
+        });
+
+        state.setActiveTab = setActiveTab;
+      };
+
+      const setupEventHandlers = () => {
+        if (elements.btnFollow) elements.btnFollow.addEventListener('click', handleFollowClick);
+        if (elements.btnShare) elements.btnShare.addEventListener('click', handleShareClick);
+        const recipesSection = document.getElementById('recipes');
+        if (recipesSection) recipesSection.addEventListener('click', handleRecipesClick);
+      };
+
+      const applyProfileData = (profile) => {
+        state.profile = profile;
+        state.viewer = profile.viewer || {};
+        clearMessage();
+        hideElement(elements.loading);
+        showElement(elements.overview);
+
+        document.title = profile.name
+          ? `Perfil de ${profile.name} - El Recetario®`
+          : 'Perfil de la comunidad - El Recetario®';
+
+        elements.name.textContent = profile.name || 'Chef anónimo';
+        if (profile.displayAlias) {
+          elements.alias.textContent = profile.displayAlias;
+          showElement(elements.alias);
+        } else {
+          elements.alias.textContent = '';
+          hideElement(elements.alias);
+        }
+
+        elements.tagline.textContent = formatTagline(profile);
+        elements.bio.textContent = profile.bio && profile.bio.trim()
+          ? profile.bio.trim()
+          : 'Este chef todavía no ha escrito una biografía.';
+        elements.banner.src = profile.banner || '/Imagenes/Fondos/Fondo.jpg';
+        elements.avatar.src = profile.avatar || '/Imagenes/Usuarios/0.png';
+
+        elements.statFollowers.textContent = formatNumber(profile.stats?.followers);
+        elements.statFollowing.textContent = formatNumber(profile.stats?.following);
+        elements.statRecipes.textContent = formatNumber(profile.stats?.recipes);
+        elements.statRatingValue.textContent = formatRating(profile.stats?.rating, profile.stats?.ratingsCount);
+        elements.statRatingLabel.textContent = profile.stats?.ratingsCount
+          ? `${formatNumber(profile.stats.ratingsCount)} reseñas`
+          : 'Sin reseñas';
+
+        renderBadges(profile.badges);
+        renderRecipes(profile.recipes);
+        renderCollections(profile.categories);
+        renderFollowers(profile.followers);
+
+        updateFollowButton();
+        if (typeof state.setActiveTab === 'function') state.setActiveTab('recipes');
+      };
+
+      const loadProfile = async () => {
+        if (!state.identifier) {
+          hideElement(elements.loading);
+          showMessage('Selecciona un usuario desde la comunidad para ver su perfil público.');
+          return;
+        }
+
+        showElement(elements.loading);
+        try {
+          const response = await fetch(`/api/usuario/perfil/${encodeURIComponent(state.identifier)}`, { credentials: 'include' });
+          if (response.status === 404) {
+            hideElement(elements.loading);
+            showMessage('No encontramos este perfil. Verifica que el enlace sea correcto.');
+            return;
+          }
+          if (!response.ok) throw new Error(`Respuesta inválida: ${response.status}`);
+          const payload = await response.json();
+          applyProfileData(payload);
+        } catch (error) {
+          console.error('loadProfile error:', error && error.message ? error.message : error);
+          hideElement(elements.loading);
+          showMessage('No se pudo cargar el perfil. Inténtalo más tarde.');
+        }
+      };
+
+      document.addEventListener('DOMContentLoaded', () => {
+        state.identifier = parseIdentifierFromLocation();
+        initTabs();
+        setupEventHandlers();
+        loadProfile();
+      });
+    })();
+  </script>
+</body>
+
+</html>

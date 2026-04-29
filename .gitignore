@@ -1,0 +1,11 @@
+# Node modules
+# node_modules/
+
+# Environment variables
+# .env
+
+# Firebase credentials
+# firebaseService.json
+
+# Base de datos
+# base de datos.sql

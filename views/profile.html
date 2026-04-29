@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <title>Mi Perfil - El Recetario®</title>
+  <link rel="shortcut icon" href="../Imagenes/Logo/favicon.ico">
+  <link href="./css/output.css" rel="stylesheet">
+  <link href="../css/output.css" rel="stylesheet">
+  <script src="/js/userSession.js"></script>
+  <script src="/js/confirmDialog.js"></script>
+</head>
+
+<body class="font-sans bg-gray-50 text-gray-800">
+  <script src="/js/loadHeader.js" defer></script>
+  <div id="headerContainer"></div>
+
+  <!-- Breadcrumbs -->
+  <nav class="bg-white border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 py-3 text-sm">
+      <ol class="flex items-center gap-2 text-gray-500">
+        <li><a href="/inicio" class="hover:text-purple-600">Inicio</a></li>
+        <li class="text-gray-400">/</li>
+        <li class="text-gray-700 font-medium">Perfil</li>
+      </ol>
+    </div>
+  </nav>
+  <div id="header-placeholder"></div>
+  <div id="saveConfirmModal" role="dialog" aria-modal="true" aria-labelledby="saveConfirmTitle"
+    style="position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;">
+    <div style="position:absolute;inset:0;background:rgba(0,0,0,0.6);"></div>
+    <div
+      style="position:relative;z-index:10000;background:#fff;border-radius:12px;max-width:480px;width:100%;padding:20px;">
+      <h3 id="saveConfirmTitle" style="font-size:18px;font-weight:600;margin-bottom:8px;">Confirmar cambios</h3>
+      <p style="color:#6b7280;margin-bottom:18px;">¿Deseas guardar los cambios en tu perfil ahora? Esta acción
+        actualizará tus datos en la base de datos.</p>
+      <div style="display:flex;justify-content:flex-end;gap:12px;">
+        <button id="saveCancelBtn"
+          style="padding:8px 14px;border-radius:8px;background:#f3f4f6;border:0;cursor:pointer;">Cancelar</button>
+        <button id="saveConfirmBtn"
+          style="padding:8px 14px;border-radius:8px;background:#16a34a;color:#fff;border:0;cursor:pointer;">Sí,
+          guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="reportUserModal" role="dialog" aria-modal="true" aria-labelledby="reportUserModalTitle"
+    style="position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;">
+    <div id="reportUserModalBackdrop" style="position:absolute;inset:0;background:rgba(0,0,0,0.6);"></div>
+    <div
+      style="position:relative;z-index:10001;background:#fff;border-radius:12px;max-width:480px;width:100%;padding:20px;">
+      <h3 id="reportUserModalTitle" style="font-size:18px;font-weight:600;margin-bottom:6px;">Reportar usuario</h3>
+      <p id="reportUserModalSubtitle" style="color:#6b7280;margin-bottom:12px;">Describe el motivo del reporte.</p>
+      <textarea id="reportUserTextarea" maxlength="255" rows="5"
+        style="width:100%;border:1px solid #d1d5db;border-radius:8px;padding:10px;font-size:14px;resize:vertical;min-height:120px;"
+        placeholder="Escribe el motivo (mínimo 10 caracteres)"></textarea>
+      <p id="reportUserError" style="color:#dc2626;font-size:13px;margin-top:8px;display:none;"></p>
+      <div style="display:flex;justify-content:flex-end;gap:12px;margin-top:16px;">
+        <button id="reportUserCancelBtn" type="button"
+          style="padding:8px 14px;border-radius:8px;background:#f3f4f6;border:0;cursor:pointer;">Cancelar</button>
+        <button id="reportUserSubmitBtn" type="button"
+          style="padding:8px 14px;border-radius:8px;background:#ef4444;color:#fff;border:0;cursor:pointer;">Enviar
+          reporte</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="max-w-4xl mx-auto p-6 space-y-6">
+    <div class="bg-white rounded-2xl shadow-lg p-6">
+      <div class="flex flex-col md:flex-row items-start gap-6 pb-6 border-b">
+        <div class="w-24 h-24 rounded-full bg-gray-200 overflow-hidden group relative">
+          <img id="profileImage" alt="Foto perfil" class="w-full h-full object-cover">
+          <label
+            class="absolute inset-0 bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition">
+            <span class="material-symbols-outlined">photo_camera</span>
+            <input id="avatarInput" type="file" class="hidden" accept="image/*" aria-label="Subir foto de perfil">
+          </label>
+        </div>
+        <div id="cropModal"
+          style="position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:9999;">
+          <div
+            style="background:#fff;padding:12px;border-radius:8px;max-width:90vw;max-height:90vh;display:flex;gap:12px;flex-direction:column;align-items:center;">
+            <div style="position:relative;touch-action:none;">
+              <canvas id="cropCanvas" style="background:#222;display:block;max-width:80vw;max-height:60vh;"></canvas>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <label style="display:flex;gap:6px;align-items:center;">Zoom <input id="cropZoom" type="range" min="1"
+                  max="3" step="0.01" value="1" /></label>
+              <button id="cropCancel" type="button" class="px-3 py-1 rounded border">Cancelar</button>
+              <button id="cropSave" type="button" class="px-3 py-1 rounded bg-purple-600 text-white">Guardar
+                recorte</button>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center;">
+              <div>Preview</div>
+              <canvas id="cropPreview" width="128" height="128"
+                style="width:64px;height:64px;border:1px solid #ccc;background:#fff;"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex-1 w-full relative">
+          <div class="flex items-start">
+            <div class="pr-16">
+              <h1 id="displayName" class="text-2xl font-bold">Usuario</h1>
+              <p id="displayEmail" class="text-gray-500">email@example.com</p>
+            </div>
+            <div class="flex items-center gap-3 absolute top-0 right-0">
+              <button id="profileSettingsBtn" type="button" onclick="window.location.href='/configuracion'"
+                class="text-gray-600 hover:text-purple-600" aria-label="Ir a configuración">
+                <span class="material-symbols-outlined">settings</span>
+              </button>
+              <button id="reportUserBtn" type="button"
+                class="hidden items-center gap-1 text-sm font-semibold text-red-600 hover:text-red-700 transition"
+                aria-hidden="true">
+                <span class="material-symbols-outlined text-base">flag</span>
+                <span>Reportar usuario</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-3 mt-2">
+            <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-3 py-1 rounded-full">
+              Nivel 5 - Chef
+            </span>
+            <span id="avgRating" class="text-sm text-teal-500 flex items-center gap-1">
+              <span class="material-symbols-outlined text-yellow-500 text-base">star</span>
+              0.0 calificación
+            </span>
+            <span id="premiumBadge" class="text-sm text-purple-600 flex items-center gap-1">
+              <span class="material-symbols-outlined text-base">verified</span>
+              Premium
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mt-6">
+
+        <a href="/mis-recetas"
+          class="bg-gradient-to-r from-green-500 to-yellow-500 text-white rounded-xl p-4 shadow-md hover:scale-105 transition">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="material-symbols-outlined text-lg">bookmark</span>
+            <span class="font-semibold">Mis Recetas</span>
+          </div>
+        </a>
+
+        <a href="/estadisticas"
+          class="bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-xl p-4 shadow-md hover:scale-105 transition">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="material-symbols-outlined text-lg">bookmark</span>
+            <span class="font-semibold">estadisticas</span>
+          </div>
+        </a>
+
+        <a href="/recetas-guardadas"
+          class="bg-gradient-to-r from-orange-500 to-teal-500 text-white rounded-xl p-4 shadow-md hover:scale-105 transition">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="material-symbols-outlined text-lg">bookmark</span>
+            <span class="font-semibold">Rec. Guardadas</span>
+          </div>
+          <p id="savedRecipesCount" class="text-2xl font-bold">0</p>
+        </a>
+
+        <a href="/siguiendo"
+          class="bg-gradient-to-r from-teal-500 to-red-500 text-white rounded-xl p-4 shadow-md hover:scale-105 transition">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="material-symbols-outlined text-lg">group</span>
+            <span class="font-semibold">Siguiendo</span>
+          </div>
+          <p id="followingCount" class="text-2xl font-bold">0</p>
+        </a>
+
+        <a href="/logros"
+          class="bg-gradient-to-r from-red-500 to-yellow-500 text-white rounded-xl p-4 shadow-md hover:scale-105 transition">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="material-symbols-outlined text-lg">emoji_events</span>
+            <span class="font-semibold">Logros</span>
+          </div>
+          <p id="achievementsCount" class="text-2xl font-bold">0</p>
+        </a>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg p-6">
+      <h2 class="text-xl font-semibold mb-6">Configuración de la cuenta</h2>
+      <form id="profileForm" class="space-y-6" action="/actualizar-perfil" method="POST">
+        <div class="bg-gray-50 p-4 rounded-lg border">
+          <h3 class="text-lg font-medium mb-3">Información personal</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Nombre completo</label>
+              <input type="text" name="fullname" value="Sarah Johnson"
+                class="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-purple-300 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Nombre de usuario</label>
+              <div class="flex items-center">
+                <input id="usernameInput" type="text" name="username" value="sarahchef"
+                  class="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-purple-300 focus:outline-none">
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Tu nombre de usuario público.</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
+              <input id="emailInput" type="email" name="email" value="sarah.johnson@ejemplo.com" readonly
+                class="w-full px-4 py-2 rounded-lg border bg-gray-100 cursor-not-allowed focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+              <input type="tel" name="phone" placeholder="+1 234 567 890" readonly
+                class="w-full px-4 py-2 rounded-lg border bg-gray-100 cursor-not-allowed focus:ring-2 focus:ring-purple-300 focus:outline-none">
+            </div>
+          </div>
+          <div class="mt-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Biografía</label>
+            <textarea id="bioInput" name="bio" rows="3" maxlength="255"
+              class="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-purple-300 focus:outline-none"
+              placeholder="Cuéntanos sobre ti..."></textarea>
+            <div class="text-right text-xs text-gray-500 mt-1"><span id="bioCount">0</span>/255</div>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 p-4 rounded-lg border">
+          <h3 class="text-lg font-medium mb-3">Preferencias culinarias</h3>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <label class="flex items-center gap-2"><input type="checkbox" name="preferences[]" value="vegetarian"
+                class="rounded text-purple-600">Vegetariano</label>
+            <label class="flex items-center gap-2"><input type="checkbox" name="preferences[]" value="vegan"
+                class="rounded text-purple-600">Vegano</label>
+            <label class="flex items-center gap-2"><input type="checkbox" name="preferences[]" value="gluten_free"
+                class="rounded text-purple-600">Sin gluten</label>
+            <label class="flex items-center gap-2"><input type="checkbox" name="preferences[]" value="lactose_free"
+                class="rounded text-purple-600">Sin lactosa</label>
+            <label class="flex items-center gap-2"><input type="checkbox" name="preferences[]" value="keto"
+                class="rounded text-purple-600">Keto</label>
+            <label class="flex items-center gap-2"><input type="checkbox" name="preferences[]" value="paleo"
+                class="rounded text-purple-600">Paleo</label>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 p-4 rounded-lg border">
+          <h3 class="text-lg font-medium mb-3">Alergias</h3>
+          <p class="text-sm text-gray-600 mb-3">Selecciona los ingredientes que te causan alergia:</p>
+          <div id="allergiesList" class="grid grid-cols-2 md:grid-cols-3 gap-3">
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-4 pt-6 border-t mt-8">
+
+          <!-- Grupo izquierdo -->
+          <div class="flex flex-col sm:flex-row w-full sm:w-auto items-stretch sm:items-center gap-3">
+
+            <!-- Guardar cambios -->
+            <button id="saveBtn" type="submit"
+              class="action-btn inline-flex items-center justify-center sm:justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-green-600 rounded-xl shadow-sm transition-transform duration-150 hover:bg-green-700 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-green-500 w-full sm:w-auto">
+              <span class="material-symbols-outlined">save</span>
+              Guardar cambios
+            </button>
+
+            <!-- Cambiar contraseña -->
+            <button type="button" onclick="window.location.href='/cambiar-contrasena'"
+              class="action-btn inline-flex items-center justify-center sm:justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-xl shadow-sm transition-transform duration-150 hover:bg-blue-700 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 w-full sm:w-auto">
+              <span class="material-symbols-outlined">lock</span>
+              Cambiar contraseña
+            </button>
+
+          </div>
+
+          <!-- Eliminar cuenta -->
+          <button id="deleteAccountBtn" type="button"
+            class="action-btn inline-flex items-center justify-center sm:justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-red-600 rounded-xl shadow-sm transition-transform duration-150 hover:bg-red-700 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-red-500 w-full sm:w-auto">
+            <span class="material-symbols-outlined">delete</span>
+            Eliminar cuenta
+          </button>
+
+        </div>
+
+      </form>
+    </div>
+  </main>
+
+  <script src="/js/loadFooter.js" defer></script>
+  <div id="footerContainer"></div>
+
+  <script>
+    // Obtiene los datos de logros y prepara los totales que muestra el perfil.
+    async function loadAchievements() {
+      try {
+        const pageDbg = document.getElementById('achPageDebug');
+        const logPage = (m) => { if (pageDbg) { pageDbg.style.display = 'block'; pageDbg.textContent += '\n' + m; } else console.debug(m); };
+        logPage('fetch /api/logros...');
+        const res = await fetch('/api/logros', { credentials: 'same-origin' });
+        if (!res.ok) {
+          logPage('fetch failed status=' + res.status);
+          console.error('No se pudo cargar achievements', res.status);
+          return;
+        }
+        logPage('fetch ok, parsing json...');
+        const raw = await res.json();
+        let achievements = [];
+        let total = 0;
+        let unlockedCount = 0;
+        if (Array.isArray(raw)) {
+          achievements = raw;
+          total = raw.length;
+          unlockedCount = raw.filter(a => a && (a.unlocked === true || a.unlocked === 1)).length;
+          logPage(`json parsed (array); received=${raw.length} unlocked=${unlockedCount}`);
+        } else if (raw && Array.isArray(raw.achievements)) {
+          achievements = raw.achievements;
+          total = Number(raw.total) || achievements.length;
+          unlockedCount = Number(raw.unlockedCount) || achievements.filter(a => a && (a.unlocked === true || a.unlocked === 1)).length;
+          logPage(`json parsed (object); total=${total} unlocked=${unlockedCount} received=${achievements.length}`);
+        } else {
+          try {
+            const maybe = Array.isArray(raw?.data) ? raw.data : raw;
+            if (Array.isArray(maybe)) {
+              achievements = maybe;
+              total = maybe.length;
+              unlockedCount = maybe.filter(a => a && (a.unlocked === true || a.unlocked === 1)).length;
+              logPage(`json parsed (coerced); received=${maybe.length} unlocked=${unlockedCount}`);
+            }
+          } catch (e) { }
+        }
+
+        try {
+          const achievementsCountEl = document.getElementById('achievementsCount');
+          if (achievementsCountEl) {
+            setTextVisible(achievementsCountEl, unlockedCount);
+          }
+          const badge = document.getElementById('unlockedCountBadge');
+          if (badge) {
+            try {
+              const unlockedPoints = (achievements || [])
+                .filter(a => a && a.unlocked)
+                .reduce((sum, a) => sum + (Number(a.Logro_puntos || a.points || 0) || 0), 0);
+              badge.textContent = `${unlockedPoints} pts`;
+            } catch (e) { badge.textContent = String(unlockedCount || 0); }
+          }
+        } catch (e) { console.debug('loadAchievements: header update failed', e); }
+
+        const container = document.getElementById('achievementsContainer');
+        const upcoming = document.getElementById('upcomingList');
+        try { console.debug(`/api/logros - computed achievements length= ${achievements.length} unlockedCount= ${unlockedCount}`); } catch (e) { }
+        console.debug('client /api/logros normalized response:', { total, unlockedCount, received: (achievements || []).length });
+        if (container) {
+          container.innerHTML = '';
+          if (upcoming) upcoming.innerHTML = '';
+        }
+
+        return { achievements, total, unlockedCount };
+      } catch (err) {
+        console.error('Error loading achievements:', err);
+        return null;
+      }
+    }
+    const AVAILABLE_ALLERGENS = [
+      { id: 'leche', label: 'Leche' },
+      { id: 'huevo', label: 'Huevo' },
+      { id: 'cacahuate', label: 'Cacahuate' },
+      { id: 'frutos_secos', label: 'Frutos secos' },
+      { id: 'pescado', label: 'Pescado' },
+      { id: 'mariscos', label: 'Mariscos' },
+      { id: 'soya', label: 'Soya' },
+      { id: 'trigo / gluten', label: 'Trigo / Gluten' },
+      { id: 'sesamo(ajonjoli)', label: 'Sésamo (ajonjolí)' },
+      { id: 'frutas', label: 'Frutas' },
+      { id: 'legumbres', label: 'Legumbres' }
+    ];
+
+    const USER_ID_KEYS = ['Usu_ID', 'UsuId', 'usu_id', 'id', 'ID', 'userId', 'UserId', 'UsuID'];
+    const USER_ALIAS_KEYS = ['username', 'alias', 'Usu_Alias', 'usu_alias', 'user_alias', 'UsuAlias'];
+    const USER_NAME_KEYS = ['nombre', 'name', 'Usu_Nombre', 'usu_nombre', 'fullName', 'fullname'];
+
+    let currentViewerData = null;
+    let viewedProfileAlias = null;
+    let reportUserTargetId = null;
+    let reportUserTargetLabel = '';
+    let reportUserSubmissionInFlight = false;
+
+    let reportUserBtn = null;
+    let profileSettingsBtn = null;
+    let reportUserModal = null;
+    let reportUserModalBackdrop = null;
+    let reportUserModalSubtitle = null;
+    let reportUserTextarea = null;
+    let reportUserError = null;
+    let reportUserCancelBtn = null;
+    let reportUserSubmitBtn = null;
+
+    // Genera la lista de alergias mostrando las selecciones actuales del usuario.
+    function renderAllergiesList(selectedCsv) {
+      const container = document.getElementById('allergiesList');
+      if (!container) return;
+      container.innerHTML = '';
+      const selected = new Set((selectedCsv || '').split(',').map(s => s.trim()).filter(Boolean));
+      AVAILABLE_ALLERGENS.forEach(a => {
+        const id = 'allergy-' + a.id;
+        const label = document.createElement('label');
+        label.className = 'flex items-center gap-2';
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.name = 'allergies[]';
+        input.value = a.id;
+        input.id = id;
+        input.className = 'rounded text-purple-600';
+        if (selected.has(a.id)) input.checked = true;
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(a.label));
+        container.appendChild(label);
+      });
+    }
+
+    function extractUserId(user) {
+      if (!user || typeof user !== 'object') return null;
+      for (const key of USER_ID_KEYS) {
+        if (Object.prototype.hasOwnProperty.call(user, key)) {
+          const value = Number(user[key]);
+          if (Number.isFinite(value) && value > 0) return value;
+        }
+      }
+      return null;
+    }
+
+    function extractUserAlias(user) {
+      if (!user || typeof user !== 'object') return '';
+      for (const key of USER_ALIAS_KEYS) {
+        if (user[key]) {
+          const raw = String(user[key]).trim();
+          if (raw) return raw.replace(/^@+/, '');
+        }
+      }
+      return '';
+    }
+
+    function extractUserName(user) {
+      if (!user || typeof user !== 'object') return '';
+      for (const key of USER_NAME_KEYS) {
+        if (user[key]) {
+          const raw = String(user[key]).trim();
+          if (raw) return raw;
+        }
+      }
+      return '';
+    }
+
+    function configureReportUserButton(user, viewAlias) {
+      if (!reportUserBtn) return;
+
+      const targetId = extractUserId(user);
+      const viewerId = extractUserId(currentViewerData);
+      const alias = extractUserAlias(user);
+      const name = extractUserName(user);
+      const label = alias ? `@${alias}` : (name || 'este usuario');
+
+      const isSelf = !viewAlias || (viewerId != null && targetId != null && viewerId === targetId);
+      const shouldShow = Boolean(viewAlias) && Number.isFinite(targetId) && !isSelf;
+
+      reportUserTargetId = shouldShow ? targetId : null;
+      reportUserTargetLabel = shouldShow ? label : '';
+
+      if (profileSettingsBtn) profileSettingsBtn.style.display = isSelf ? '' : 'none';
+
+      if (!shouldShow) {
+        if (reportUserModal && reportUserModal.style.display === 'flex') closeReportUserModal({ restoreFocus: false });
+        reportUserBtn.classList.add('hidden');
+        reportUserBtn.setAttribute('aria-hidden', 'true');
+        reportUserBtn.disabled = true;
+        reportUserBtn.removeAttribute('title');
+        return;
+      }
+
+      reportUserBtn.classList.remove('hidden');
+      reportUserBtn.removeAttribute('aria-hidden');
+      reportUserBtn.disabled = false;
+      reportUserBtn.setAttribute('title', `Reportar ${label}`);
+    }
+
+    function resetReportUserModalState() {
+      reportUserSubmissionInFlight = false;
+      if (reportUserSubmitBtn) {
+        reportUserSubmitBtn.disabled = false;
+        reportUserSubmitBtn.textContent = 'Enviar reporte';
+      }
+      if (reportUserError) {
+        reportUserError.style.display = 'none';
+        reportUserError.textContent = '';
+      }
+    }
+
+    function showReportUserError(message) {
+      if (!reportUserError) return;
+      reportUserError.textContent = message;
+      reportUserError.style.display = 'block';
+    }
+
+    function openReportUserModal() {
+      if (!reportUserModal) return;
+      if (!Number.isFinite(reportUserTargetId)) return;
+      resetReportUserModalState();
+      if (reportUserTextarea) reportUserTextarea.value = '';
+      if (reportUserModalSubtitle) {
+        reportUserModalSubtitle.textContent = `Describe el motivo para reportar ${reportUserTargetLabel || 'este usuario'}.`;
+      }
+      reportUserModal.style.display = 'flex';
+      window.requestAnimationFrame(() => {
+        if (reportUserTextarea) reportUserTextarea.focus();
+      });
+    }
+
+    function closeReportUserModal({ restoreFocus = true } = {}) {
+      if (!reportUserModal) return;
+      reportUserModal.style.display = 'none';
+      resetReportUserModalState();
+      if (reportUserTextarea) reportUserTextarea.value = '';
+      if (restoreFocus && reportUserBtn) {
+        try { reportUserBtn.focus(); } catch (err) { /* noop */ }
+      }
+    }
+
+    function handleReportUserClick() {
+      if (!reportUserBtn) return;
+      if (!Number.isFinite(reportUserTargetId)) return;
+      const viewerId = extractUserId(currentViewerData);
+      if (viewerId && viewerId === reportUserTargetId) {
+        window.alert('No puedes reportarte a ti mismo.');
+        return;
+      }
+      if (reportUserSubmissionInFlight) return;
+      openReportUserModal();
+    }
+
+    async function submitUserReport() {
+      if (reportUserSubmissionInFlight) return;
+      if (!Number.isFinite(reportUserTargetId)) {
+        closeReportUserModal({ restoreFocus: false });
+        return;
+      }
+
+      const viewerId = extractUserId(currentViewerData);
+      if (viewerId && viewerId === reportUserTargetId) {
+        closeReportUserModal({ restoreFocus: false });
+        window.alert('No puedes reportarte a ti mismo.');
+        return;
+      }
+
+      const motivo = reportUserTextarea ? reportUserTextarea.value.trim() : '';
+      if (motivo.length < 10) {
+        showReportUserError('El motivo debe tener al menos 10 caracteres.');
+        if (reportUserTextarea) reportUserTextarea.focus();
+        return;
+      }
+
+      reportUserSubmissionInFlight = true;
+      if (reportUserSubmitBtn) {
+        reportUserSubmitBtn.disabled = true;
+        reportUserSubmitBtn.textContent = 'Enviando...';
+      }
+      if (reportUserError) {
+        reportUserError.style.display = 'none';
+        reportUserError.textContent = '';
+      }
+
+      let payload = null;
+
+      try {
+        const response = await fetch('/api/reports', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'usuario',
+            targetId: reportUserTargetId,
+            motivo
+          })
+        });
+
+        if (response.status === 401) {
+          closeReportUserModal({ restoreFocus: false });
+          window.location.href = '/iniciar-sesion';
+          return;
+        }
+
+        try {
+          payload = await response.json();
+        } catch (err) {
+          payload = null;
+        }
+
+        if (!response.ok) {
+          const errorCode = payload && payload.error ? payload.error : 'report_failed';
+          if (errorCode === 'motivo_too_short') {
+            showReportUserError('El motivo debe tener al menos 10 caracteres.');
+          } else if (errorCode === 'target_not_found') {
+            showReportUserError('El usuario que deseas reportar ya no está disponible.');
+          } else if (errorCode === 'duplicate') {
+            closeReportUserModal({ restoreFocus: false });
+            window.alert(`Ya habías reportado ${reportUserTargetLabel || 'a este usuario'}.`);
+            return;
+          } else {
+            showReportUserError('No se pudo enviar el reporte. Intenta nuevamente más tarde.');
+          }
+          if (reportUserTextarea) reportUserTextarea.focus();
+          return;
+        }
+
+        if (payload && payload.status === 'duplicate') {
+          closeReportUserModal({ restoreFocus: false });
+          window.alert(`Ya habías reportado ${reportUserTargetLabel || 'a este usuario'}.`);
+          return;
+        }
+
+        closeReportUserModal({ restoreFocus: false });
+        window.alert(`Gracias por reportar ${reportUserTargetLabel || 'a este usuario'}. Nuestro equipo lo revisará pronto.`);
+      } catch (error) {
+        console.error('Error al enviar reporte de usuario:', error);
+        showReportUserError('No se pudo enviar el reporte por un problema de red. Intenta más tarde.');
+        if (reportUserTextarea) reportUserTextarea.focus();
+      } finally {
+        reportUserSubmissionInFlight = false;
+        if (reportUserSubmitBtn) {
+          reportUserSubmitBtn.disabled = false;
+          reportUserSubmitBtn.textContent = 'Enviar reporte';
+        }
+      }
+    }
+    function $id(id) {
+      return document.getElementById(id);
+    }
+
+    function setTextVisible(el, text) {
+      if (!el) return;
+      el.textContent = String(text);
+      el.setAttribute('aria-live', 'polite');
+      el.style.visibility = 'visible';
+      el.style.opacity = '1';
+    }
+
+    async function updateSavedRecipesCount() {
+      const target = document.getElementById('savedRecipesCount');
+      if (!target) return null;
+      try {
+        const response = await fetch('/api/yo/recetas-guardadas', { credentials: 'same-origin' });
+        if (response.status === 401) {
+          window.location.href = '/iniciar-sesion';
+          return null;
+        }
+        if (!response.ok) throw new Error('request_failed');
+        const payload = await response.json();
+        const total = Number(payload?.stats?.total ?? (Array.isArray(payload?.recipes) ? payload.recipes.length : 0));
+        setTextVisible(target, Number.isFinite(total) ? total : 0);
+        return total;
+      } catch (error) {
+        console.error('Error al obtener el total de recetas guardadas:', error);
+        setTextVisible(target, 0);
+        return null;
+      }
+    }
+
+    async function updateFollowingCount() {
+      const target = document.getElementById('followingCount');
+      if (!target) return null;
+      try {
+        const response = await fetch('/api/usuario/seguidos', { credentials: 'same-origin' });
+        if (response.status === 401) {
+          window.location.href = '/iniciar-sesion';
+          return null;
+        }
+        if (!response.ok) throw new Error('request_failed');
+        const payload = await response.json();
+        const total = Number(payload?.counts?.total ?? (Array.isArray(payload?.users) ? payload.users.length : 0));
+        setTextVisible(target, Number.isFinite(total) ? total : 0);
+        return total;
+      } catch (error) {
+        console.error('Error al obtener el total de personas que sigues:', error);
+        setTextVisible(target, 0);
+        return null;
+      }
+    }
+
+    function refreshQuickActionCounters() {
+      updateSavedRecipesCount();
+      updateFollowingCount();
+      updateAchievementsCount();
+    }
+
+    // Observa el DOM hasta que aparezca el elemento indicado y ejecuta un callback.
+    function observeUntilElement(id, onFound, timeoutMs = 10000) {
+      try {
+        const observer = new MutationObserver((mutations, obs) => {
+          const el = $id(id);
+          if (el) {
+            try { onFound(el); } catch (e) { console.debug('observeUntilElement: onFound error', e); }
+            obs.disconnect();
+          }
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+        setTimeout(() => { try { observer.disconnect(); console.debug('observeUntilElement: timeout disconnected for', id); } catch (e) { } }, timeoutMs);
+        return observer;
+      } catch (e) {
+        console.debug('observeUntilElement: failed to create observer', e);
+        return null;
+      }
+    }
+    // Refresca el contador de logros utilizando la información normalizada.
+    async function updateAchievementsCount() {
+      try {
+        const normalized = await loadAchievements();
+        const desired = String((normalized && typeof normalized.unlockedCount === 'number') ? normalized.unlockedCount : 0);
+
+        let attempts = 0;
+        const tryUpdate = () => {
+          attempts++;
+          const el = $id('achievementsCount');
+          if (el) {
+            setTextVisible(el, desired);
+            console.debug('updateAchievementsCount: updated to', desired);
+            return true;
+          }
+          if (attempts < 6) {
+            setTimeout(tryUpdate, 150);
+            return false;
+          }
+          observeUntilElement('achievementsCount', (el2) => setTextVisible(el2, desired));
+          return false;
+        };
+        tryUpdate();
+      } catch (err) {
+        console.debug('updateAchievementsCount error', err);
+      }
+    }
+
+    let cropImage;
+    let imgNaturalWidth = 0, imgNaturalHeight = 0;
+    let viewW = 0, viewH = 0;
+    let offsetX = 0, offsetY = 0;
+    let dragging = false, lastX = 0, lastY = 0;
+
+    // Abre el modal de recorte con la imagen proporcionada.
+    function openCropper(dataUrl) {
+      cropImage = new Image();
+      cropImage.crossOrigin = 'anonymous';
+      cropImage.onload = () => {
+        imgNaturalWidth = cropImage.naturalWidth;
+        imgNaturalHeight = cropImage.naturalHeight;
+        const maxW = Math.min(window.innerWidth * 0.8, 900);
+        const maxH = Math.min(window.innerHeight * 0.6, 700);
+        const ratio = Math.min(maxW / imgNaturalWidth, maxH / imgNaturalHeight, 1);
+        viewW = Math.round(imgNaturalWidth * ratio);
+        viewH = Math.round(imgNaturalHeight * ratio);
+        const cropCanvas = document.getElementById('cropCanvas');
+        cropCanvas.width = viewW;
+        cropCanvas.height = viewH;
+        offsetX = 0; offsetY = 0; document.getElementById('cropZoom').value = 1;
+        drawCropCanvas();
+        document.getElementById('cropModal').style.display = 'flex';
+      };
+      cropImage.src = dataUrl;
+    }
+
+    // Dibuja el lienzo de recorte con el zoom y desplazamientos actuales.
+    function drawCropCanvas() {
+      const cropCanvas = document.getElementById('cropCanvas');
+      const zoomEl = document.getElementById('cropZoom');
+      if (!cropCanvas || !zoomEl || !cropImage) return;
+
+      const ctx = cropCanvas.getContext('2d');
+      const z = Number.parseFloat(zoomEl.value) || 1;
+      const sw = imgNaturalWidth * z;
+      const sh = imgNaturalHeight * z;
+      const cx = (cropCanvas.width - sw) / 2 + offsetX;
+      const cy = (cropCanvas.height - sh) / 2 + offsetY;
+
+      ctx.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
+      ctx.drawImage(cropImage, cx, cy, sw, sh);
+
+      const size = Math.min(cropCanvas.width, cropCanvas.height);
+      const sx = (cropCanvas.width - size) / 2;
+      const sy = (cropCanvas.height - size) / 2;
+
+      let imgData = null;
+      try {
+        imgData = ctx.getImageData(sx, sy, size, size);
+      } catch (err) {
+        console.debug('drawCropCanvas: getImageData failed', err);
+      }
+
+      ctx.save();
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.fillRect(0, 0, cropCanvas.width, cropCanvas.height);
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.fillRect(sx, sy, size, size);
+      ctx.restore();
+
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(sx + 0.5, sy + 0.5, size - 1, size - 1);
+
+      if (imgData) {
+        const preview = document.getElementById('cropPreview');
+        if (preview) {
+          const pctx = preview.getContext('2d');
+          pctx.clearRect(0, 0, preview.width, preview.height);
+          const tmp = document.createElement('canvas');
+          tmp.width = size;
+          tmp.height = size;
+          tmp.getContext('2d').putImageData(imgData, 0, 0);
+          pctx.drawImage(tmp, 0, 0, size, size, 0, 0, preview.width, preview.height);
+        }
+      }
+    }
+
+    // Exporta el avatar recortado y lo envía al servidor.
+    function captureCroppedDataUrlAndUpload() {
+      const cropCanvas = document.getElementById('cropCanvas');
+      const size = Math.min(cropCanvas.width, cropCanvas.height);
+      const sx = (cropCanvas.width - size) / 2;
+      const sy = (cropCanvas.height - size) / 2;
+      const zoomEl = document.getElementById('cropZoom');
+      const z = parseFloat(zoomEl.value);
+      const sw = imgNaturalWidth * z;
+      const sh = imgNaturalHeight * z;
+      const cx = (cropCanvas.width - sw) / 2 + offsetX;
+      const cy = (cropCanvas.height - sh) / 2 + offsetY;
+      const temp = document.createElement('canvas'); temp.width = cropCanvas.width; temp.height = cropCanvas.height;
+      const tctx = temp.getContext('2d');
+      tctx.drawImage(cropImage, cx, cy, sw, sh);
+      const imageData = tctx.getImageData(sx, sy, size, size);
+      const tmp2 = document.createElement('canvas'); tmp2.width = size; tmp2.height = size; tmp2.getContext('2d').putImageData(imageData, 0, 0);
+      const exportCanvas = document.createElement('canvas'); exportCanvas.width = 128; exportCanvas.height = 128;
+      exportCanvas.getContext('2d').drawImage(tmp2, 0, 0, size, size, 0, 0, 128, 128);
+      const dataUrl = exportCanvas.toDataURL('image/png');
+      document.getElementById('cropModal').style.display = 'none';
+      fetch('/subir-avatar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ image: dataUrl }), credentials: 'same-origin' })
+        .then(r => r.json()).then(res => {
+          if (res && (res.path || res.foto)) {
+            const img = document.getElementById('profileImage');
+            img.src = (res.path || res.foto) + '?t=' + Date.now();
+            alert('Foto de perfil actualizada');
+          } else alert('Error al subir la imagen');
+        }).catch(err => { console.error(err); alert('Error de red al subir la imagen'); });
+    }
+
+    // Carga los datos del perfil y actualiza la vista para el usuario activo o público.
+    async function loadUserProfile(viewAlias) {
+      try {
+        let res, user;
+        if (viewAlias) {
+          res = await fetch('/api/usuario/alias/' + encodeURIComponent(viewAlias), { credentials: 'same-origin' });
+        } else {
+          res = await fetch('/api/usuario', { credentials: 'same-origin' });
+        }
+        if (!res.ok) {
+          if (viewAlias && res.status === 404) {
+            const main = document.querySelector('main');
+            if (main) {
+              main.innerHTML = `
+                <div class="max-w-3xl mx-auto p-12 text-center">
+                  <h2 class="text-2xl font-bold mb-4">Usuario no encontrado</h2>
+                  <p class="text-gray-600 mb-6">El alias "${viewAlias}" no existe o fue eliminado.</p>
+                  <a href="/perfil" class="inline-block bg-purple-600 text-white px-4 py-2 rounded">Volver a mi perfil</a>
+                </div>
+              `;
+            }
+            return;
+          }
+          return;
+        }
+        user = await res.json();
+        try { console.debug('/api/usuario response payload:', user); console.debug('avg_rating (raw):', user && user.avg_rating); } catch (e) { }
+        if (!viewAlias && user && typeof user === 'object') currentViewerData = user;
+        if (user.nombre) document.getElementById('displayName').textContent = user.nombre;
+        if (user.email) document.getElementById('displayEmail').textContent = user.email;
+        const img = document.getElementById('profileImage');
+        if (img && user.foto) {
+          let src = user.foto;
+          if (!src.startsWith('http') && !src.startsWith('/')) src = '/' + src.replace(/^\/+/, '');
+          img.src = src;
+        }
+
+        if (user.nombre) document.querySelector('input[name="fullname"]').value = user.nombre;
+        if (user.username) {
+          const clean = String(user.username).trim().replace(/^@+/, '');
+          const el = document.getElementById('usernameInput') || document.querySelector('input[name="username"]');
+          if (el) el.value = clean;
+        }
+        if (user.email) document.getElementById('emailInput').value = user.email;
+        if (user.phone) document.querySelector('input[name="phone"]').value = user.phone || '';
+        const bioEl = document.getElementById('bioInput');
+        const bioCountEl = document.getElementById('bioCount');
+        if (bioEl) {
+          const bioVal = (user.Usu_Biografia || user.Usu_Bio || user.bio || '').toString().slice(0, 255);
+          bioEl.value = bioVal;
+          if (bioCountEl) bioCountEl.textContent = String(bioEl.value.length || 0);
+        }
+        let allergiesVal = '';
+        if (user.allergies) {
+          if (Array.isArray(user.allergies)) allergiesVal = user.allergies.join(',');
+          else allergiesVal = String(user.allergies || '');
+        } else if (user.Ale_ID) {
+          allergiesVal = String(user.Ale_ID || '');
+        }
+        renderAllergiesList(allergiesVal);
+        refreshQuickActionCounters();
+        try { loadAchievements(); } catch (e) { console.debug('loadAchievements failed inside loadUserProfile', e); }
+        try {
+          const premiumBadgeEl = document.getElementById('premiumBadge');
+          const usuTipo = Number(user.Tipo_Usu_ID ?? 0);
+          if (premiumBadgeEl) {
+            if (usuTipo === 2) premiumBadgeEl.style.display = 'none';
+            else if (usuTipo === 3) premiumBadgeEl.style.display = '';
+          }
+        } catch (e) {
+          console.debug('premiumBadge visibility check failed', e);
+        }
+        try {
+          const avgEl = document.getElementById('avgRating');
+          if (avgEl && typeof user.avg_rating !== 'undefined') {
+            const val = Number(user.avg_rating) || 0;
+            avgEl.childNodes[avgEl.childNodes.length - 1].nodeValue = ' ' + val.toFixed(1) + ' calificación';
+          }
+        } catch (e) { console.debug('avg rating update failed', e); }
+        if (user.website) document.getElementById('websiteInput').value = user.website || '';
+        if (user.instagram) document.getElementById('instagramInput').value = user.instagram || '';
+        if (user.youtube) document.getElementById('youtubeInput').value = user.youtube || '';
+        if (user.tiktok) document.getElementById('tiktokInput').value = user.tiktok || '';
+
+        configureReportUserButton(user, viewAlias);
+
+        if (viewAlias) {
+          const saveBtn = document.getElementById('saveBtn'); if (saveBtn) saveBtn.style.display = 'none';
+          const avatarLabel = document.querySelector('.group label'); if (avatarLabel) avatarLabel.style.display = 'none';
+          const changePwdBtn = document.querySelector('button[onclick="window.location.href=\'/cambiar-contrasena\'"]'); if (changePwdBtn) changePwdBtn.style.display = 'none';
+          const deleteBtn = document.getElementById('deleteAccountBtn'); if (deleteBtn) deleteBtn.style.display = 'none';
+          document.querySelectorAll('#profileForm input, #profileForm textarea, #profileForm select, #profileForm button').forEach(el => { el.disabled = true; });
+        }
+
+      } catch (err) {
+        console.error('Error cargando perfil:', err);
+      }
+    }
+
+    // Valida los datos del perfil y abre el modal de confirmación antes de guardar.
+    function submitProfileForm(e) {
+      e.preventDefault();
+      const form = document.getElementById('profileForm');
+      const fullnameVal = String(form.querySelector('input[name="fullname"]').value || '').trim();
+      if (fullnameVal.length < 3 || fullnameVal.length > 150) { alert('El nombre completo debe tener entre 3 y 150 caracteres.'); return; }
+      if (!/^[\p{L} ]+$/u.test(fullnameVal)) { alert('El nombre solo puede contener letras y espacios.'); return; }
+      const rawAliasEl = document.getElementById('usernameInput') || form.querySelector('input[name="username"]');
+      let aliasVal = rawAliasEl ? String(rawAliasEl.value).trim() : '';
+      aliasVal = aliasVal.replace(/@/g, '').replace(/\s+/g, '_');
+      if (aliasVal.length > 0 && (aliasVal.length < 3 || aliasVal.length > 19 || !/^[A-Za-z0-9]+$/.test(aliasVal))) {
+        alert('El alias debe tener entre 3 y 19 caracteres y contener sólo letras y números.');
+        return;
+      }
+      const modal = document.getElementById('saveConfirmModal');
+      if (modal) modal.style.display = 'flex';
+    }
+
+    // Envía al servidor la información actualizada del perfil.
+    async function performProfileSave() {
+      const form = document.getElementById('profileForm');
+      const data = new URLSearchParams();
+      try {
+        data.append('fullname', (form.querySelector('input[name="fullname"]') || { value: '' }).value);
+        const rawAliasEl = document.getElementById('usernameInput') || form.querySelector('input[name="username"]');
+        let aliasVal = rawAliasEl ? String(rawAliasEl.value).trim() : '';
+        aliasVal = aliasVal.replace(/@/g, '').replace(/\s+/g, '_');
+        data.append('username', aliasVal);
+        data.append('phone', (form.querySelector('input[name="phone"]') || { value: '' }).value);
+        data.append('bio', String((document.getElementById('bioInput') || { value: '' }).value).slice(0, 255));
+        const selectedAllergies = Array.from(document.querySelectorAll('input[name="allergies[]"]:checked')).map(i => i.value);
+        if (selectedAllergies.length) data.append('allergies', selectedAllergies.join(','));
+        data.append('website', (document.getElementById('websiteInput') || { value: '' }).value);
+        data.append('instagram', (document.getElementById('instagramInput') || { value: '' }).value);
+        data.append('youtube', (document.getElementById('youtubeInput') || { value: '' }).value);
+        data.append('tiktok', (document.getElementById('tiktokInput') || { value: '' }).value);
+      } catch (e) {
+        console.debug('performProfileSave: error reading form fields', e);
+      }
+
+      const saveConfirmBtn = document.getElementById('saveConfirmBtn');
+      const saveModal = document.getElementById('saveConfirmModal');
+      try {
+        if (saveConfirmBtn) saveConfirmBtn.disabled = true;
+        if (saveModal) saveModal.style.display = 'none';
+
+        const res = await fetch('/actualizar-perfil', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: data.toString(),
+          credentials: 'same-origin'
+        });
+
+        if (!res.ok) {
+          let bodyText = null;
+          try { const json = await res.json(); bodyText = json.error || JSON.stringify(json); } catch (_) { try { bodyText = await res.text(); } catch (_) { bodyText = null; } }
+          alert(bodyText ? ('Error actualizando perfil: ' + bodyText) : ('Error actualizando perfil (status ' + res.status + ')'));
+          return;
+        }
+
+        let json = null;
+        try { json = await res.json(); } catch (e) { }
+        if (json && json.ok) {
+          alert('Perfil actualizado correctamente');
+          try { refreshQuickActionCounters(); loadAchievements(); } catch (e) { }
+        } else {
+          alert('Perfil guardado. Respuesta del servidor: ' + (json ? JSON.stringify(json) : 'OK'));
+        }
+      } catch (err) {
+        console.error('Error updating profile:', err);
+        alert('No se pudo actualizar el perfil: ' + (err && err.message ? err.message : 'error de red'));
+      } finally {
+        if (saveConfirmBtn) saveConfirmBtn.disabled = false;
+      }
+    }
+
+    // Contador de caracteres de la biografía
+    (function () {
+      const bio = document.getElementById('bioInput');
+      const counter = document.getElementById('bioCount');
+      if (!bio || !counter) return;
+      const update = () => { counter.textContent = String(bio.value.length || 0); if (bio.value.length > 255) bio.value = bio.value.slice(0, 255); };
+      bio.addEventListener('input', update);
+      update();
+    })();
+
+    // Manejo de subida de avatar
+    async function uploadAvatar(file) {
+      if (!file) return;
+      // Validaciones rápidas
+      const maxBytes = 8 * 1024 * 1024; // 8MB
+      if (file.size > maxBytes) { alert('La imagen es demasiado grande (máx 8MB)'); return; }
+
+      // Leer como DataURL
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const dataUrl = reader.result;
+          // Enviar al servidor
+          const res = await fetch('/subir-avatar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image: dataUrl }),
+            credentials: 'same-origin'
+          });
+
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            alert(err.error || 'Error subiendo la imagen');
+            return;
+          }
+
+          const body = await res.json();
+          const imgEl = document.getElementById('profileImage');
+          if (imgEl && body.foto) imgEl.src = body.foto + '?t=' + Date.now();
+        } catch (err) {
+          console.error('Error subiendo avatar:', err);
+          alert('No se pudo subir la imagen');
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Mostrar/ocultar el modal mediante inline style (invisible por defecto)
+    document.addEventListener('DOMContentLoaded', async () => {
+      const mobileNavToggle = document.querySelector('[data-mobile-nav-toggle]');
+      const mobileNav = document.getElementById('mobileNav');
+
+      const closeMobileNav = () => {
+        if (!mobileNav) return;
+        mobileNav.classList.add('hidden');
+        if (mobileNavToggle) mobileNavToggle.setAttribute('aria-expanded', 'false');
+      };
+
+      const openMobileNav = () => {
+        if (!mobileNav) return;
+        mobileNav.classList.remove('hidden');
+        if (mobileNavToggle) mobileNavToggle.setAttribute('aria-expanded', 'true');
+      };
+
+      if (mobileNavToggle && mobileNav) {
+        mobileNavToggle.addEventListener('click', () => {
+          const isHidden = mobileNav.classList.contains('hidden');
+          if (isHidden) {
+            openMobileNav();
+          } else {
+            closeMobileNav();
+          }
+        });
+
+        mobileNav.querySelectorAll('a').forEach((link) => {
+          link.addEventListener('click', () => {
+            if (window.innerWidth < 768) closeMobileNav();
+          });
+        });
+      }
+
+      window.addEventListener('resize', () => {
+        if (window.innerWidth >= 768) closeMobileNav();
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && window.innerWidth < 768) {
+          closeMobileNav();
+        }
+      });
+
+      reportUserBtn = document.getElementById('reportUserBtn');
+      profileSettingsBtn = document.getElementById('profileSettingsBtn');
+      reportUserModal = document.getElementById('reportUserModal');
+      reportUserModalBackdrop = document.getElementById('reportUserModalBackdrop');
+      reportUserModalSubtitle = document.getElementById('reportUserModalSubtitle');
+      reportUserTextarea = document.getElementById('reportUserTextarea');
+      reportUserError = document.getElementById('reportUserError');
+      reportUserCancelBtn = document.getElementById('reportUserCancelBtn');
+      reportUserSubmitBtn = document.getElementById('reportUserSubmitBtn');
+
+      // Conexiones del modal de confirmación de guardado
+      const saveModal = document.getElementById('saveConfirmModal');
+      const saveConfirmBtn = document.getElementById('saveConfirmBtn');
+      const saveCancelBtn = document.getElementById('saveCancelBtn');
+      if (saveCancelBtn) saveCancelBtn.addEventListener('click', (e) => { e.preventDefault(); if (saveModal) saveModal.style.display = 'none'; });
+      if (saveConfirmBtn) saveConfirmBtn.addEventListener('click', async (e) => { e.preventDefault(); if (saveModal) saveModal.style.display = 'none'; await performProfileSave(); });
+
+      // Detectar ruta /perfil/:alias — si hay un segmento extra, cargar ese perfil en modo consulta
+      const pathParts = window.location.pathname.replace(/(^\/+|\/+$)/g, '').split('/');
+      let viewAlias = null;
+      if (pathParts.length >= 2 && pathParts[0] === 'perfil' && pathParts[1]) {
+        viewAlias = decodeURIComponent(pathParts[1]);
+      }
+      viewedProfileAlias = viewAlias;
+
+      // Si estamos visitando un alias y hay sesión, comprobar si es nuestro propio alias y redirigir a /perfil
+      if (viewAlias) {
+        try {
+          const meRes = await fetch('/api/usuario', { credentials: 'same-origin' });
+          if (meRes.ok) {
+            const me = await meRes.json();
+            if (me && typeof me === 'object') currentViewerData = me;
+            if (me && me.username && String(me.username).toLowerCase() === String(viewAlias).toLowerCase()) {
+              // Es nuestro alias: redirigir a la versión editable
+              window.location.href = '/perfil';
+              return;
+            }
+          }
+        } catch (e) {
+          console.debug('no se pudo consultar /api/usuario para comparar alias', e);
+        }
+      }
+
+      // Llamada rápida para rellenar los accesos directos incluso si loadUserProfile tarda
+      try { refreshQuickActionCounters(); } catch (e) { console.debug('initial refreshQuickActionCounters failed', e); }
+      try { loadAchievements(); } catch (e) { console.debug('initial loadAchievements failed', e); }
+
+      loadUserProfile(viewAlias);
+
+      // Enlazar submit del formulario
+      const profileForm = document.getElementById('profileForm');
+      if (profileForm) profileForm.addEventListener('submit', submitProfileForm);
+
+      // Enlazar input de avatar con cropper
+      const avatarInput = document.getElementById('avatarInput');
+      const cropModal = document.getElementById('cropModal');
+      const cropCanvas = document.getElementById('cropCanvas');
+      const cropZoom = document.getElementById('cropZoom');
+      const cropCancel = document.getElementById('cropCancel');
+      const cropSave = document.getElementById('cropSave');
+      const cropPreview = document.getElementById('cropPreview');
+
+      if (cropCanvas) {
+        cropCanvas.addEventListener('mousedown', (e) => { dragging = true; lastX = e.clientX; lastY = e.clientY; });
+        document.addEventListener('mouseup', () => { dragging = false; });
+        document.addEventListener('mousemove', (e) => { if (!dragging) return; const dx = e.clientX - lastX; const dy = e.clientY - lastY; lastX = e.clientX; lastY = e.clientY; offsetX += dx; offsetY += dy; drawCropCanvas(); });
+        // gestos táctiles
+        cropCanvas.addEventListener('touchstart', (e) => { dragging = true; const t = e.touches[0]; lastX = t.clientX; lastY = t.clientY; });
+        document.addEventListener('touchend', () => { dragging = false; });
+        document.addEventListener('touchmove', (e) => { if (!dragging) return; const t = e.touches[0]; const dx = t.clientX - lastX; const dy = t.clientY - lastY; lastX = t.clientX; lastY = t.clientY; offsetX += dx; offsetY += dy; drawCropCanvas(); e.preventDefault(); }, { passive: false });
+      }
+
+      if (cropZoom) cropZoom.addEventListener('input', drawCropCanvas);
+      if (cropCancel) cropCancel.addEventListener('click', () => { if (cropModal) cropModal.style.display = 'none'; });
+      if (cropSave) cropSave.addEventListener('click', () => { captureCroppedDataUrlAndUpload(); });
+
+      if (avatarInput) {
+        avatarInput.addEventListener('change', (e) => {
+          const f = e.target.files && e.target.files[0];
+          if (!f) return;
+          const maxBytes = 8 * 1024 * 1024;
+          if (f.size > maxBytes) { alert('La imagen es demasiado grande (máx 8MB)'); return; }
+          const reader = new FileReader();
+          reader.onload = function (ev) {
+            const dataUrl = ev.target.result;
+            const img = new Image();
+            img.onload = function () {
+              if (img.width !== img.height) {
+                openCropper(dataUrl);
+              } else {
+                const c = document.createElement('canvas'); c.width = 128; c.height = 128; const ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0, 128, 128); const png = c.toDataURL('image/png');
+                fetch('/subir-avatar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ image: png }), credentials: 'same-origin' })
+                  .then(r => r.json()).then(res => { if (res && (res.path || res.foto)) { document.getElementById('profileImage').src = (res.path || res.foto) + '?t=' + Date.now(); alert('Foto de perfil actualizada'); } else alert('Error al subir la imagen'); }).catch(() => alert('Error subiendo la imagen'));
+              }
+            };
+            img.src = dataUrl;
+          };
+          reader.readAsDataURL(f);
+        });
+      }
+
+      if (reportUserBtn) reportUserBtn.addEventListener('click', handleReportUserClick);
+      if (reportUserCancelBtn) reportUserCancelBtn.addEventListener('click', () => {
+        if (!reportUserSubmissionInFlight) closeReportUserModal();
+      });
+      if (reportUserModalBackdrop) reportUserModalBackdrop.addEventListener('click', () => {
+        if (!reportUserSubmissionInFlight) closeReportUserModal();
+      });
+      if (reportUserModal) {
+        reportUserModal.addEventListener('click', (event) => {
+          if (event.target === reportUserModal && !reportUserSubmissionInFlight) closeReportUserModal();
+        });
+      }
+      if (reportUserSubmitBtn) reportUserSubmitBtn.addEventListener('click', submitUserReport);
+      if (reportUserTextarea) reportUserTextarea.addEventListener('input', () => {
+        if (reportUserError && reportUserError.style.display !== 'none') {
+          reportUserError.style.display = 'none';
+          reportUserError.textContent = '';
+        }
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return;
+        if (reportUserModal && reportUserModal.style.display === 'flex' && !reportUserSubmissionInFlight) {
+          closeReportUserModal();
+        }
+      });
+    });
+
+    // Manejo de eliminación de cuenta: llama a POST /eliminar-cuenta y redirige al completar
+    async function confirmDelete() {
+      const accepted = await showPopupConfirm('¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.', {
+        title: 'Eliminar cuenta',
+        subtitle: 'Acción irreversible',
+        confirmText: 'Eliminar',
+        cancelText: 'Cancelar'
+      });
+      if (!accepted) return;
+      try {
+        const res = await fetch('/eliminar-cuenta', { method: 'POST', credentials: 'same-origin' });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          alert(err.error || 'No se pudo eliminar la cuenta');
+          return;
+        }
+        const json = await res.json();
+        if (json && json.redirect) window.location.href = json.redirect;
+        else window.location.href = '/';
+      } catch (e) {
+        console.error('Error eliminando cuenta:', e);
+        alert('Error al eliminar la cuenta');
+      }
+    }
+
+    // enlazar el botón
+    const deleteBtn = document.getElementById('deleteAccountBtn');
+    if (deleteBtn) deleteBtn.addEventListener('click', confirmDelete);
+  </script>
+</body>
+
+</html>

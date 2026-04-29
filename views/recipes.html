@@ -1,0 +1,2041 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <title>Resultados de búsqueda - El Recetario</title>
+  <link rel="shortcut icon" href="../Imagenes/Logo/favicon.ico">
+  <link href="../css/output.css" rel="stylesheet">
+  <script src="/js/userSession.js"></script>
+</head>
+
+<body class="bg-gray-50">
+  <!-- Header -->
+  <script src="/js/loadHeader.js" defer></script>
+  <div id="headerContainer"></div>
+
+  <!-- Breadcrumbs -->
+  <nav id="breadcrumbNav" class="bg-white border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 py-3 text-sm">
+      <ol class="flex items-center gap-2 text-gray-500">
+        <li><a href="/inicio" class="hover:text-purple-600">Inicio</a></li>
+        <li class="text-gray-400">/</li>
+        <li class="text-gray-700 font-medium">Recetas</li>
+      </ol>
+    </div>
+  </nav>
+
+  <!-- Contenido principal -->
+  <main class="max-w-7xl mx-auto p-4 md:p-6">
+    <div class="flex flex-col md:flex-row gap-6">
+
+      <!-- Sidebar filtros -->
+      <aside id="sidebarFilters"
+        class="fixed top-28 bottom-0 left-0 z-30 w-72 max-w-xs transform -translate-x-full transition-transform duration-300 md:relative md:top-0 md:bottom-auto md:translate-x-0 md:w-72 md:z-auto">
+        <div
+          class="flex h-full flex-col overflow-y-auto rounded-r-3xl bg-white/95 p-5 shadow-xl ring-1 ring-black/5 md:rounded-3xl md:shadow-none md:ring-0">
+          <div class="flex items-center justify-between gap-3 md:hidden">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wide text-purple-600">Filtros</p>
+              <h3 class="text-lg font-semibold text-gray-900">Refinar búsqueda</h3>
+            </div>
+            <button id="closeFilters"
+              class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-transparent bg-white text-gray-600 shadow-sm transition hover:border-red-200 hover:text-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500">
+              <span class="material-symbols-outlined text-base">close</span>
+            </button>
+          </div>
+
+          <div class="hidden md:flex md:flex-col md:gap-1 md:pb-4">
+            <p class="text-xs font-semibold uppercase tracking-wide text-purple-600">Filtros</p>
+            <h3 class="text-lg font-semibold text-gray-900">Refinar búsqueda</h3>
+            <p class="text-xs text-gray-500">Combina filtros para encontrar la receta perfecta.</p>
+          </div>
+
+          <form id="filtersForm" class="mt-4 flex-1 space-y-5">
+            <label for="filter_q" class="text-xs font-semibold uppercase tracking-wide text-gray-500">Buscar</label>
+            <div
+              class="mt-2 flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 shadow-sm focus-within:border-purple-400 focus-within:ring-2 focus-within:ring-purple-200">
+              <span class="material-symbols-outlined text-base text-gray-400">search</span>
+              <input type="search" name="q" id="filter_q" placeholder="Título, ingredredinte o autor"
+                class="w-full border-0 bg-transparent text-sm text-gray-700 focus:outline-none" />
+            </div>
+            <p id="filter_q_helper" class="mt-2 hidden text-xs text-red-500">Solo se permiten letras y espacios.</p>
+
+            <div class="space-y-2">
+              <label for="filter_category"
+                class="text-xs font-semibold uppercase tracking-wide text-gray-500">Categoría</label>
+              <select id="filter_category" name="category"
+                class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm transition focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-200">
+                <option value="">Todas</option>
+              </select>
+            </div>
+
+            <div class="space-y-2">
+              <label for="filter_difficulty"
+                class="text-xs font-semibold uppercase tracking-wide text-gray-500">Dificultad</label>
+              <select id="filter_difficulty" name="difficulty"
+                class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm transition focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-200">
+                <option value="">Cualquiera</option>
+                <option value="facil">Fácil</option>
+                <option value="media">Media</option>
+                <option value="Avanzada">Avanzada</option>
+              </select>
+            </div>
+
+            <div class="space-y-2">
+              <label for="filter_access" class="text-xs font-semibold uppercase tracking-wide text-gray-500">Tipo de
+                acceso</label>
+              <select id="filter_access" name="access"
+                class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm transition focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-200">
+                <option value="">Todos</option>
+                <option value="gratis">Gratuitas</option>
+                <option value="premium">Premium</option>
+              </select>
+            </div>
+
+            <div class="space-y-2">
+              <label for="filter_time" class="text-xs font-semibold uppercase tracking-wide text-gray-500">Tiempo máximo
+                (min)</label>
+              <input type="number" id="filter_time" name="time" min="0" placeholder="Ej. 30"
+                class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm transition focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-200" />
+            </div>
+
+            <div class="space-y-2">
+              <label for="filter_sort" class="text-xs font-semibold uppercase tracking-wide text-gray-500">Ordenar
+                por</label>
+              <select id="filter_sort" name="sort"
+                class="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm transition focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-200">
+                <option value="">Predeterminado</option>
+                <option value="date_desc">Fecha de publicación (más recientes)</option>
+                <option value="date_asc">Fecha de publicación (más antiguas)</option>
+                <option value="difficulty_asc">Dificultad (menor a mayor)</option>
+                <option value="difficulty_desc">Dificultad (mayor a menor)</option>
+              </select>
+            </div>
+
+            <div class="space-y-2 pt-3">
+              <button type="submit"
+                class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-orange-500 px-4 py-3 text-sm font-semibold text-white shadow-lg transition hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500">
+                <span class="material-symbols-outlined text-base">filter_alt</span>
+                Aplicar filtros
+              </button>
+              <button type="button" id="clearFilters"
+                class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-semibold text-gray-600 transition hover:border-purple-300 hover:text-purple-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500">
+                <span class="material-symbols-outlined text-base">restart_alt</span>
+                Limpiar todo
+              </button>
+            </div>
+          </form>
+        </div>
+      </aside>
+
+      <!-- Overlay para móvil -->
+      <div id="overlay" class="fixed inset-x-0 top-28 bottom-0 bg-black bg-opacity-40 hidden z-20 md:hidden"></div>
+
+      <!-- Contenido principal -->
+      <section class="flex-1">
+        <div class="rounded-3xl bg-white p-6 shadow-lg ring-1 ring-black/5 md:p-8">
+          <div class="flex flex-col gap-6">
+            <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+              <div class="text-center sm:text-left">
+                <h2 class="text-3xl font-semibold text-gray-900">Recetas</h2>
+                <p id="resultsSummary" class="mt-1 text-sm text-gray-500">Explora nuestras recetas más recientes.</p>
+              </div>
+              <div class="flex flex-wrap items-center justify-center gap-3">
+                <a href="/recetas-guardadas"
+                  class="inline-flex items-center justify-center gap-2 rounded-xl border border-purple-200 bg-white px-4 py-2 text-sm font-semibold text-purple-600 shadow-sm transition hover:bg-purple-50 hover:text-purple-700">
+                  <span class="material-symbols-outlined text-base">bookmark</span>
+                  Mis guardadas
+                </a>
+                <a href="/crear-receta"
+                  class="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:shadow-lg">
+                  <span class="material-symbols-outlined text-base">add</span>
+                  Crear receta
+                </a>
+              </div>
+              <button id="toggleFilters"
+                class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-purple-200 bg-white px-4 py-2 text-sm font-semibold text-purple-600 shadow-sm transition hover:bg-purple-50 hover:text-purple-700 md:hidden">
+                <span class="material-symbols-outlined text-base">tune</span>
+                Filtros
+              </button>
+            </div>
+
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center sm:gap-4">
+                <span class="text-xs font-semibold uppercase tracking-wide text-gray-400">Vista</span>
+                <div
+                  class="flex w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-50 text-sm font-medium shadow-inner sm:w-auto">
+                  <button type="button" data-view-mode="list" aria-pressed="false"
+                    class="inline-flex w-1/2 items-center justify-center gap-2 px-3 py-2 text-gray-500 transition hover:bg-white hover:text-purple-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500 sm:w-auto"
+                    title="Ver en lista">
+                    <span class="material-symbols-outlined text-base">view_list</span>
+                    <span class="hidden sm:inline">Lista</span>
+                  </button>
+                  <button type="button" data-view-mode="grid" aria-pressed="true"
+                    class="inline-flex w-1/2 items-center justify-center gap-2 px-3 py-2 text-gray-500 transition hover:bg-white hover:text-purple-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500 sm:w-auto"
+                    title="Ver en cuadrícula">
+                    <span class="material-symbols-outlined text-base">grid_view</span>
+                    <span class="hidden sm:inline">Cuadrícula</span>
+                  </button>
+                </div>
+              </div>
+              <div
+                class="flex w-full items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm sm:w-auto sm:justify-start">
+                <label for="perPageSelect" class="text-sm font-medium text-gray-600">Resultados por página</label>
+                <select id="perPageSelect"
+                  class="rounded-lg border border-transparent bg-transparent px-1 py-0 text-sm font-semibold text-gray-700 focus:border-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-200">
+                  <option value="10">10</option>
+                  <option value="20" selected>20</option>
+                  <option value="30">30</option>
+                  <option value="40">40</option>
+                  <option value="50">50</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="activeFiltersWrapper" class="hidden">
+              <div id="activeFilters"
+                class="flex flex-wrap items-center gap-2 rounded-2xl bg-purple-50/80 p-3 text-sm font-medium text-purple-700">
+              </div>
+            </div>
+
+            <div id="recipesGrid" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <!-- Aquí se cargarán las recetas -->
+            </div>
+
+            <div id="paginationSection" class="hidden border-t border-gray-100 pt-6">
+              <div id="paginationControls"
+                class="flex flex-col gap-4 text-sm text-gray-600 lg:flex-row lg:items-center lg:justify-between">
+                <!-- Controles de paginación -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+  <script src="/js/loadFooter.js" defer></script>
+  <div id="footerContainer"></div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggle = document.getElementById('mobileMenuToggle');
+      const menu = document.getElementById('mobileMenu');
+      if (!toggle || !menu) return;
+
+      const icon = toggle.querySelector('.material-symbols-outlined');
+      const closeMenu = () => {
+        if (!menu.classList.contains('hidden')) {
+          menu.classList.add('hidden');
+          toggle.setAttribute('aria-expanded', 'false');
+          if (icon) icon.textContent = 'menu';
+        }
+      };
+
+      toggle.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const willOpen = menu.classList.contains('hidden');
+        menu.classList.toggle('hidden');
+        toggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        if (icon) icon.textContent = willOpen ? 'close' : 'menu';
+      });
+
+      document.addEventListener('click', (event) => {
+        if (!menu.contains(event.target) && event.target !== toggle && !toggle.contains(event.target)) {
+          closeMenu();
+        }
+      });
+    });
+  </script>
+  <script>
+    // --- Función auxiliar para obtener cookies ---
+    function getCookie(name) {
+      const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+      return match ? decodeURIComponent(match[1]) : null;
+    }
+
+    let currentUserMenu = null;
+    let currentUserMenuToggle = null;
+    let userMenuListenersAttached = false;
+
+    function closeUserMenu() {
+      if (currentUserMenu) currentUserMenu.classList.add('hidden');
+      if (currentUserMenuToggle) currentUserMenuToggle.setAttribute('aria-expanded', 'false');
+    }
+
+    function openUserMenu(menu, toggle) {
+      document.querySelectorAll('[data-user-menu]').forEach(el => {
+        if (el !== menu) el.classList.add('hidden');
+      });
+      document.querySelectorAll('[data-user-menu-toggle]').forEach(btn => {
+        if (btn !== toggle) btn.setAttribute('aria-expanded', 'false');
+      });
+      menu.classList.remove('hidden');
+      toggle.setAttribute('aria-expanded', 'true');
+      currentUserMenu = menu;
+      currentUserMenuToggle = toggle;
+    }
+
+    function setupUserMenuToggle(container) {
+      if (!container) return;
+      const toggle = container.querySelector('[data-user-menu-toggle]');
+      const menu = container.querySelector('[data-user-menu]');
+      if (!toggle || !menu) return;
+
+      currentUserMenu = menu;
+      currentUserMenuToggle = toggle;
+
+      if (toggle.dataset.bound === 'true') return;
+      toggle.dataset.bound = 'true';
+      menu.dataset.bound = 'true';
+
+      toggle.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const willOpen = menu.classList.contains('hidden');
+        if (willOpen) {
+          openUserMenu(menu, toggle);
+        } else {
+          closeUserMenu();
+        }
+      });
+
+      menu.addEventListener('click', (event) => {
+        event.stopPropagation();
+      });
+
+      if (!userMenuListenersAttached) {
+        document.addEventListener('click', () => {
+          closeUserMenu();
+        });
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape') closeUserMenu();
+        });
+        userMenuListenersAttached = true;
+      }
+    }
+
+    // --- Manejo del usuario autenticado ---
+    function updateUserSection() {
+      const desktopSection = document.getElementById('userSectionDesktop');
+      const mobileSection = document.getElementById('mobileUserSection');
+      if (!desktopSection && !mobileSection) return;
+
+      const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[char] || char);
+
+      try {
+        const rawUserInfo = getCookie('userInfo');
+        const userInfo = rawUserInfo ? JSON.parse(rawUserInfo) : null;
+        const userName = userInfo?.nombre || getCookie('userName');
+
+        if (userName) {
+          const safeName = escapeHtml(userName);
+          const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}`;
+
+          if (desktopSection) {
+            desktopSection.innerHTML = `
+        <div class="relative">
+          <button type="button" data-user-menu-toggle class="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition" aria-expanded="false">
+            <img src="${avatarUrl}" alt="${safeName}" class="w-8 h-8 rounded-full">
+            <span class="text-sm font-medium">${safeName}</span>
+            <span class="material-symbols-outlined text-sm">expand_more</span>
+          </button>
+          <div data-user-menu class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg py-2 hidden z-50" role="menu">
+            <a href="/perfil" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" role="menuitem">
+              <span class="material-symbols-outlined align-middle mr-2">person</span>Mi Perfil
+            </a>
+            <a href="/recetas-guardadas" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" role="menuitem">
+              <span class="material-symbols-outlined align-middle mr-2">bookmark</span>Guardados
+            </a>
+            <a href="/configuracion" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" role="menuitem">
+              <span class="material-symbols-outlined align-middle mr-2">settings</span>Configuración
+            </a>
+          </div>
+        </div>`;
+            setupUserMenuToggle(desktopSection);
+          }
+
+          if (mobileSection) {
+            mobileSection.innerHTML = `
+        <div class="flex items-center gap-3 bg-orange-50 rounded-xl px-3 py-3">
+          <img src="${avatarUrl}" alt="${safeName}" class="w-10 h-10 rounded-full">
+          <div class="text-left">
+            <p class="text-sm font-semibold text-gray-800">${safeName}</p>
+            <p class="text-xs text-gray-500">Tu cuenta</p>
+          </div>
+        </div>
+        <div class="flex flex-col text-sm text-gray-700 font-medium gap-2">
+          <a href="/perfil" class="flex items-center gap-2 hover:text-orange-500 transition">
+            <span class="material-symbols-outlined text-base">person</span>
+            Mi Perfil
+          </a>
+          <a href="/recetas-guardadas" class="flex items-center gap-2 hover:text-orange-500 transition">
+            <span class="material-symbols-outlined text-base">bookmark</span>
+            Guardados
+          </a>
+          <a href="/configuracion" class="flex items-center gap-2 hover:text-orange-500 transition">
+            <span class="material-symbols-outlined text-base">settings</span>
+            Configuración
+          </a>
+        </div>`;
+          }
+        } else {
+          if (desktopSection) {
+            desktopSection.innerHTML = `
+        <a href="/iniciar-sesion" class="text-gray-600 hover:text-purple-600 transition flex items-center gap-1">
+          <span class="material-symbols-outlined">person</span>Iniciar Sesión
+        </a>
+        <a href="/registro" class="px-6 py-3 text-sm rounded-md bg-orange-500 text-white font-semibold hover:bg-orange-600">
+          Regístrate
+        </a>`;
+          }
+          if (mobileSection) {
+            mobileSection.innerHTML = `
+        <a href="/iniciar-sesion" class="text-sm font-medium text-gray-700 hover:text-orange-500 transition">Inicia sesión</a>
+        <a href="/registro" class="text-sm font-semibold text-white bg-orange-500 hover:bg-orange-600 transition px-3 py-2 rounded-lg text-center">Regístrate</a>`;
+          }
+          currentUserMenu = null;
+          currentUserMenuToggle = null;
+        }
+      } catch (error) {
+        console.error('Error al actualizar la sección de usuario:', error);
+      }
+    }
+
+
+    // --- Sincroniza plan seleccionado con input oculto ---
+    function setupPlanSync() {
+      const radios = document.querySelectorAll('input[name="plan"]');
+      const hidden = document.getElementById('price_id_input');
+      const label = document.getElementById('selectedPlanLabel');
+      const form = document.getElementById('checkoutForm');
+
+      if (!radios.length || !hidden) return;
+
+      const updateSelection = () => {
+        const checked = [...radios].find(r => r.checked) || radios[0];
+        if (!checked) return;
+        hidden.value = checked.value;
+        if (label) label.textContent = checked.dataset.label || checked.value;
+      };
+
+      radios.forEach(r => r.addEventListener('change', updateSelection));
+      if (form) form.addEventListener('submit', updateSelection);
+      updateSelection();
+    }
+
+    // --- Inicialización general ---
+    document.addEventListener('DOMContentLoaded', () => {
+      updateUserSection();
+      setupPlanSync();
+      setupUserMenuToggle(document.getElementById('userSectionDesktop'));
+    });
+  </script>
+
+  <!-- Script: Mostrar/Ocultar sidebar -->
+  <script>
+    const toggleBtn = document.getElementById('toggleFilters');
+    const closeBtn = document.getElementById('closeFilters');
+    const sidebar = document.getElementById('sidebarFilters');
+    const overlay = document.getElementById('overlay');
+    const headerEl = document.querySelector('header');
+    const breadcrumbNav = document.getElementById('breadcrumbNav');
+
+    const updateFilterOffset = () => {
+      if (!sidebar) return;
+      if (window.matchMedia('(min-width: 768px)').matches) {
+        sidebar.style.top = '';
+        if (overlay) overlay.style.top = '';
+        return;
+      }
+
+      const headerHeight = headerEl ? headerEl.offsetHeight : 0;
+      const breadcrumbHeight = breadcrumbNav ? breadcrumbNav.offsetHeight : 0;
+      const offset = Math.max(headerHeight + breadcrumbHeight, 0);
+
+      sidebar.style.top = `${offset}px`;
+      if (overlay) overlay.style.top = `${offset}px`;
+    };
+
+    updateFilterOffset();
+    window.addEventListener('resize', updateFilterOffset);
+
+    toggleBtn.addEventListener('click', () => {
+      updateFilterOffset();
+      sidebar.classList.remove('-translate-x-full');
+      overlay.classList.remove('hidden');
+    });
+
+    closeBtn.addEventListener('click', () => {
+      sidebar.classList.add('-translate-x-full');
+      overlay.classList.add('hidden');
+    });
+
+    overlay.addEventListener('click', () => {
+      sidebar.classList.add('-translate-x-full');
+      overlay.classList.add('hidden');
+    });
+  </script>
+  <script>
+    // Gestión de vistas, filtros y paginación de recetas
+    (function () {
+      const sidebarForm = document.getElementById('filtersForm');
+      const clearBtn = document.getElementById('clearFilters');
+      const sortSelect = document.getElementById('filter_sort');
+      const categorySelect = document.getElementById('filter_category');
+      const grid = document.getElementById('recipesGrid');
+      const perPageSelect = document.getElementById('perPageSelect');
+      const paginationWrapper = document.getElementById('paginationSection');
+      const pagination = document.getElementById('paginationControls');
+      const viewButtons = document.querySelectorAll('[data-view-mode]');
+      const summaryLabel = document.getElementById('resultsSummary');
+      const chipsWrapper = document.getElementById('activeFiltersWrapper');
+      const chipsContainer = document.getElementById('activeFilters');
+
+      if (!grid) return;
+
+      const currentUser = window.CURRENT_USER || {};
+      const isLoggedIn = Boolean(
+        currentUser && (
+          currentUser.id != null
+          || currentUser.Usu_ID != null
+          || currentUser.userId != null
+        )
+      );
+
+      const favoriteSet = new Set(
+        Array.isArray(window.FAVORITE_RECIPES)
+          ? window.FAVORITE_RECIPES
+            .filter((value) => value !== null && typeof value !== 'undefined')
+            .map((value) => String(value))
+          : []
+      );
+
+      const preloadedCategories = Array.isArray(window.RECIPE_CATEGORIES) ? window.RECIPE_CATEGORIES : [];
+      const resolvedCategorySource = preloadedCategories.length ? preloadedCategories : null;
+      const categoryLabelOverrides = Object.create(null);
+      let categoryFilterFromUrl = '';
+
+      function normalizeCategoryEntry(entry) {
+        if (!entry) return null;
+        const idRaw = entry.id ?? entry.Cat_ID ?? entry.value ?? null;
+        const id = Number(idRaw);
+        const rawName = entry.name ?? entry.nombre ?? entry.Cat_Nombre ?? '';
+        const name = rawName ? String(rawName).trim() : '';
+        const slugSource = entry.slug ?? entry.Slug ?? entry.Cat_Slug ?? (name || idRaw);
+        const slug = normalizeToken(slugSource);
+        return {
+          id: Number.isFinite(id) ? id : null,
+          name: name || 'Sin categoría',
+          slug,
+        };
+      }
+
+      function populateCategorySelect(list = []) {
+        if (!categorySelect) return;
+        const previousValue = categorySelect.value;
+        categorySelect.innerHTML = '';
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = 'Todas';
+        categorySelect.appendChild(defaultOption);
+
+        list.forEach((entry) => {
+          const normalized = normalizeCategoryEntry(entry);
+          if (!normalized || !normalized.slug) return;
+          const option = document.createElement('option');
+          option.value = normalized.slug;
+          if (normalized.id != null) {
+            option.dataset.categoryId = String(normalized.id);
+          }
+          option.textContent = normalized.name;
+          categorySelect.appendChild(option);
+          categoryLabelOverrides[normalized.slug] = normalized.name;
+        });
+
+        if (previousValue) {
+          const hasPrevious = Array.from(categorySelect.options).some((option) => option.value === previousValue);
+          if (hasPrevious) {
+            categorySelect.value = previousValue;
+          }
+        }
+      }
+
+      async function ensureCategoriesLoaded() {
+        if (!categorySelect || resolvedCategorySource) return;
+        try {
+          const response = await fetch('/api/recetas/opciones', { credentials: 'same-origin' });
+          if (!response.ok) throw new Error('request_failed');
+          const data = await response.json();
+          if (Array.isArray(data?.categories) && data.categories.length) {
+            populateCategorySelect(data.categories);
+          }
+        } catch (error) {
+          console.warn('[recipes] No se pudieron cargar las categorías del filtro', error);
+        }
+      }
+
+      function deriveCategoriesFromRecipes(recipes) {
+        if (!Array.isArray(recipes)) return [];
+        const map = new Map();
+        recipes.forEach((recipe) => {
+          const name = (recipe.Cat_Nombre || recipe.Categoria_Nombre || recipe.categoryName || '').toString().trim();
+          if (!name) return;
+          const slug = normalizeToken(name);
+          if (!slug || map.has(slug)) return;
+          map.set(slug, { id: recipe.Cat_ID ?? recipe.categoryId ?? null, name, slug });
+        });
+        return Array.from(map.values());
+      }
+
+      function setExternalCategoryFilter(slug, label) {
+        if (!slug) return;
+        categoryFilterFromUrl = slug;
+        if (label) {
+          categoryLabelOverrides[slug] = label;
+        }
+      }
+
+      function clearExternalCategoryFilter() {
+        if (categoryFilterFromUrl) {
+          delete categoryLabelOverrides[categoryFilterFromUrl];
+        }
+        categoryFilterFromUrl = '';
+      }
+
+      function applyCategoryFromQuery(rawValue, labelValue) {
+        if (!rawValue) {
+          if (categorySelect) categorySelect.value = '';
+          clearExternalCategoryFilter();
+          return;
+        }
+        const normalized = normalizeToken(rawValue);
+        clearExternalCategoryFilter();
+        if (normalized) {
+          setExternalCategoryFilter(normalized, labelValue || rawValue);
+        }
+        if (!categorySelect || !normalized) return;
+        const options = Array.from(categorySelect.options || []);
+        const match = options.find((option) => normalizeToken(option.value) === normalized);
+        if (match) {
+          categorySelect.value = match.value;
+          const optionLabel = match.textContent || match.label || match.value;
+          clearExternalCategoryFilter();
+          setExternalCategoryFilter(normalizeToken(match.value), optionLabel);
+        }
+      }
+
+      const loginRedirectUrl = `/iniciar-sesion?returnTo=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+
+      const VIEW_CONFIG = {
+        grid: {
+          container: 'grid grid-cols-1 gap-7 sm:grid-cols-2 xl:grid-cols-2',
+          card: 'group relative flex h-full flex-col rounded-3xl border border-gray-100 bg-white p-6 shadow-md transition hover:-translate-y-1 hover:shadow-xl focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50',
+          media: 'relative h-56 overflow-hidden rounded-2xl rounded-b-none bg-gray-100',
+          mediaImage: 'h-full w-full object-cover transition duration-300 group-hover:scale-105',
+          content: 'flex flex-1 flex-col gap-5 pt-4',
+        },
+        list: {
+          container: 'flex flex-col gap-3',
+          card: 'group flex w-full items-stretch gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-50',
+          media: 'relative h-28 w-28 flex-shrink-0 overflow-hidden rounded-xl bg-gray-100 sm:h-32 sm:w-40',
+          mediaImage: 'h-full w-full object-cover transition duration-300 group-hover:scale-105',
+          content: 'flex min-w-0 flex-1 flex-col justify-between gap-3',
+        },
+      };
+
+      let userTipo = getUserTipo();
+      console.log('[recipes] userTipo resolved to:', userTipo, {
+        CURRENT_USER: window.CURRENT_USER,
+      });
+      let hasPremiumAccess = userTipo === 1 || userTipo === 3;
+      console.log('[recipes] hasPremiumAccess flag:', hasPremiumAccess);
+
+      const state = {
+        view: 'grid',
+        perPage: Math.max(1, Number(perPageSelect?.value) || 20),
+        page: 1,
+        filters: null,
+        all: [],
+        filtered: [],
+      };
+
+      const rawRecipes = Array.isArray(window.RECIPES) ? window.RECIPES : [];
+
+      const initialCategories = resolvedCategorySource && resolvedCategorySource.length
+        ? resolvedCategorySource
+        : deriveCategoriesFromRecipes(rawRecipes);
+      populateCategorySelect(initialCategories);
+
+      prefillFiltersFromQuery();
+      ensureCategoriesLoaded();
+
+      if (categorySelect) {
+        categorySelect.addEventListener('change', () => {
+          const normalized = normalizeToken(categorySelect.value);
+          if (!normalized) {
+            clearExternalCategoryFilter();
+            return;
+          }
+          const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+          const label = selectedOption
+            ? (selectedOption.textContent || selectedOption.label || normalized)
+            : normalized;
+          clearExternalCategoryFilter();
+          setExternalCategoryFilter(normalized, label);
+        });
+      }
+
+      function recomputeRecipes() {
+        state.all = rawRecipes.map((recipe) => normalizeRecipe(recipe, hasPremiumAccess, favoriteSet));
+        state.filters = state.filters || readFilters();
+        const filtered = state.all.filter((recipe) => matchesFilters(recipe, state.filters));
+        state.filtered = sortRecipes(filtered, state.filters.sort);
+      }
+
+      recomputeRecipes();
+
+      updateActiveViewButtons();
+      updateChips(state.filters);
+      render();
+      syncUrlWithFilters(state.filters);
+
+      if (sidebarForm) {
+        sidebarForm.addEventListener('submit', (event) => {
+          event.preventDefault();
+          applyFilters();
+        });
+      }
+
+      if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+          sidebarForm?.reset();
+          clearExternalCategoryFilter();
+          if (categorySelect) categorySelect.value = '';
+          applyFilters();
+        });
+      }
+
+      if (sortSelect) {
+        sortSelect.addEventListener('change', () => {
+          applyFilters();
+        });
+      }
+
+      if (perPageSelect) {
+        perPageSelect.addEventListener('change', () => {
+          state.perPage = Math.max(1, Number(perPageSelect.value) || 10);
+          state.page = 1;
+          render();
+        });
+      }
+
+      viewButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const view = button.dataset.viewMode;
+          if (!view || view === state.view) return;
+          state.view = view;
+          updateActiveViewButtons();
+          render();
+        });
+      });
+
+      if (pagination) {
+        pagination.addEventListener('click', onPaginationClick);
+      }
+
+      function applyFilters() {
+        state.filters = readFilters();
+        state.page = 1;
+        const filtered = state.all.filter((recipe) => matchesFilters(recipe, state.filters));
+        state.filtered = sortRecipes(filtered, state.filters.sort);
+        updateChips(state.filters);
+        syncUrlWithFilters(state.filters);
+        render();
+      }
+
+      function refreshAccessIfNeeded(force = false) {
+        const latestTipo = getUserTipo();
+        if (!force && latestTipo === userTipo) return;
+        userTipo = latestTipo;
+        const latestAccess = userTipo === 1 || userTipo === 3;
+        if (!force && latestAccess === hasPremiumAccess) return;
+        hasPremiumAccess = latestAccess;
+        console.log('[recipes] updated userTipo/hasPremiumAccess:', { userTipo, hasPremiumAccess });
+        recomputeRecipes();
+        updateChips(state.filters || {});
+        render();
+      }
+
+      let accessAttempts = 0;
+      const maxAttempts = 20;
+      const accessInterval = setInterval(() => {
+        accessAttempts += 1;
+        refreshAccessIfNeeded();
+        if (userTipo !== null || accessAttempts >= maxAttempts) {
+          clearInterval(accessInterval);
+        }
+      }, 500);
+
+      function render() {
+        const viewConfig = VIEW_CONFIG[state.view] || VIEW_CONFIG.grid;
+        grid.className = viewConfig.container;
+        grid.dataset.view = state.view;
+        grid.innerHTML = '';
+
+        const total = state.filtered.length;
+        const perPage = Math.max(1, state.perPage);
+        const totalPages = Math.max(1, Math.ceil(total / perPage));
+        if (state.page > totalPages) state.page = totalPages;
+
+        const lockedTotal = state.filtered.filter((recipe) => recipe.locked).length;
+
+        if (!total) {
+          if (summaryLabel) {
+            summaryLabel.textContent = 'No se encontraron recetas con los filtros actuales.';
+          }
+          renderPagination(0);
+          const empty = document.createElement('div');
+          empty.className = state.view === 'list'
+            ? 'rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-8 text-center text-sm text-gray-500'
+            : 'col-span-full rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-8 text-center text-sm text-gray-500';
+          empty.innerHTML = 'Prueba ajustando los filtros o <a href="/crear-receta" class="font-semibold text-purple-600 hover:text-purple-700">crea una nueva receta</a>.';
+          grid.appendChild(empty);
+          return;
+        }
+
+        const startIndex = (state.page - 1) * perPage;
+        const endIndex = Math.min(total, startIndex + perPage);
+        const pageItems = state.filtered.slice(startIndex, endIndex);
+
+        if (summaryLabel) {
+          const lockedSuffix = !hasPremiumAccess && lockedTotal
+            ? ` · ${lockedTotal} premium bloqueadas`
+            : '';
+          summaryLabel.textContent = `Mostrando ${startIndex + 1} – ${endIndex} de ${total} recetas${lockedSuffix}`;
+        }
+
+        if (!hasPremiumAccess && lockedTotal > 0) {
+          const banner = document.createElement('div');
+          banner.className = state.view === 'list'
+            ? 'rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700'
+            : 'col-span-full rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700';
+          banner.innerHTML = `Hay ${lockedTotal} receta${lockedTotal === 1 ? '' : 's'} premium disponibles solo para suscriptores. <a href="/suscripcion" class="font-semibold text-purple-600 hover:text-purple-700">Hazte Premium</a>`;
+          grid.appendChild(banner);
+        }
+
+        pageItems.forEach((recipe) => {
+          const card = buildCard(recipe, state.view);
+          grid.appendChild(card);
+          attachCardHandlers(card, recipe);
+        });
+
+        renderPagination(total);
+      }
+
+      function renderPagination(total) {
+        if (!pagination || !paginationWrapper) return;
+        const perPage = Math.max(1, state.perPage);
+        const totalPages = Math.ceil(total / perPage);
+        if (!total || totalPages <= 1) {
+          paginationWrapper.classList.add('hidden');
+          pagination.innerHTML = '';
+          return;
+        }
+
+        paginationWrapper.classList.remove('hidden');
+        pagination.innerHTML = '';
+
+        const nav = document.createElement('div');
+        nav.className = 'flex flex-wrap items-center gap-2';
+
+        nav.appendChild(createPaginationButton('Anterior', 'prev', state.page === 1));
+        buildPageList(totalPages, state.page).forEach((page) => {
+          if (page === 'ellipsis') {
+            const spacer = document.createElement('span');
+            spacer.className = 'px-2 text-gray-400';
+            spacer.textContent = '…';
+            nav.appendChild(spacer);
+            return;
+          }
+          nav.appendChild(createPaginationButton(String(page), page, false, page === state.page));
+        });
+        nav.appendChild(createPaginationButton('Siguiente', 'next', state.page === totalPages));
+
+        pagination.appendChild(nav);
+
+        const meta = document.createElement('div');
+        meta.className = 'text-xs text-gray-500';
+        meta.textContent = `Página ${state.page} de ${totalPages}`;
+        pagination.appendChild(meta);
+      }
+
+      function onPaginationClick(event) {
+        const button = event.target.closest('button[data-page]');
+        if (!button) return;
+        const value = button.dataset.page;
+        if (value === 'prev') {
+          if (state.page > 1) {
+            state.page -= 1;
+            render();
+          }
+          return;
+        }
+        if (value === 'next') {
+          const totalPages = Math.max(1, Math.ceil(state.filtered.length / state.perPage));
+          if (state.page < totalPages) {
+            state.page += 1;
+            render();
+          }
+          return;
+        }
+        const pageNumber = Number(value);
+        if (Number.isFinite(pageNumber) && pageNumber !== state.page) {
+          state.page = pageNumber;
+          render();
+        }
+      }
+
+      function updateActiveViewButtons() {
+        viewButtons.forEach((button) => {
+          const isActive = button.dataset.viewMode === state.view;
+          button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+          if (isActive) {
+            button.classList.add('bg-white', 'text-purple-600', 'shadow-sm', 'border', 'border-purple-200');
+            button.classList.remove('text-gray-500');
+          } else {
+            button.classList.remove('bg-white', 'text-purple-600', 'shadow-sm', 'border', 'border-purple-200');
+            button.classList.add('text-gray-500');
+          }
+        });
+      }
+
+      function updateChips(filters) {
+        if (!chipsContainer || !chipsWrapper) return;
+        chipsContainer.innerHTML = '';
+
+        const chips = [];
+
+        if (!filters) {
+          chipsWrapper.classList.add('hidden');
+          return;
+        }
+
+        if (filters.q) {
+          chips.push({
+            label: `Búsqueda: "${filters.q}"`,
+            action: () => {
+              const input = document.getElementById('filter_q');
+              if (input) input.value = '';
+            },
+          });
+        }
+
+        if (filters.category) {
+          chips.push({
+            label: `Categoría: ${formatChipLabel(filters.category)}`,
+            action: () => {
+              clearExternalCategoryFilter();
+              if (categorySelect) categorySelect.value = '';
+            },
+          });
+        }
+
+        if (filters.difficulty) {
+          chips.push({
+            label: `Dificultad: ${formatChipLabel(filters.difficulty)}`,
+            action: () => {
+              const select = document.getElementById('filter_difficulty');
+              if (select) select.value = '';
+            },
+          });
+        }
+
+        if (filters.access) {
+          chips.push({
+            label: `Acceso: ${formatChipLabel(filters.access)}`,
+            action: () => {
+              const select = document.getElementById('filter_access');
+              if (select) select.value = '';
+            },
+          });
+        }
+
+        if (filters.timeMax) {
+          chips.push({
+            label: `Tiempo ≤ ${filters.timeMax} min`,
+            action: () => {
+              const input = document.getElementById('filter_time');
+              if (input) input.value = '';
+            },
+          });
+        }
+
+        const dietFilters = Array.isArray(filters.diets) ? filters.diets : [];
+
+        dietFilters.forEach((diet) => {
+          chips.push({
+            label: `Dieta: ${formatChipLabel(diet)}`,
+            action: () => {
+              const checkbox = document.querySelector(`#filtersForm input[name="diet"][value="${diet}"]`);
+              if (checkbox) checkbox.checked = false;
+            },
+          });
+        });
+
+        if (filters.sort) {
+          chips.push({
+            label: `Orden: ${formatSortLabel(filters.sort)}`,
+            action: () => {
+              const select = document.getElementById('filter_sort');
+              if (select) select.value = '';
+            },
+          });
+        }
+
+        if (!chips.length) {
+          chipsWrapper.classList.add('hidden');
+          return;
+        }
+
+        chipsWrapper.classList.remove('hidden');
+
+        chips.forEach((chip) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'inline-flex items-center gap-1 rounded-full bg-white/70 px-3 py-1 text-xs font-semibold text-purple-600 shadow-sm transition hover:bg-white';
+          button.innerHTML = `<span>${chip.label}</span><span class="material-symbols-outlined text-sm">close</span>`;
+          button.addEventListener('click', () => {
+            chip.action();
+            applyFilters();
+          });
+          chipsContainer.appendChild(button);
+        });
+      }
+
+      function buildPageList(totalPages, current) {
+        if (totalPages <= 7) {
+          return Array.from({ length: totalPages }, (_, index) => index + 1);
+        }
+        const pages = [1];
+        if (current > 3) pages.push('ellipsis');
+        const start = Math.max(2, current - 1);
+        const end = Math.min(totalPages - 1, current + 1);
+        for (let page = start; page <= end; page += 1) pages.push(page);
+        if (current < totalPages - 2) pages.push('ellipsis');
+        pages.push(totalPages);
+        return pages;
+      }
+
+      function createPaginationButton(label, value, disabled, isCurrent = false) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.dataset.page = String(value);
+        button.textContent = label;
+        button.className = 'inline-flex items-center justify-center rounded-lg border px-3 py-2 text-sm font-semibold transition';
+        if (disabled) {
+          button.disabled = true;
+          button.classList.add('cursor-not-allowed', 'border-gray-200', 'bg-gray-100', 'text-gray-400');
+        } else if (isCurrent) {
+          button.classList.add('border-purple-500', 'bg-purple-600', 'text-white', 'shadow');
+          button.setAttribute('aria-current', 'page');
+        } else {
+          button.classList.add('border-gray-200', 'bg-white', 'text-gray-600', 'hover:border-purple-300', 'hover:text-purple-600');
+        }
+
+        if (value === 'prev') {
+          button.setAttribute('aria-label', 'Página anterior');
+        } else if (value === 'next') {
+          button.setAttribute('aria-label', 'Página siguiente');
+        } else if (typeof value === 'number') {
+          button.setAttribute('aria-label', `Página ${value}`);
+        }
+
+        return button;
+      }
+
+      function buildCard(recipe, view) {
+        const config = VIEW_CONFIG[view] || VIEW_CONFIG.grid;
+        const article = document.createElement('article');
+        article.className = config.card;
+        article.dataset.id = recipe.id || '';
+        article.dataset.locked = recipe.locked ? '1' : '0';
+        article.dataset.favorite = recipe.isFavorite ? '1' : '0';
+        article.dataset.title = recipe.title;
+        article.dataset.time = String(recipe.timeMinutes);
+        article.dataset.premium = recipe.premium ? '1' : '0';
+
+        if (recipe.locked) {
+          article.classList.add('cursor-not-allowed', 'opacity-95');
+        } else {
+          article.classList.add('cursor-pointer');
+        }
+
+        const media = document.createElement('div');
+        media.className = config.media;
+
+        if (recipe.locked) {
+          media.classList.add('flex', 'flex-col', 'items-center', 'justify-center', 'gap-2', 'bg-gradient-to-br', 'from-gray-100', 'via-gray-200', 'to-gray-100');
+          media.innerHTML = '<span class="material-symbols-outlined text-5xl text-gray-400">lock</span><span class="text-sm font-semibold text-gray-500">Receta Premium</span>';
+        } else if (recipe.image) {
+          const img = document.createElement('img');
+          img.src = recipe.image;
+          img.alt = recipe.title || 'Receta';
+          img.className = config.mediaImage;
+          media.appendChild(img);
+        } else {
+          const placeholder = document.createElement('div');
+          placeholder.className = 'flex h-full w-full items-center justify-center bg-white text-sm text-gray-400';
+          placeholder.textContent = 'Foto no disponible';
+          media.appendChild(placeholder);
+        }
+
+        if (recipe.premium) {
+          const badge = document.createElement('span');
+          badge.className = 'absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-amber-500/90 px-3 py-1 text-xs font-semibold text-white shadow-lg backdrop-blur';
+          badge.innerHTML = '<span class="material-symbols-outlined text-sm">workspace_premium</span> Premium';
+          media.appendChild(badge);
+        }
+
+        const content = document.createElement('div');
+        content.className = config.content;
+
+        const header = document.createElement('div');
+        header.className = 'flex flex-col gap-2';
+
+        const titleRow = document.createElement('div');
+        titleRow.className = 'flex items-start justify-between gap-3';
+
+        const heading = document.createElement('h3');
+        heading.className = view === 'list' ? 'text-lg font-semibold text-gray-900' : 'text-xl font-semibold text-gray-900';
+        heading.textContent = recipe.title || 'Sin título';
+
+        titleRow.appendChild(heading);
+        header.appendChild(titleRow);
+
+        const description = document.createElement('p');
+        description.className = 'text-sm text-gray-600';
+        description.textContent = recipe.locked
+          ? 'Contenido exclusivo para suscriptores Premium.'
+          : (recipe.summary || 'Sin descripción disponible.');
+        header.appendChild(description);
+
+        const stats = document.createElement('div');
+        stats.className = view === 'list'
+          ? 'grid grid-cols-2 gap-3 text-xs text-gray-600 sm:grid-cols-4'
+          : 'grid grid-cols-2 gap-3 text-xs text-gray-600';
+
+        if (recipe.locked) {
+          stats.appendChild(createStatRow('lock', 'Acceso', 'Suscripción'));
+          stats.appendChild(createStatRow('workspace_premium', 'Nivel', 'Premium'));
+        } else {
+          stats.appendChild(createStatRow('schedule', 'Tiempo', recipe.timeDisplay));
+          stats.appendChild(createStatRow('science', 'Dificultad', recipe.difficultyLabel || 'N/D', {
+            valueClass: resolveDifficultyTone(recipe.difficultyLabel),
+          }));
+          if (recipe.dietsDisplay.length) {
+            const dietsLabel = recipe.dietsDisplay.slice(0, 2).join(', ');
+            const extra = recipe.dietsDisplay.length > 2 ? ` +${recipe.dietsDisplay.length - 2}` : '';
+            stats.appendChild(createStatRow('spa', 'Dietas', dietsLabel + extra));
+          }
+        }
+
+        header.appendChild(stats);
+        content.appendChild(header);
+
+        const footer = document.createElement('div');
+        footer.className = view === 'list'
+          ? 'flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'
+          : 'flex flex-col gap-2';
+
+        const cta = document.createElement('a');
+        cta.className = 'inline-flex w-full items-center justify-center gap-1 rounded-xl px-3 py-2 text-sm font-semibold transition sm:w-auto';
+
+        if (recipe.locked) {
+          cta.href = '/suscripcion';
+          cta.classList.add('border', 'border-purple-200', 'bg-white', 'text-purple-600', 'hover:border-purple-400', 'hover:text-purple-700', 'hover:bg-purple-50');
+          cta.innerHTML = 'Hazte Premium <span class="material-symbols-outlined text-base">lock_open</span>';
+        } else {
+          cta.href = `/receta/${encodeURIComponent(recipe.id)}`;
+          cta.classList.add('bg-orange-500/90', 'text-white', 'shadow-sm', 'hover:bg-orange-500', 'hover:shadow');
+          cta.innerHTML = 'Ver receta <span class="material-symbols-outlined text-base">arrow_forward</span>';
+        }
+
+        const ratingRow = document.createElement('div');
+        ratingRow.className = 'flex items-center justify-center gap-1 text-xs font-medium text-gray-500 sm:justify-start';
+
+        if (recipe.locked) {
+          ratingRow.innerHTML = '<span class="material-symbols-outlined text-sm text-gray-400">lock</span><span>Contenido exclusivo Premium</span>';
+        } else {
+          const ratingInfo = formatRating(recipe.ratingAvg, recipe.ratingCount);
+          ratingRow.innerHTML = `<span class="material-symbols-outlined text-sm ${ratingInfo.toneClass}">${ratingInfo.icon}</span><span>${ratingInfo.label}</span>`;
+        }
+
+        const actions = document.createElement('div');
+        actions.className = 'flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-center sm:gap-3';
+
+        actions.appendChild(cta);
+
+        const favoriteButton = createFavoriteButton(recipe);
+        if (favoriteButton) actions.appendChild(favoriteButton);
+
+        footer.appendChild(actions);
+        footer.appendChild(ratingRow);
+        content.appendChild(footer);
+
+        article.appendChild(media);
+        article.appendChild(content);
+
+        return article;
+      }
+
+      function createStatRow(icon, label, value, options = {}) {
+        const wrapper = document.createElement('div');
+        const wrapperClasses = [
+          'flex',
+          'flex-col',
+          'gap-1',
+          'rounded-xl',
+          'border',
+          'border-gray-100',
+          'bg-gray-50',
+          'px-3',
+          'py-2',
+        ];
+
+        if (options.wrapperClass) {
+          wrapperClasses.push(...options.wrapperClass.split(' ').filter(Boolean));
+        }
+
+        wrapper.className = wrapperClasses.join(' ');
+
+        const heading = document.createElement('div');
+        heading.className = 'flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400';
+        heading.innerHTML = `<span class="material-symbols-outlined text-sm">${icon}</span>${label}`;
+
+        const description = document.createElement('div');
+        const descriptionClasses = ['text-sm', 'font-medium'];
+        if (options.valueClass) {
+          descriptionClasses.push(options.valueClass);
+        } else {
+          descriptionClasses.push('text-gray-700');
+        }
+        description.className = descriptionClasses.join(' ');
+        description.textContent = value || '—';
+
+        wrapper.appendChild(heading);
+        wrapper.appendChild(description);
+        return wrapper;
+      }
+
+      function createFavoriteButton(recipe) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.dataset.action = 'toggle-favorite';
+        button.dataset.recipeId = recipe.id || '';
+        updateFavoriteButtonVisual(button, recipe.isFavorite, recipe.locked);
+        return button;
+      }
+
+      function updateFavoriteButtonVisual(button, isFavorite, locked) {
+        if (!button) return;
+
+        const baseClasses = [
+          'inline-flex',
+          'items-center',
+          'gap-1',
+          'rounded-xl',
+          'border',
+          'px-3',
+          'py-2',
+          'text-sm',
+          'font-semibold',
+          'transition',
+          'focus-visible:outline',
+          'focus-visible:outline-2',
+          'focus-visible:outline-offset-2',
+          'focus-visible:outline-purple-500',
+          'w-full',
+          'justify-center',
+          'sm:w-auto',
+        ];
+
+        button.className = baseClasses.join(' ');
+
+        if (locked) {
+          button.classList.add('border-gray-200', 'bg-gray-100', 'text-gray-400', 'cursor-not-allowed');
+          button.innerHTML = '<span class="material-symbols-outlined text-base">lock</span>Solo Premium';
+          button.title = 'Disponible únicamente para suscriptores Premium';
+          button.disabled = true;
+          return;
+        }
+
+        button.disabled = false;
+
+        if (isFavorite) {
+          button.classList.add('border-purple-600', 'bg-purple-600', 'text-white', 'shadow');
+          button.innerHTML = '<span class="material-symbols-outlined text-base">bookmark_added</span>Guardada';
+          button.title = 'Esta receta está en tus guardados';
+        } else {
+          button.classList.add('border-purple-200', 'bg-white', 'text-purple-600', 'hover:border-purple-400', 'hover:text-purple-600', 'hover:bg-purple-50');
+          button.innerHTML = '<span class="material-symbols-outlined text-base">bookmark_add</span>Guardar';
+          button.title = isLoggedIn ? 'Guardar en tus recetas favoritas' : 'Inicia sesión para guardar esta receta';
+        }
+      }
+
+      function setFavoriteButtonLoading(button, loading, locked) {
+        if (!button) return;
+        if (loading) {
+          button.dataset.loading = '1';
+          button.disabled = true;
+          button.classList.add('opacity-70', 'cursor-wait');
+          button.innerHTML = '<span class="material-symbols-outlined text-base animate-spin">progress_activity</span>';
+        } else {
+          button.dataset.loading = '0';
+          button.classList.remove('opacity-70', 'cursor-wait');
+          button.disabled = Boolean(locked);
+        }
+      }
+
+      function updateCardFavoriteState(card, button, recipe) {
+        if (!recipe) return;
+        if (card) card.dataset.favorite = recipe.isFavorite ? '1' : '0';
+        updateFavoriteButtonVisual(button, recipe.isFavorite, recipe.locked);
+      }
+
+      function handleFavoriteToggle(recipe, card, button) {
+        if (!recipe || !button) return;
+        if (button.dataset.loading === '1') return;
+
+        if (recipe.locked) {
+          window.location.href = '/suscripcion';
+          return;
+        }
+
+        if (!isLoggedIn) {
+          window.location.href = loginRedirectUrl;
+          return;
+        }
+
+        const recipeId = recipe.id;
+        if (!recipeId) return;
+
+        const key = String(recipeId);
+        const wasFavorite = favoriteSet.has(key);
+        const method = wasFavorite ? 'DELETE' : 'POST';
+
+        setFavoriteButtonLoading(button, true, recipe.locked);
+
+        fetch(`/api/recetas/${encodeURIComponent(recipeId)}/favorita`, {
+          method,
+          credentials: 'same-origin',
+        })
+          .then((response) => {
+            if (!response.ok) throw new Error('request_failed');
+            return response.json().catch(() => ({}));
+          })
+          .then((data) => {
+            const nextState = typeof data.isFavorite === 'boolean' ? data.isFavorite : !wasFavorite;
+            if (nextState) favoriteSet.add(key);
+            else favoriteSet.delete(key);
+            recipe.isFavorite = nextState;
+            updateCardFavoriteState(card, button, recipe);
+          })
+          .catch((error) => {
+            console.error('[recipes] toggle favorite failed', error);
+            window.alert('No se pudo actualizar la receta guardada. Intenta nuevamente.');
+            recipe.isFavorite = favoriteSet.has(key);
+            updateCardFavoriteState(card, button, recipe);
+          })
+          .finally(() => {
+            setFavoriteButtonLoading(button, false, recipe.locked);
+          });
+      }
+
+      function attachCardHandlers(card, recipe) {
+        if (!card) return;
+        if (recipe.locked || !recipe.id) {
+          card.setAttribute('tabindex', recipe.locked ? '-1' : '0');
+          if (recipe.locked) card.setAttribute('aria-disabled', 'true');
+        } else {
+          card.tabIndex = 0;
+
+          const navigate = () => {
+            window.location.href = `/receta/${recipe.id}`;
+          };
+
+          card.addEventListener('click', (event) => {
+            const interactive = event.target.closest('a, button');
+            if (interactive) return;
+            navigate();
+          });
+
+          card.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              navigate();
+            }
+          });
+        }
+
+        const favoriteButton = card.querySelector('button[data-action="toggle-favorite"]');
+        if (favoriteButton) {
+          favoriteButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            handleFavoriteToggle(recipe, card, favoriteButton);
+          });
+        }
+      }
+
+      function prefillFiltersFromQuery() {
+        try {
+          const params = new URLSearchParams(window.location.search || '');
+          if (!params || !Array.from(params.keys()).length) return;
+
+          const assignValue = (id, value) => {
+            if (value == null || value === '') return;
+            const input = document.getElementById(id);
+            if (input) input.value = value;
+          };
+
+          assignValue('filter_q', params.get('q') || params.get('search') || '');
+          applyCategoryFromQuery(params.get('category') || '', params.get('categoryLabel') || '');
+          assignValue('filter_difficulty', params.get('difficulty') || '');
+          assignValue('filter_access', params.get('access') || '');
+          assignValue('filter_time', params.get('timeMax') || params.get('maxTime') || params.get('time') || '');
+          assignValue('filter_sort', params.get('sort') || params.get('order') || '');
+
+          const dietValues = [];
+          params.getAll('diet').forEach((value) => dietValues.push(value));
+          const csv = params.get('diets');
+          if (csv) {
+            csv.split(',').forEach((value) => dietValues.push(value));
+          }
+
+          dietValues
+            .map((diet) => normalizeToken(diet))
+            .filter(Boolean)
+            .forEach((diet) => {
+              const checkbox = document.querySelector(`#filtersForm input[name="diet"][value="${diet}"]`);
+              if (checkbox) checkbox.checked = true;
+            });
+        } catch (error) {
+          console.warn('recipes: no se pudieron aplicar los filtros desde la URL', error);
+        }
+      }
+
+      function syncUrlWithFilters(filters) {
+        if (!filters) return;
+        const params = new URLSearchParams();
+        if (filters.q) params.set('q', filters.q);
+        if (filters.category) {
+          params.set('category', filters.category);
+          if (categoryLabelOverrides[filters.category]) {
+            params.set('categoryLabel', categoryLabelOverrides[filters.category]);
+          }
+        }
+        if (filters.difficulty) params.set('difficulty', filters.difficulty);
+        if (filters.access) params.set('access', filters.access);
+        if (filters.timeMax && Number(filters.timeMax) > 0) params.set('time', String(filters.timeMax));
+        const diets = Array.isArray(filters.diets) ? filters.diets.filter(Boolean) : [];
+        diets.forEach((diet) => params.append('diet', diet));
+        if (filters.sort) params.set('sort', filters.sort);
+
+        const queryString = params.toString();
+        const nextUrl = queryString ? `${window.location.pathname}?${queryString}` : window.location.pathname;
+        const currentUrl = `${window.location.pathname}${window.location.search}`;
+        if (nextUrl !== currentUrl) {
+          window.history.replaceState(null, '', nextUrl);
+        }
+      }
+
+      function readFilters() {
+        const q = normalizeSearchValue(document.getElementById('filter_q')?.value);
+        const categorySelectValue = normalizeToken(categorySelect ? categorySelect.value : '');
+        const category = categorySelectValue || categoryFilterFromUrl || '';
+        const difficulty = normalizeToken(document.getElementById('filter_difficulty')?.value);
+        const access = normalizeToken(document.getElementById('filter_access')?.value);
+        const timeMaxRaw = document.getElementById('filter_time')?.value || '0';
+        const timeMax = parseInt(timeMaxRaw, 10) || 0;
+        const diets = Array.from(document.querySelectorAll('#filtersForm input[name="diet"]:checked'))
+          .map((input) => normalizeToken(input.value))
+          .filter(Boolean);
+        const sort = (document.getElementById('filter_sort')?.value || '').trim();
+
+        return { q, category, difficulty, access, timeMax, diets, sort };
+      }
+
+      function matchesFilters(recipe, filters) {
+        if (!filters) return true;
+        if (filters.q) {
+          const matchesText = recipe.titleLower.includes(filters.q)
+            || recipe.descriptionLower.includes(filters.q)
+            || (recipe.authorLower && recipe.authorLower.includes(filters.q))
+            || recipe.dietsTokens.some((diet) => diet.includes(filters.q))
+            || (Array.isArray(recipe.ingredientsLower) && recipe.ingredientsLower.some((ingredient) => ingredient.includes(filters.q)))
+            || (Array.isArray(recipe.ingredientTokens) && recipe.ingredientTokens.some((token) => token.includes(filters.q)));
+          if (!matchesText) return false;
+        }
+
+        if (filters.category && !recipe.categoryTokens.includes(filters.category)) return false;
+        if (filters.difficulty && !recipe.difficultyTokens.includes(filters.difficulty)) return false;
+        if (filters.access) {
+          if (filters.access === 'premium' && !recipe.premium) return false;
+          if ((filters.access === 'gratis' || filters.access === 'gratuitas' || filters.access === 'gratuito') && recipe.premium) return false;
+        }
+        if (filters.timeMax > 0 && recipe.timeMinutes > filters.timeMax) return false;
+        if (filters.diets.length) {
+          const satisfiesDiets = filters.diets.every((diet) => recipe.dietsTokens.includes(diet));
+          if (!satisfiesDiets) return false;
+        }
+
+        return true;
+      }
+
+      function sortRecipes(recipes, sortValue) {
+        if (!Array.isArray(recipes)) return [];
+        const list = [...recipes];
+
+        const compareTitle = (a, b) => (a.title || '').localeCompare(b.title || '', 'es', { sensitivity: 'base' });
+
+        if (!sortValue) return list;
+
+        switch (sortValue) {
+          case 'date_desc':
+            return list.sort((a, b) => {
+              const timeA = Number.isFinite(a.publishedAtTime) ? a.publishedAtTime : Number.NEGATIVE_INFINITY;
+              const timeB = Number.isFinite(b.publishedAtTime) ? b.publishedAtTime : Number.NEGATIVE_INFINITY;
+              if (timeA === timeB) return compareTitle(a, b);
+              return timeB - timeA;
+            });
+          case 'date_asc':
+            return list.sort((a, b) => {
+              const timeA = Number.isFinite(a.publishedAtTime) ? a.publishedAtTime : Number.POSITIVE_INFINITY;
+              const timeB = Number.isFinite(b.publishedAtTime) ? b.publishedAtTime : Number.POSITIVE_INFINITY;
+              if (timeA === timeB) return compareTitle(a, b);
+              return timeA - timeB;
+            });
+          case 'difficulty_asc':
+            return list.sort((a, b) => {
+              const valueA = Number.isFinite(a.difficultyNumeric) ? a.difficultyNumeric : Number.MAX_SAFE_INTEGER;
+              const valueB = Number.isFinite(b.difficultyNumeric) ? b.difficultyNumeric : Number.MAX_SAFE_INTEGER;
+              if (valueA === valueB) {
+                const timeA = Number.isFinite(a.publishedAtTime) ? a.publishedAtTime : Number.NEGATIVE_INFINITY;
+                const timeB = Number.isFinite(b.publishedAtTime) ? b.publishedAtTime : Number.NEGATIVE_INFINITY;
+                if (timeA === timeB) return compareTitle(a, b);
+                return timeB - timeA;
+              }
+              return valueA - valueB;
+            });
+          case 'difficulty_desc':
+            return list.sort((a, b) => {
+              const valueA = Number.isFinite(a.difficultyNumeric) ? a.difficultyNumeric : Number.NEGATIVE_INFINITY;
+              const valueB = Number.isFinite(b.difficultyNumeric) ? b.difficultyNumeric : Number.NEGATIVE_INFINITY;
+              if (valueA === valueB) {
+                const timeA = Number.isFinite(a.publishedAtTime) ? a.publishedAtTime : Number.NEGATIVE_INFINITY;
+                const timeB = Number.isFinite(b.publishedAtTime) ? b.publishedAtTime : Number.NEGATIVE_INFINITY;
+                if (timeA === timeB) return compareTitle(a, b);
+                return timeB - timeA;
+              }
+              return valueB - valueA;
+            });
+          default:
+            return list;
+        }
+      }
+
+      function normalizeRecipe(recipe, premiumAccess, favoriteIds) {
+        const premium = isRecipePremium(recipe);
+        const locked = !premiumAccess && premium;
+
+        const id = recipe.Rec_ID ?? recipe.id ?? recipe.recipeId ?? '';
+        const title = (recipe.Rec_Nombre || 'Sin título').toString().trim();
+        const titleLower = title.toLowerCase();
+
+        const categoryTokens = collectTokens([
+          recipe.Cat_Slug,
+          recipe.CategoriaSlug,
+          recipe.Cat_ID,
+          recipe.category,
+          recipe.categoryId,
+          recipe.Categoria_Nombre,
+          recipe.Cat_Nombre,
+          recipe.categoryName,
+        ]);
+
+        const difficultyRaw = recipe.Rec_Dificultad
+          ?? recipe.dificultad
+          ?? recipe.difficulty
+          ?? recipe.difficultyLevel
+          ?? recipe.Dificultad
+          ?? null;
+        const difficultyLabel = describeDifficulty(difficultyRaw);
+        const difficultyNumeric = resolveDifficultyNumeric(difficultyRaw, difficultyLabel);
+        const difficultyTokens = collectTokens([difficultyRaw, recipe.dificultad, recipe.difficulty, difficultyLabel]);
+
+        const dietsDisplay = toArray(recipe.Dietas ?? recipe.diets);
+        const dietsTokens = collectTokens(dietsDisplay);
+
+        const ingredientSource = recipe.Ingredientes_Nombres
+          ?? recipe.ingredientes
+          ?? recipe.ingredients
+          ?? recipe.ingredientsList
+          ?? recipe.ingredients_names
+          ?? recipe.Ingredientes;
+        const ingredientNames = toArray(ingredientSource).map((name) => name.toString().trim()).filter(Boolean);
+        const uniqueIngredientNames = Array.from(new Set(ingredientNames));
+        const ingredientsLower = uniqueIngredientNames.map((name) => name.toLowerCase());
+        const ingredientTokens = collectTokens(uniqueIngredientNames);
+
+        const timeRaw = recipe.Rec_Tiempo_Prep;
+        const timeDisplay = formatPrepTime(timeRaw);
+        const timeMinutes = parseTimeToMinutes(timeRaw);
+
+        const publishedRaw = recipe.Rec_Fecha_Publicacion
+          ?? recipe.Rec_Fecha_Creacion
+          ?? recipe.Rec_Fecha
+          ?? recipe.fechaPublicacion
+          ?? recipe.FechaPublicacion
+          ?? recipe.Fecha_Publicacion
+          ?? recipe.fecha_publicacion
+          ?? recipe.createdAt
+          ?? recipe.created_at
+          ?? recipe.creado
+          ?? recipe.Creado
+          ?? recipe.fechaCreacion
+          ?? recipe.FechaCreacion
+          ?? recipe.created
+          ?? recipe.fecha
+          ?? null;
+        const publishedAtDate = parseDateValue(publishedRaw);
+        let publishedAtTime = NaN;
+        if (publishedAtDate instanceof Date) {
+          const timeValue = publishedAtDate.getTime();
+          if (Number.isFinite(timeValue)) {
+            publishedAtTime = timeValue;
+          }
+        }
+        if (!Number.isFinite(publishedAtTime)) {
+          const numericCandidate = Number(publishedRaw);
+          if (Number.isFinite(numericCandidate)) {
+            publishedAtTime = numericCandidate;
+          }
+        }
+
+        const description = (recipe.Rec_Descripcion || '').toString();
+        const descriptionLower = description.toLowerCase();
+
+        const author = (recipe.Autor || recipe.Usu_Nombre || '').toString().trim();
+        const authorLower = author.toLowerCase();
+
+        const ratingAvg = recipe.avgRating != null ? Number(recipe.avgRating) : null;
+        const ratingCount = recipe.totalRatings != null ? Number(recipe.totalRatings) : null;
+
+        const typeLabel = (recipe.Tipo_Rec_Nombre || '').toString();
+
+        const image = resolveImageSource(recipe.Img_Rutas);
+
+        const idString = String(id);
+        const isFavorite = favoriteIds instanceof Set ? favoriteIds.has(idString) : false;
+
+        return {
+          id: String(id),
+          title,
+          titleLower,
+          categoryTokens: Array.from(new Set(categoryTokens)),
+          difficultyTokens: Array.from(new Set(difficultyTokens)),
+          difficultyLabel,
+          difficultyNumeric,
+          timeMinutes,
+          timeDisplay,
+          dietsDisplay,
+          dietsTokens: Array.from(new Set(dietsTokens)),
+          ingredients: uniqueIngredientNames,
+          ingredientsLower,
+          ingredientTokens: Array.from(new Set(ingredientTokens)),
+          description,
+          descriptionLower,
+          summary: summarizeText(description, 140),
+          author,
+          authorLower,
+          locked,
+          premium,
+          isFavorite,
+          typeLabel,
+          ratingAvg,
+          ratingCount,
+          image,
+          publishedAtTime,
+        };
+      }
+
+      function normalizeToken(value) {
+        if (value === null || value === undefined) return '';
+        return value
+          .toString()
+          .normalize('NFD')
+          .replace(/[,/]/g, '-')
+          .replace(/[\u0300-\u036f]/g, '')
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9-]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+      }
+
+      function normalizeSearchValue(value) {
+        if (!value) return '';
+        return value
+          .toString()
+          .trim()
+          .toLowerCase();
+      }
+
+      function collectTokens(values) {
+        const tokens = [];
+        values.forEach((value) => {
+          const token = normalizeToken(value);
+          if (token) tokens.push(token);
+        });
+        return tokens;
+      }
+
+      function formatChipLabel(token) {
+        if (!token) return '';
+        const mapping = {
+          facil: 'Fácil',
+          media: 'Media',
+          Avanzada: 'Avanzada',
+          desayuno: 'Desayuno',
+          principal: 'Principal',
+          postre: 'Postre',
+          gratis: 'Gratuitas',
+          gratuito: 'Gratuita',
+          gratuitas: 'Gratuitas',
+          premium: 'Premium',
+        };
+        if (categoryLabelOverrides[token]) return categoryLabelOverrides[token];
+        if (mapping[token]) return mapping[token];
+        return token
+          .split('-')
+          .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+          .join(' ');
+      }
+
+      function formatSortLabel(value) {
+        const mapping = {
+          'date_desc': 'Fecha (más recientes)',
+          'date_asc': 'Fecha (más antiguas)',
+          'difficulty_asc': 'Dificultad (menor a mayor)',
+          'difficulty_desc': 'Dificultad (mayor a menor)',
+        };
+        return mapping[value] || 'Predeterminado';
+      }
+
+      function toArray(value) {
+        if (!value) return [];
+        if (Array.isArray(value)) {
+          return value.filter(Boolean).map((entry) => entry.toString().trim()).filter(Boolean);
+        }
+        return String(value)
+          .split(',')
+          .map((item) => item.trim())
+          .filter(Boolean);
+      }
+
+      function resolveImageSource(value) {
+        if (!value) return null;
+        const candidates = Array.isArray(value) ? value : String(value).split(',');
+        const first = candidates.map((item) => item && item.toString().trim()).find(Boolean);
+        if (!first) return null;
+        if (/^https?:\/\//i.test(first)) return first;
+        return `/${first.replace(/^\/+/g, '').replace(/\\/g, '/')}`;
+      }
+
+      function parseDateValue(value) {
+        if (value === null || typeof value === 'undefined') return null;
+        if (value instanceof Date) {
+          return Number.isNaN(value.getTime()) ? null : value;
+        }
+        if (typeof value === 'number' && Number.isFinite(value)) {
+          const timestamp = value < 1e12 ? value * 1000 : value;
+          const date = new Date(timestamp);
+          return Number.isNaN(date.getTime()) ? null : date;
+        }
+        if (typeof value === 'string') {
+          const trimmed = value.trim();
+          if (!trimmed) return null;
+          if (/^\d+$/.test(trimmed)) {
+            return parseDateValue(Number(trimmed));
+          }
+          const normalized = trimmed.replace(' ', 'T');
+          const candidates = [normalized, normalized.replace(/\//g, '-')];
+          for (const candidate of candidates) {
+            const date = new Date(candidate);
+            if (!Number.isNaN(date.getTime())) {
+              return date;
+            }
+          }
+        }
+        return null;
+      }
+
+      function parseTimeToMinutes(value) {
+        if (value === null || value === undefined || value === '') return 0;
+        if (typeof value === 'number') return Math.max(0, value);
+        const input = value.toString().trim();
+        if (!input) return 0;
+        if (input.includes(':')) {
+          const [h = '0', m = '0', s = '0'] = input.split(':');
+          const hours = Number(h) || 0;
+          const minutes = Number(m) || 0;
+          const seconds = Number(s) || 0;
+          return Math.max(0, hours * 60 + minutes + Math.round(seconds / 60));
+        }
+        const numeric = Number(input);
+        return Number.isFinite(numeric) ? Math.max(0, numeric) : 0;
+      }
+
+      function getUserTipo() {
+        const candidates = [
+          window.CURRENT_USER
+        ];
+
+        const storageSources = ['CURRENT_USER'];
+        storageSources.forEach((key) => {
+          try {
+            const raw = (window.sessionStorage?.getItem?.(key)) || (window.localStorage?.getItem?.(key));
+            if (!raw) return;
+            const parsed = JSON.parse(raw);
+            candidates.push(parsed);
+          } catch (error) {
+            console.warn('[recipes] Failed to parse stored user payload for key', key, error);
+          }
+        });
+
+        try {
+          const cookieEntry = (document.cookie || '')
+            .split(';')
+            .map((entry) => entry.trim())
+            .find((entry) => entry.startsWith('userInfo='));
+          if (cookieEntry) {
+            const rawValue = cookieEntry.slice('userInfo='.length);
+            if (rawValue) {
+              const decoded = decodeURIComponent(rawValue);
+              if (decoded) {
+                const parsed = JSON.parse(decoded);
+                candidates.push(parsed);
+              }
+            }
+          }
+        } catch (cookieError) {
+          console.warn('[recipes] Failed to parse userInfo cookie payload', cookieError);
+        }
+
+        const TYPE_KEYS = [
+          'Tipo_Usu_ID'
+        ];
+
+        const nestedKeys = ['user', 'usuario', 'profile', 'info', 'data'];
+
+        const visited = new Set();
+
+        const extract = (value, label) => {
+          if (!value || visited.has(value)) return null;
+          if (typeof value === 'string') {
+            try {
+              const parsed = JSON.parse(value);
+              return extract(parsed, `${label}:json`);
+            } catch (error) {
+              console.warn('[recipes] Unable to parse user JSON string:', label, error);
+              return null;
+            }
+          }
+
+          if (typeof value !== 'object') return null;
+          visited.add(value);
+
+          for (const key of TYPE_KEYS) {
+            if (Object.prototype.hasOwnProperty.call(value, key)) {
+              const numeric = Number(value[key]);
+              console.log('[recipes] inspecting candidate', label, 'found key', key, 'value', value[key]);
+              if (Number.isFinite(numeric) && numeric > 0) return numeric;
+            }
+          }
+
+          for (const key of nestedKeys) {
+            if (value[key] !== undefined) {
+              const nestedResult = extract(value[key], `${label}.${key}`);
+              if (Number.isFinite(nestedResult)) return nestedResult;
+            }
+          }
+
+          if (Array.isArray(value)) {
+            for (let index = 0; index < value.length; index += 1) {
+              const nestedResult = extract(value[index], `${label}[${index}]`);
+              if (Number.isFinite(nestedResult)) return nestedResult;
+            }
+          }
+
+          return null;
+        };
+
+        for (let index = 0; index < candidates.length; index += 1) {
+          const candidate = candidates[index];
+          const result = extract(candidate, `candidate[${index}]`);
+          if (Number.isFinite(result)) return result;
+        }
+
+        console.warn('[recipes] Unable to resolve user Tipo_Usu_ID from session payloads.');
+        return null;
+      }
+
+      function isRecipePremium(recipe) {
+        const typeRaw = recipe.Tipo_Rec_ID
+        const typeNumeric = Number(typeRaw);
+        if (Number.isFinite(typeNumeric) && typeNumeric > 0) {
+          return typeNumeric >= 2;
+        }
+        const typeLabel = (recipe.Tipo_Rec_Nombre
+          ?? recipe.tipoRecNombre
+          ?? recipe.recipeTypeName
+          ?? '').toString().toLowerCase();
+        return typeLabel.includes('premium');
+      }
+
+      function formatPrepTime(value) {
+        if (value == null || value === '') return '—';
+        const asString = String(value);
+        if (!asString.includes(':')) {
+          const minutesOnly = Number(asString);
+          if (!Number.isFinite(minutesOnly)) return asString;
+          if (minutesOnly <= 0) return 'Menos de 1 min';
+          if (minutesOnly >= 60) {
+            const h = Math.floor(minutesOnly / 60);
+            const m = minutesOnly % 60;
+            return m ? `${h} h ${m} min` : `${h} h`;
+          }
+          return `${minutesOnly} min`;
+        }
+
+        const segments = asString.split(':').map(Number).filter((number) => !Number.isNaN(number));
+        if (!segments.length) return `${asString}`;
+        const [hours = 0, minutes = 0, seconds = 0] = segments;
+        const parts = [];
+        if (hours > 0) parts.push(`${hours} h`);
+        if (minutes > 0) parts.push(`${minutes} min`);
+        if (!hours && minutes < 10 && seconds > 0) parts.push(`${seconds} s`);
+        return parts.length ? parts.join(' ') : 'Menos de 1 min';
+      }
+
+      function resolveDifficultyNumeric(value, fallbackLabel) {
+        const numeric = Number(value);
+        if (Number.isFinite(numeric)) return numeric;
+
+        const source = (value ?? fallbackLabel ?? '').toString().trim();
+        if (!source) return NaN;
+
+        const normalized = source
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '');
+
+        if (normalized.includes('facil')) return 1;
+        if (normalized.includes('media')) return 5;
+        if (normalized.includes('avanz') || normalized.includes('dificil') || normalized.includes('expert')) return 10;
+        return NaN;
+      }
+
+      function describeDifficulty(value) {
+        const numeric = Number(value);
+        if (Number.isFinite(numeric) && numeric > 0) {
+          if (numeric <= 1) return 'Fácil';
+          if (numeric <= 5) return 'Media';
+          if (numeric <= 10) return 'Avanzada';
+          return 'Experto';
+        }
+
+        const source = (value ?? '').toString().trim();
+        if (!source) return 'Sin datos';
+
+        const normalized = source
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '');
+
+        if (normalized.includes('facil')) return 'Fácil';
+        if (normalized.includes('media')) return 'Media';
+        if (normalized.includes('avanz') || normalized.includes('dificil') || normalized.includes('expert')) return 'Avanzada';
+
+        return source;
+      }
+
+      function resolveDifficultyTone(label) {
+        if (!label) return 'text-gray-700';
+        const normalized = label
+          .toString()
+          .trim()
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '');
+
+        if (normalized.includes('facil')) return 'text-emerald-600';
+        if (normalized.includes('media')) return 'text-amber-600';
+        if (normalized.includes('avanzada') || normalized.includes('experto')) return 'text-red-600';
+        return 'text-gray-700';
+      }
+
+      function summarizeText(value, max = 120) {
+        if (!value) return 'Sin descripción disponible.';
+        const clean = String(value).trim();
+        if (clean.length <= max) return clean;
+        return `${clean.slice(0, max)}…`;
+      }
+
+      function formatRating(avg, count) {
+        const rating = Number(avg);
+        const total = Number(count) || 0;
+        if (!Number.isFinite(rating) || rating <= 0) {
+          return {
+            label: 'Sin calificaciones',
+            icon: 'star_border',
+            toneClass: 'text-gray-400',
+          };
+        }
+        const iconName = rating >= 4.5 ? 'star' : rating >= 3 ? 'star_half' : 'grade';
+        const formatted = rating.toFixed(1).replace(/\.0$/, '');
+        const plural = total === 1 ? 'calificación' : 'calificaciones';
+        return {
+          label: `${formatted} · ${total} ${plural}`,
+          icon: iconName,
+          toneClass: 'text-yellow-500',
+        };
+      }
+    })();
+  </script>
+  <script>
+    (function () {
+      const qInput = document.getElementById('filter_q');
+      const helper = document.getElementById('filter_q_helper');
+      if (!qInput || !helper) return;
+      const validRegex = /[^A-Za-zÀ-ÿñÑ\s]/g;
+      qInput.addEventListener('input', (event) => {
+        const original = event.target.value;
+        const cleaned = original.replace(validRegex, '');
+        if (cleaned !== original) {
+          event.target.value = cleaned;
+          helper.classList.remove('hidden');
+          clearTimeout(helper._hideTimeout);
+          helper._hideTimeout = setTimeout(() => helper.classList.add('hidden'), 2000);
+        }
+      });
+    })();
+  </script>
+</body>
+
+</html>

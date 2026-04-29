@@ -1,0 +1,1950 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Receta - El Recetario</title>
+  <link rel="shortcut icon" href="../Imagenes/Logo/favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <link href="../css/output.css" rel="stylesheet">
+  <script src="/js/userSession.js"></script>
+  <script src="/js/confirmDialog.js"></script>
+</head>
+
+<body class="bg-gray-50 text-gray-800">
+  <script src="/js/loadHeader.js" defer></script>
+  <div id="headerContainer"></div>
+
+  <!-- Breadcrumbs -->
+  <nav class="bg-white border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 py-3 text-sm">
+      <ol class="flex items-center gap-2 text-gray-500">
+        <li><a href="/inicio" class="hover:text-purple-600">Inicio</a></li>
+        <li class="text-gray-400">/</li>
+        <li><a href="/recetas" class="hover:text-purple-600">Recetas</a></li>
+        <li class="text-gray-400">/</li>
+        <li class="text-gray-700 font-medium">Detalle</li>
+      </ol>
+    </div>
+  </nav>
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="max-w-6xl mx-auto py-10 px-6">
+    <!-- Título -->
+    <h2 id="recipeTitle" class="text-3xl font-bold text-center mb-4 md:mb-6">Nombre de la receta</h2>
+
+    <div class="mt-8 grid md:grid-cols-2 gap-10 items-start">
+      <!-- Imagen de la receta -->
+      <div class="flex flex-col items-center">
+        <span class="text-gray-500 mb-2">Fotos de la receta</span>
+        <div id="recipeImageWrapper"
+          class="relative w-full max-w-md aspect-square bg-gray-200 rounded-2xl shadow-inner overflow-hidden focus:outline-none focus:ring-2 focus:ring-orange-300"
+          tabindex="0" aria-label="Galería de imágenes de la receta">
+          <img id="recipeImage" alt="Receta"
+            class="absolute inset-0 h-full w-full object-cover transition-opacity duration-300" loading="lazy">
+          <button id="recipeImagePrev" type="button"
+            class="absolute left-2 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-full bg-black/50 p-2 text-white shadow transition hover:bg-black/70 focus:outline-none focus:ring-2 focus:ring-white"
+            aria-label="Ver imagen anterior">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+          <button id="recipeImageNext" type="button"
+            class="absolute right-2 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-full bg-black/50 p-2 text-white shadow transition hover:bg-black/70 focus:outline-none focus:ring-2 focus:ring-white"
+            aria-label="Ver imagen siguiente">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+          <div id="recipeImageIndicator"
+            class="hidden absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/60 px-3 py-1 text-xs font-semibold text-white">
+          </div>
+        </div>
+
+        <!-- Datos de receta -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 w-full mt-6">
+          <div class="bg-white rounded-xl shadow p-4 text-center flex flex-col gap-2">
+            <p class="text-sm text-gray-500">Tiempo de preparación</p>
+            <p class="font-semibold flex justify-center items-center gap-1">
+              <span class="material-symbols-outlined text-orange-500 text-base">schedule</span>
+              <span id="recipeTime">--</span>
+            </p>
+          </div>
+          <div class="bg-white rounded-xl shadow p-4 text-center flex flex-col gap-2">
+            <p class="text-sm text-gray-500">Porciones</p>
+            <p class="font-semibold flex justify-center items-center gap-1 text-lg">
+              <span class="material-symbols-outlined text-emerald-500 text-base">groups</span>
+              <span id="recipePortions">--</span>
+            </p>
+          </div>
+          <div class="bg-white rounded-xl shadow p-4 flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <p class="text-sm text-gray-500 flex items-center gap-2 relative">
+                <span>Dificultad</span>
+
+
+              </p>
+              <span id="recipeDifficultyValue" class="text-xs text-gray-400 font-semibold">1-10</span>
+            </div>
+            <p id="recipeDifficultyLabel" class="text-2xl font-semibold mt-2">Media</p>
+            <div
+              class="mt-3 h-2 rounded-full bg-gradient-to-r from-emerald-400 via-amber-400 to-rose-500 relative overflow-hidden">
+              <span id="recipeDifficultyMarker"
+                class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 block h-4 w-4 rounded-full border-2 border-white shadow"></span>
+            </div>
+            <div class="flex justify-between text-[10px] text-gray-400 mt-1">
+              <span>1 = Fácil</span>
+              <span>10 = Difícil</span>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl shadow p-4 flex flex-col gap-2 text-center">
+            <p class="text-sm text-gray-500">Calificación promedio</p>
+            <p class="font-semibold flex justify-center items-center gap-2 text-3xl">
+              <span class="material-symbols-outlined text-yellow-400">grade</span>
+              <span id="recipeAvgRating">--</span>
+            </p>
+            <p id="recipeRatingCount" class="text-xs text-gray-500 text-center">Sin calificaciones</p>
+          </div>
+        </div>
+
+        <div class="w-full mt-6 grid gap-3 sm:grid-cols-2">
+          <button id="saveRecipeBtn"
+            class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-semibold transition disabled:opacity-60 disabled:cursor-not-allowed">
+            <span id="saveRecipeBtnIcon" class="material-symbols-outlined text-white text-lg">bookmark_add</span>
+            <span id="saveRecipeBtnLabel">Guardar receta</span>
+          </button>
+
+          <button id="shareRecipeBtn"
+            class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-600 font-semibold transition hover:bg-indigo-100">
+            <span class="material-symbols-outlined text-lg">share</span>
+            <span id="shareRecipeBtnLabel">Compartir receta</span>
+          </button>
+
+          <button id="reportRecipeBtn"
+            class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-red-200 bg-red-50 text-red-600 font-semibold transition hover:bg-red-100 sm:col-span-2">
+            <span class="material-symbols-outlined text-red-500 text-lg">flag</span>
+            <span>Reportar receta</span>
+          </button>
+
+          <div class="bg-white rounded-xl shadow p-4 space-y-3 sm:col-span-2">
+            <div>
+              <label for="ratingInput" class="block text-sm font-semibold text-gray-600">Califica esta receta
+                (1-10)</label>
+              <div class="mt-2 flex items-center gap-3">
+                <input id="ratingInput" type="number" min="1" max="10" step="1"
+                  class="w-20 px-3 py-2 border border-gray-200 rounded-lg focus:outline-orange-500" placeholder="--">
+                <button id="submitRatingBtn"
+                  class="px-4 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-600 text-white transition disabled:opacity-60 disabled:cursor-not-allowed">
+                  Calificar
+                </button>
+              </div>
+              <p id="ratingHelpText" class="text-xs text-gray-500 mt-2">Debes iniciar sesión para calificar.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lado derecho: descripción, ingredientes, utensilios -->
+      <div class="space-y-5">
+        <div>
+          <label class="block text-sm font-semibold text-gray-600 mb-2">Descripción de la receta</label>
+          <p id="recipeDescription"
+            class="w-full p-3 rounded-lg shadow-sm border border-gray-200 bg-white text-gray-800"
+            style="min-height:48px"></p>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-600 mb-2">Ingredientes</label>
+          <ul id="recipeIngredients"
+            class="list-disc list-inside bg-white p-4 rounded-lg border border-gray-200 text-gray-700"></ul>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-600 mb-2">Utensilios</label>
+          <div id="recipeUtensils" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
+          <p id="recipeUtensilsEmpty"
+            class="hidden mt-2 text-sm text-gray-500 bg-white p-3 rounded-lg border border-dashed border-gray-200">
+            Esta receta no especifica utensilios.
+          </p>
+        </div>
+        <div>
+          <section class="mt-10">
+            <h3 class="text-xl font-semibold mb-4">Preparación</h3>
+            <ol id="recipeInstructions"
+              class="space-y-4 list-decimal list-inside bg-white p-4 rounded-lg border border-gray-200 text-gray-700">
+            </ol>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    </div>
+
+    <div id="recipeMetaContainer" class="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+
+      <!-- Fecha de publicación -->
+      <div
+        class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col gap-2 md:col-span-2 xl:col-span-1">
+        <span class="text-xs font-semibold tracking-wide text-gray-500 uppercase">Publicado</span>
+        <span id="recipeMetaPublished" class="text-sm font-semibold text-gray-800">--</span>
+      </div>
+
+      <!-- Categoría -->
+      <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col gap-2">
+        <span class="text-xs font-semibold tracking-wide text-gray-500 uppercase">Categoría</span>
+        <span id="recipeMetaCategory" class="text-sm font-semibold text-gray-800">--</span>
+      </div>
+
+      <!-- Autor de la receta -->
+      <div id="recipeAuthorContainer"
+        class="hidden bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex-col gap-3 md:col-span-2 xl:col-span-1">
+        <span class="text-xs font-semibold tracking-wide text-gray-500 uppercase">Autor de la receta</span>
+
+        <a id="recipeAuthorLink"
+          class="flex items-center gap-3 rounded-lg p-1 text-gray-700 transition hover:text-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-200">
+          <img id="recipeAuthorAvatar" src="/Imagenes/Usuarios/0.png" alt="Autor de la receta"
+            class="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover border border-gray-200 shadow-sm">
+          <div class="flex flex-col">
+            <span id="recipeAuthorName" class="text-sm font-semibold text-gray-800">Autor</span>
+            <span id="recipeAuthorAlias" class="text-xs text-gray-500">@autor</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Tipo de receta -->
+      <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4 flex flex-col gap-2">
+        <span class="text-xs font-semibold tracking-wide text-gray-500 uppercase">Tipo de receta</span>
+        <span id="recipeMetaTypePill"
+          class="inline-flex w-fit items-center gap-2 rounded-full border bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600">
+          Gratuita
+        </span>
+      </div>
+
+    </div>
+
+    <section id="relatedRecipesSection" class="mt-10 hidden">
+      <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+        <h3 class="text-lg font-semibold text-gray-800">Sugerencias para ti</h3>
+        <p id="relatedRecipesHint" class="text-xs text-gray-500">Basadas en la categoría y autor de esta receta.</p>
+      </div>
+      <div class="relative mt-4">
+        <div id="relatedRecipesGrid" class="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-4 pr-2 sm:pr-0"
+          aria-label="Recetas sugeridas">
+        </div>
+        <div
+          class="pointer-events-none absolute inset-y-0 right-0 hidden w-6 bg-gradient-to-l from-gray-50 to-transparent sm:flex">
+        </div>
+      </div>
+      <p id="relatedRecipesEmpty"
+        class="hidden mt-4 text-xs text-gray-500 bg-white/80 px-4 py-3 rounded-lg border border-dashed border-gray-200 text-center">
+        No encontramos recetas relacionadas en este momento.
+      </p>
+    </section>
+
+    <section class="mt-12 space-y-8 sm:space-y-10" id="commentsSection">
+      <div class="space-y-6 sm:space-y-7">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h3 class="text-xl font-semibold text-gray-800">Comentarios</h3>
+          <span id="commentsCount" class="text-sm text-gray-500">0 comentarios</span>
+        </div>
+        <div id="recipeCommentsEmpty"
+          class="text-sm text-gray-500 bg-white p-4 sm:p-5 rounded-lg border border-dashed border-gray-200 text-center">
+          Sé el primero en comentar esta receta.
+        </div>
+        <div id="recipeComments" class="space-y-4"></div>
+
+        <div class="bg-white rounded-lg shadow p-4 sm:p-5 space-y-3">
+          <h4 class="text-lg font-semibold text-gray-700">Agregar comentario</h4>
+          <p id="commentFormNotice" class="text-xs text-gray-500">Inicia sesión para compartir tu experiencia.</p>
+          <textarea id="commentInput"
+            class="w-full border border-gray-200 rounded-lg p-3 focus:outline-orange-500 resize-y"
+            style="min-height: 90px" placeholder="Escribe un comentario..." disabled></textarea>
+          <button id="submitCommentBtn"
+            class="w-full sm:w-auto px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition disabled:opacity-60 disabled:cursor-not-allowed"
+            disabled>Publicar comentario</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="reportModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-gray-900/60 px-4" role="dialog"
+    aria-modal="true" aria-labelledby="reportModalTitle" aria-describedby="reportModalSubtitle">
+    <div class="w-full max-w-md rounded-2xl bg-white shadow-xl">
+      <div class="flex items-start justify-between gap-4 border-b border-gray-100 p-5">
+        <div>
+          <h3 id="reportModalTitle" class="text-lg font-semibold text-gray-800">Reportar</h3>
+          <p id="reportModalSubtitle" class="mt-1 text-sm text-gray-500">Cuéntanos qué sucede.</p>
+        </div>
+        <button id="reportModalClose" type="button"
+          class="rounded-full p-1 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600" aria-label="Cerrar">
+          <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+      </div>
+      <div class="space-y-4 p-5">
+        <div>
+          <label for="reportModalTextarea" class="text-sm font-medium text-gray-700">Motivo del reporte</label>
+          <textarea id="reportModalTextarea" maxlength="255"
+            class="mt-2 w-full rounded-xl border border-gray-200 bg-white p-3 text-sm text-gray-700 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-100"
+            rows="5" placeholder="Describe el problema con claridad"></textarea>
+        </div>
+        <p id="reportModalError" class="hidden text-sm font-medium text-red-600"></p>
+      </div>
+      <div class="flex items-center justify-end gap-3 border-t border-gray-100 bg-gray-50 px-5 py-4">
+        <button id="reportModalCancel" type="button"
+          class="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 transition hover:bg-gray-100">Cancelar</button>
+        <button id="reportModalSubmit" type="button"
+          class="inline-flex items-center gap-2 rounded-lg bg-red-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-200">
+          <span class="material-symbols-outlined text-base">flag</span>
+          <span id="reportModalSubmitLabel">Enviar reporte</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <script src="/js/loadFooter.js" defer></script>
+  <div id="footerContainer"></div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (!window.RECIPE) return;
+
+      const recipeData = window.RECIPE;
+      const ingredientsData = Array.isArray(window.RECIPE_INGREDIENTS) ? window.RECIPE_INGREDIENTS : [];
+      const utensilsData = Array.isArray(window.RECIPE_UTENSILS) ? window.RECIPE_UTENSILS : [];
+      const recipeId = Number(recipeData.Rec_ID);
+
+      const formatPrepTime = (value) => {
+        if (!value) return '--';
+        const parts = String(value).split(':').map((segment) => Number(segment));
+        if (!parts.length || parts.some((segment) => Number.isNaN(segment))) return value;
+        const [hours, minutes, seconds] = [...parts, 0, 0];
+        const chunks = [];
+        if (hours > 0) chunks.push(`${hours} h`);
+        if (minutes > 0) chunks.push(`${minutes} min`);
+        if (seconds > 0 && !hours && minutes < 10) chunks.push(`${seconds} s`);
+        return chunks.length ? chunks.join(' ') : `${minutes} min`;
+      };
+
+      const difficultyLabel = (value) => {
+        const numeric = Number(value);
+        if (!Number.isFinite(numeric)) return 'N/A';
+        if (numeric <= 1) return 'Fácil';
+        if (numeric <= 5) return 'Media';
+        if (numeric <= 10) return 'Avanzada';
+        return 'Experto';
+      };
+
+      const formatDateLocalized = (value) => {
+        if (!value) return '--';
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return '--';
+        try {
+          return new Intl.DateTimeFormat('es-MX', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+          }).format(date);
+        } catch (err) {
+          return date.toLocaleDateString('es-MX');
+        }
+      };
+
+      const recipeTypeDescriptor = (value) => {
+        const numeric = Number(value);
+        if (numeric === 2) {
+          return {
+            label: 'Premium',
+            classes: 'bg-orange-50 text-orange-600 border-orange-200'
+          };
+        }
+        return {
+          label: 'Gratuita',
+          classes: 'bg-emerald-50 text-emerald-600 border-emerald-200'
+        };
+      };
+
+      const galleryPlaceholder = '/Imagenes/Platillos/platillo (1).png';
+
+      const normalizeRecipeImagePath = (value) => {
+        if (!value) return galleryPlaceholder;
+        if (/^https?:\/\//i.test(value)) return value;
+        const trimmed = String(value).trim();
+        if (!trimmed) return galleryPlaceholder;
+        const clean = trimmed.replace(/^\/+/, '');
+        return `/${clean}`;
+      };
+
+      const recipeImageEl = document.getElementById('recipeImage');
+      const recipeImageIndicator = document.getElementById('recipeImageIndicator');
+      const recipeImagePrev = document.getElementById('recipeImagePrev');
+      const recipeImageNext = document.getElementById('recipeImageNext');
+      const recipeImageWrapper = document.getElementById('recipeImageWrapper');
+
+      const galleryState = {
+        items: [],
+        index: 0,
+      };
+
+      const renderRecipeImage = () => {
+        if (!recipeImageEl) return;
+        const total = galleryState.items.length;
+        const fallback = normalizeRecipeImagePath(galleryPlaceholder);
+
+        if (!total) {
+          recipeImageEl.src = fallback;
+          recipeImageEl.alt = recipeData.Rec_Nombre || 'Receta';
+          if (recipeImageIndicator) recipeImageIndicator.classList.add('hidden');
+          if (recipeImagePrev) recipeImagePrev.classList.add('hidden');
+          if (recipeImageNext) recipeImageNext.classList.add('hidden');
+          return;
+        }
+
+        const normalizedIndex = ((galleryState.index % total) + total) % total;
+        galleryState.index = normalizedIndex;
+        const currentSrc = galleryState.items[normalizedIndex] || fallback;
+        recipeImageEl.src = currentSrc;
+        recipeImageEl.alt = `${recipeData.Rec_Nombre || 'Receta'} (Imagen ${normalizedIndex + 1} de ${total})`;
+
+        const showMultiple = total > 1;
+        if (recipeImageIndicator) {
+          recipeImageIndicator.textContent = `Foto ${normalizedIndex + 1} de ${total}`;
+          recipeImageIndicator.classList.toggle('hidden', !showMultiple);
+        }
+        if (recipeImagePrev) {
+          recipeImagePrev.classList.toggle('hidden', !showMultiple);
+          recipeImagePrev.disabled = !showMultiple;
+        }
+        if (recipeImageNext) {
+          recipeImageNext.classList.toggle('hidden', !showMultiple);
+          recipeImageNext.disabled = !showMultiple;
+        }
+      };
+
+      const hydrateRecipeImages = () => {
+        const rawList = typeof recipeData.Img_Rutas === 'string'
+          ? recipeData.Img_Rutas.split(',').map((item) => item.trim()).filter(Boolean)
+          : [];
+        const normalized = rawList
+          .map((path) => normalizeRecipeImagePath(path))
+          .filter((path, index, arr) => path && arr.indexOf(path) === index);
+        if (!normalized.length) normalized.push(normalizeRecipeImagePath(null));
+        galleryState.items = normalized;
+        galleryState.index = 0;
+        renderRecipeImage();
+      };
+
+      const stepRecipeImage = (delta) => {
+        if (!Number.isInteger(delta) || galleryState.items.length <= 1) return;
+        galleryState.index = (galleryState.index + delta + galleryState.items.length) % galleryState.items.length;
+        renderRecipeImage();
+      };
+
+      if (recipeImagePrev) {
+        recipeImagePrev.addEventListener('click', () => stepRecipeImage(-1));
+      }
+
+      if (recipeImageNext) {
+        recipeImageNext.addEventListener('click', () => stepRecipeImage(1));
+      }
+
+      if (recipeImageWrapper) {
+        recipeImageWrapper.addEventListener('keydown', (event) => {
+          if (galleryState.items.length <= 1) return;
+          if (event.key === 'ArrowLeft') {
+            event.preventDefault();
+            stepRecipeImage(-1);
+          } else if (event.key === 'ArrowRight') {
+            event.preventDefault();
+            stepRecipeImage(1);
+          }
+        });
+
+        recipeImageWrapper.addEventListener('click', (event) => {
+          if (galleryState.items.length <= 1) return;
+          if (event.target.closest('button')) return;
+          stepRecipeImage(1);
+        });
+      }
+
+      hydrateRecipeImages();
+
+      const titleEl = document.getElementById('recipeTitle');
+      if (titleEl) titleEl.textContent = recipeData.Rec_Nombre || 'Receta';
+      const descriptionEl = document.getElementById('recipeDescription');
+      if (descriptionEl) descriptionEl.textContent = recipeData.Rec_Descripcion || '';
+      const timeEl = document.getElementById('recipeTime');
+      if (timeEl) timeEl.textContent = formatPrepTime(recipeData.Rec_Tiempo_Prep);
+      const portionsEl = document.getElementById('recipePortions');
+      if (portionsEl) {
+        const portionsValue = Number(recipeData.Rec_Porcion);
+        portionsEl.textContent = Number.isFinite(portionsValue) && portionsValue > 0 ? portionsValue : '--';
+      }
+      const recipeMetaCategoryEl = document.getElementById('recipeMetaCategory');
+      if (recipeMetaCategoryEl) recipeMetaCategoryEl.textContent = recipeData.Cat_Nombre || 'Sin categoría';
+
+      const difficultyValue = Number(recipeData.Rec_Dificultad);
+      const isValidDifficulty = Number.isFinite(difficultyValue) && difficultyValue >= 1 && difficultyValue <= 10;
+      const difficultyValueEl = document.getElementById('recipeDifficultyValue');
+      if (difficultyValueEl) difficultyValueEl.textContent = isValidDifficulty ? `${difficultyValue}/10` : '1-10';
+      const difficultyLabelEl = document.getElementById('recipeDifficultyLabel');
+      if (difficultyLabelEl) {
+        difficultyLabelEl.textContent = isValidDifficulty
+          ? `${difficultyLabel(difficultyValue)} (${difficultyValue}/10)`
+          : 'N/A';
+      }
+      const difficultyMarkerEl = document.getElementById('recipeDifficultyMarker');
+      if (difficultyMarkerEl) {
+        if (isValidDifficulty) {
+          const clamped = Math.min(10, Math.max(1, difficultyValue));
+          const percentage = ((clamped - 1) / 9) * 100;
+          difficultyMarkerEl.style.left = `${percentage}%`;
+          difficultyMarkerEl.style.display = 'block';
+        } else {
+          difficultyMarkerEl.style.display = 'none';
+        }
+      }
+
+      const uniqueBy = (items, selector) => {
+        if (!Array.isArray(items)) return [];
+        const seen = new Set();
+        return items.filter((item) => {
+          const key = selector(item);
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+      };
+
+      const ingredientsList = document.getElementById('recipeIngredients');
+      if (ingredientsList && ingredientsData.length) {
+        ingredientsList.innerHTML = '';
+        const cleanedIngredients = uniqueBy(ingredientsData, (ingredient) => `${ingredient.Ing_ID}-${ingredient.RI_Cantidad || ''}-${ingredient.RI_Unidad || ''}`);
+        cleanedIngredients.forEach((ingredient) => {
+          const li = document.createElement('li');
+          li.textContent = `${ingredient.RI_Cantidad || ''} ${ingredient.RI_Unidad || ''} ${ingredient.Ing_Nombre || ''}`.trim();
+          ingredientsList.appendChild(li);
+        });
+      }
+
+      const utensilsContainer = document.getElementById('recipeUtensils');
+      const utensilsEmptyEl = document.getElementById('recipeUtensilsEmpty');
+      if (utensilsContainer) {
+        utensilsContainer.innerHTML = '';
+        const cleanedUtensils = uniqueBy(utensilsData, (item) => {
+          if (!item) return '';
+          if (typeof item === 'object') {
+            const nameValue = typeof item.name === 'string' ? item.name.toLowerCase() : '';
+            const idValue = Number(item.id);
+            return Number.isFinite(idValue) ? `${idValue}-${nameValue}` : nameValue;
+          }
+          return String(item).toLowerCase();
+        }).filter((entry) => {
+          const rawName = typeof entry === 'object' ? entry.name : entry;
+          const safeName = typeof rawName === 'string' ? rawName.trim() : String(rawName || '').trim();
+          return safeName.length > 0;
+        });
+
+        if (cleanedUtensils.length) {
+          cleanedUtensils.forEach((entry) => {
+            const rawName = typeof entry === 'object' ? entry.name : entry;
+            const safeName = typeof rawName === 'string' ? rawName.trim() : String(rawName || '').trim();
+            if (!safeName) return;
+            const card = document.createElement('div');
+            card.className = 'bg-white text-center p-3 rounded-lg shadow-sm border border-gray-200';
+            card.textContent = safeName;
+            utensilsContainer.appendChild(card);
+          });
+          if (utensilsEmptyEl) utensilsEmptyEl.classList.add('hidden');
+        } else if (utensilsEmptyEl) {
+          utensilsEmptyEl.classList.remove('hidden');
+        }
+      }
+
+      const instructionsEl = document.getElementById('recipeInstructions');
+      if (instructionsEl && recipeData.Rec_Instrucciones) {
+        instructionsEl.innerHTML = '';
+        const parts = String(recipeData.Rec_Instrucciones)
+          .split(/\r?\n|\d+\.\s*|\n-\s*/)
+          .map((section) => section.trim())
+          .filter(Boolean);
+        const uniqueSteps = uniqueBy(parts, (step) => step.toLowerCase());
+        uniqueSteps.forEach((step) => {
+          const li = document.createElement('li');
+          li.textContent = step;
+          instructionsEl.appendChild(li);
+        });
+      }
+
+      const saveRecipeBtn = document.getElementById('saveRecipeBtn');
+      const saveRecipeBtnIcon = document.getElementById('saveRecipeBtnIcon');
+      const saveRecipeBtnLabel = document.getElementById('saveRecipeBtnLabel');
+      const shareRecipeBtn = document.getElementById('shareRecipeBtn');
+      const shareRecipeBtnLabel = document.getElementById('shareRecipeBtnLabel');
+      const reportRecipeBtn = document.getElementById('reportRecipeBtn');
+      const ratingInput = document.getElementById('ratingInput');
+      const submitRatingBtn = document.getElementById('submitRatingBtn');
+      const recipeAvgRating = document.getElementById('recipeAvgRating');
+      const recipeRatingCount = document.getElementById('recipeRatingCount');
+      const ratingHelpText = document.getElementById('ratingHelpText');
+      const commentsContainer = document.getElementById('recipeComments');
+      const commentsEmpty = document.getElementById('recipeCommentsEmpty');
+      const commentsCount = document.getElementById('commentsCount');
+      const commentInput = document.getElementById('commentInput');
+      const commentButton = document.getElementById('submitCommentBtn');
+      const commentFormNotice = document.getElementById('commentFormNotice');
+      const difficultyInfoBtn = document.getElementById('difficultyInfoBtn');
+      const difficultyInfoTooltip = document.getElementById('difficultyInfoTooltip');
+      const authorContainer = document.getElementById('recipeAuthorContainer');
+      const authorLink = document.getElementById('recipeAuthorLink');
+      const authorNameEl = document.getElementById('recipeAuthorName');
+      const authorAvatarEl = document.getElementById('recipeAuthorAvatar');
+      const authorAliasEl = document.getElementById('recipeAuthorAlias');
+      const recipeMetaPublishedEl = document.getElementById('recipeMetaPublished');
+      const recipeMetaTypePill = document.getElementById('recipeMetaTypePill');
+      const reportModal = document.getElementById('reportModal');
+      const reportModalTitle = document.getElementById('reportModalTitle');
+      const reportModalSubtitle = document.getElementById('reportModalSubtitle');
+      const reportModalTextarea = document.getElementById('reportModalTextarea');
+      const reportModalError = document.getElementById('reportModalError');
+      const reportModalSubmit = document.getElementById('reportModalSubmit');
+      const reportModalCancel = document.getElementById('reportModalCancel');
+      const reportModalClose = document.getElementById('reportModalClose');
+      const reportModalSubmitLabel = document.getElementById('reportModalSubmitLabel');
+      const relatedSection = document.getElementById('relatedRecipesSection');
+      const relatedGrid = document.getElementById('relatedRecipesGrid');
+      const relatedEmpty = document.getElementById('relatedRecipesEmpty');
+      const relatedHint = document.getElementById('relatedRecipesHint');
+
+      const toggleDifficultyTooltip = (shouldShow = null) => {
+        if (!difficultyInfoBtn || !difficultyInfoTooltip) return;
+        const isHidden = difficultyInfoTooltip.classList.contains('hidden');
+        const show = shouldShow == null ? isHidden : shouldShow;
+        if (show) {
+          difficultyInfoTooltip.classList.remove('hidden');
+          difficultyInfoBtn.setAttribute('aria-expanded', 'true');
+        } else {
+          difficultyInfoTooltip.classList.add('hidden');
+          difficultyInfoBtn.setAttribute('aria-expanded', 'false');
+        }
+      };
+
+      const getCookie = (name) => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+      };
+
+      const parseCurrentUser = () => {
+        const raw = getCookie('userInfo');
+        if (!raw) return null;
+        const tryParse = (value) => {
+          if (!value) return null;
+          try {
+            return JSON.parse(value);
+          } catch (error) {
+            return null;
+          }
+        };
+        let parsed = tryParse(raw);
+        if (!parsed) {
+          try {
+            parsed = tryParse(decodeURIComponent(raw));
+          } catch (decodeErr) {
+            parsed = null;
+          }
+        }
+        if (!parsed) return null;
+        const id = parsed.id || parsed.Usu_ID;
+        if (!id) return null;
+        const numericId = Number(id);
+        if (!Number.isFinite(numericId)) return null;
+        const tipoRaw = parsed.Tipo_Usu_ID;
+        const tipoNumeric = Number(tipoRaw);
+        return {
+          id: numericId,
+          nombre: parsed.nombre || parsed.Usu_Nombre || '',
+          tipo: Number.isFinite(tipoNumeric) ? tipoNumeric : null,
+        };
+      };
+
+      const currentUser = parseCurrentUser();
+      const isLoggedIn = Boolean(currentUser && currentUser.id);
+
+      const state = {
+        isFavorite: false,
+        avgRating: null,
+        totalRatings: 0,
+        userRating: null,
+        userTipo: null,
+        comments: [],
+      };
+
+      const relatedState = {
+        items: [],
+        loaded: false,
+      };
+
+      const defaultRelatedHint = relatedHint ? relatedHint.textContent : '';
+
+      const userHasPremiumAccess = () => {
+        const tipoFromState = Number(state.userTipo);
+        if (Number.isFinite(tipoFromState)) return tipoFromState === 1 || tipoFromState === 3;
+        const tipoFromUser = currentUser && Number(currentUser.tipo);
+        if (Number.isFinite(tipoFromUser)) return tipoFromUser === 1 || tipoFromUser === 3;
+        return false;
+      };
+
+      const reportModalState = {
+        type: null,
+        targetId: null,
+        targetLabel: '',
+        triggerButton: null,
+      };
+      let reportSubmissionInFlight = false;
+
+      const copyToClipboard = async (value) => {
+        try {
+          if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+            await navigator.clipboard.writeText(value);
+            return true;
+          }
+        } catch (apiError) {
+          console.error('Clipboard API error:', apiError);
+        }
+        try {
+          const textarea = document.createElement('textarea');
+          textarea.value = value;
+          textarea.setAttribute('readonly', '');
+          textarea.style.position = 'absolute';
+          textarea.style.left = '-9999px';
+          document.body.appendChild(textarea);
+          textarea.select();
+          const succeeded = document.execCommand('copy');
+          document.body.removeChild(textarea);
+          return succeeded;
+        } catch (fallbackError) {
+          console.error('Clipboard fallback error:', fallbackError);
+          return false;
+        }
+      };
+
+      const handleShareRecipe = async () => {
+        if (!shareRecipeBtn) return;
+
+        const shareUrl = window.location.href;
+        const shareTitle = recipeData.Rec_Nombre || 'Receta de El Recetario';
+        const shareText = `Descubre la receta "${shareTitle}" en El Recetario®`;
+
+        shareRecipeBtn.disabled = true;
+        shareRecipeBtn.classList.add('cursor-wait');
+        if (shareRecipeBtnLabel) shareRecipeBtnLabel.textContent = 'Compartiendo...';
+
+        try {
+          if (navigator.share && typeof navigator.share === 'function') {
+            await navigator.share({ title: shareTitle, text: shareText, url: shareUrl });
+          } else {
+            const copied = await copyToClipboard(shareUrl);
+            window.alert(copied ? 'Enlace copiado al portapapeles.' : 'No se pudo copiar el enlace. Intenta nuevamente.');
+          }
+        } catch (error) {
+          if (!error || error.name !== 'AbortError') {
+            console.error('Error al compartir receta:', error);
+            window.alert('No se pudo compartir la receta en este momento.');
+          }
+        } finally {
+          shareRecipeBtn.disabled = false;
+          shareRecipeBtn.classList.remove('cursor-wait');
+          if (shareRecipeBtnLabel) shareRecipeBtnLabel.textContent = 'Compartir receta';
+        }
+      };
+
+      const formatPlural = (count, singular, plural) => `${count} ${count === 1 ? singular : plural}`;
+
+      const normalizePhotoPath = (value) => {
+        if (!value) return '/Imagenes/Usuarios/0.png';
+        if (/^https?:\/\//i.test(value)) return value;
+        const clean = String(value).replace(/^\/+/, '');
+        return `/${clean}`;
+      };
+
+      const updateAuthorDisplay = () => {
+        if (!authorContainer) return;
+        const authorName = recipeData.Autor_Nombre || recipeData.Usu_Nombre || '';
+        const authorAlias = recipeData.Autor_Alias || recipeData.Usu_Alias || '';
+        const authorPhoto = normalizePhotoPath(recipeData.Autor_Foto || recipeData.Usu_Foto);
+        if (!authorName && !authorAlias) return;
+        const displayName = authorName || authorAlias;
+        if (authorNameEl) authorNameEl.textContent = displayName;
+        if (authorAvatarEl) {
+          authorAvatarEl.src = authorPhoto;
+          authorAvatarEl.alt = `Foto de ${displayName}`;
+        }
+        if (authorAliasEl) {
+          if (authorAlias) {
+            authorAliasEl.textContent = `@${authorAlias}`;
+            authorAliasEl.classList.remove('hidden');
+          } else {
+            authorAliasEl.textContent = '';
+            authorAliasEl.classList.add('hidden');
+          }
+        }
+        if (authorLink) {
+          if (authorAlias) {
+            authorLink.href = `/perfil/${encodeURIComponent(authorAlias)}`;
+            authorLink.setAttribute('aria-label', `Ver perfil de ${displayName}`);
+            authorLink.classList.remove('pointer-events-none', 'cursor-default', 'text-gray-400');
+            authorLink.removeAttribute('aria-disabled');
+          } else {
+            authorLink.removeAttribute('href');
+            authorLink.setAttribute('aria-disabled', 'true');
+            authorLink.classList.add('pointer-events-none', 'cursor-default', 'text-gray-400');
+          }
+        }
+        authorContainer.classList.remove('hidden');
+        authorContainer.classList.add('flex');
+      };
+
+      const updateRecipeMeta = () => {
+        if (recipeMetaPublishedEl) {
+          const formatted = formatDateLocalized(recipeData.Rec_Fecha_Publicacion);
+          recipeMetaPublishedEl.textContent = formatted || '--';
+        }
+        if (recipeMetaTypePill) {
+          const baseClasses = 'inline-flex w-fit items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold transition-colors';
+          const typeInfo = recipeTypeDescriptor(recipeData.Tipo_Rec_ID);
+          recipeMetaTypePill.textContent = typeInfo.label;
+          recipeMetaTypePill.className = `${baseClasses} ${typeInfo.classes}`;
+        }
+      };
+
+      const createRelatedRecipeCard = (item) => {
+        if (!item || !Number.isFinite(item.id)) return null;
+
+        const link = document.createElement('a');
+        link.href = `/receta/${item.id}`;
+        link.className = 'flex items-center gap-3 rounded-lg border border-transparent bg-white/80 px-3 py-3 text-left transition hover:border-orange-200 hover:bg-white hover:shadow-sm snap-start flex-shrink-0';
+        link.style.width = '220px';
+        link.style.minHeight = '96px';
+        link.setAttribute('aria-label', `Ver receta ${item.name || 'relacionada'}`);
+
+        const thumbWrapper = document.createElement('div');
+        thumbWrapper.className = 'relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100';
+
+        const img = document.createElement('img');
+        img.src = normalizeRecipeImagePath(item.image);
+        img.alt = item.name ? `Foto de ${item.name}` : 'Receta relacionada';
+        img.loading = 'lazy';
+        img.className = 'h-full w-full object-cover';
+        thumbWrapper.appendChild(img);
+
+        if (item.premium) {
+          const badge = document.createElement('span');
+          badge.className = 'absolute right-1 top-1 inline-flex items-center justify-center rounded-full bg-orange-500/90 p-1 text-white';
+          const badgeIcon = document.createElement('span');
+          badgeIcon.className = 'material-symbols-outlined text-[14px]';
+          badgeIcon.textContent = 'stars';
+          badge.appendChild(badgeIcon);
+          thumbWrapper.appendChild(badge);
+        }
+
+        link.appendChild(thumbWrapper);
+
+        const body = document.createElement('div');
+        body.className = 'flex min-w-0 flex-1 flex-col gap-1';
+
+        const title = document.createElement('p');
+        title.className = 'truncate text-sm font-semibold text-gray-800';
+        title.textContent = item.name || 'Receta';
+        body.appendChild(title);
+
+        if (item.category) {
+          const categoryEl = document.createElement('p');
+          categoryEl.className = 'truncate text-xs text-gray-500';
+          categoryEl.textContent = item.category;
+          body.appendChild(categoryEl);
+        }
+
+        const metaRow = document.createElement('div');
+        metaRow.className = 'flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-gray-500';
+
+        if (item.time) {
+          const timeSegment = document.createElement('span');
+          timeSegment.className = 'inline-flex items-center gap-1';
+          const timeIcon = document.createElement('span');
+          timeIcon.className = 'material-symbols-outlined text-[15px] text-orange-400';
+          timeIcon.textContent = 'schedule';
+          timeSegment.appendChild(timeIcon);
+          timeSegment.appendChild(document.createTextNode(formatPrepTime(item.time)));
+          metaRow.appendChild(timeSegment);
+        }
+
+        if (item.difficulty != null) {
+          const difficultySegment = document.createElement('span');
+          difficultySegment.className = 'inline-flex items-center gap-1';
+          const difficultyIcon = document.createElement('span');
+          difficultyIcon.className = 'material-symbols-outlined text-[15px] text-indigo-400';
+          difficultyIcon.textContent = 'terrain';
+          difficultySegment.appendChild(difficultyIcon);
+          difficultySegment.appendChild(document.createTextNode(difficultyLabel(item.difficulty)));
+          metaRow.appendChild(difficultySegment);
+        }
+
+        if (item.portions != null && Number(item.portions) > 0) {
+          const portionsSegment = document.createElement('span');
+          portionsSegment.className = 'inline-flex items-center gap-1';
+          const portionsIcon = document.createElement('span');
+          portionsIcon.className = 'material-symbols-outlined text-[15px] text-emerald-400';
+          portionsIcon.textContent = 'groups';
+          portionsSegment.appendChild(portionsIcon);
+          portionsSegment.appendChild(document.createTextNode(`${Number(item.portions)} porciones`));
+          metaRow.appendChild(portionsSegment);
+        }
+
+        if (item.avgRating != null && !Number.isNaN(item.avgRating) && item.avgRating > 0) {
+          const ratingSegment = document.createElement('span');
+          ratingSegment.className = 'inline-flex items-center gap-1';
+          const ratingIcon = document.createElement('span');
+          ratingIcon.className = 'material-symbols-outlined text-[15px] text-yellow-400';
+          ratingIcon.textContent = 'grade';
+          ratingSegment.appendChild(ratingIcon);
+          ratingSegment.appendChild(document.createTextNode(`${Number(item.avgRating).toFixed(1)}`));
+          metaRow.appendChild(ratingSegment);
+        }
+
+        if (item.authorName || item.authorAlias) {
+          const alias = typeof item.authorAlias === 'string' ? item.authorAlias.replace(/^@+/, '') : '';
+          const authorSegment = document.createElement('span');
+          authorSegment.className = 'inline-flex items-center gap-1';
+          const authorIcon = document.createElement('span');
+          authorIcon.className = 'material-symbols-outlined text-[15px] text-gray-400';
+          authorIcon.textContent = 'person';
+          authorSegment.appendChild(authorIcon);
+          authorSegment.appendChild(document.createTextNode(alias ? `@${alias}` : (item.authorName || '')));
+          metaRow.appendChild(authorSegment);
+        }
+
+        if (metaRow.childElementCount) body.appendChild(metaRow);
+        link.appendChild(body);
+
+        return link;
+      };
+
+      const renderRelatedRecipes = (items) => {
+        if (!relatedSection || !relatedGrid) return;
+        const originalList = Array.isArray(items) ? items.filter(Boolean) : [];
+        const hasAccess = userHasPremiumAccess();
+        const filteredList = (hasAccess ? originalList : originalList.filter((entry) => !entry.premium)).slice(0, 6);
+        const premiumHidden = !hasAccess && originalList.some((entry) => entry && entry.premium);
+        const hintMessage = premiumHidden && filteredList.length
+          ? 'Algunas sugerencias son exclusivas para miembros Premium.'
+          : defaultRelatedHint;
+
+        relatedGrid.innerHTML = '';
+
+        if (!filteredList.length) {
+          if (relatedHint) {
+            relatedHint.textContent = premiumHidden ? 'Hazte Premium para desbloquear todas las sugerencias.' : defaultRelatedHint;
+            relatedHint.classList.toggle('hidden', true);
+          }
+          if (relatedEmpty) {
+            relatedEmpty.textContent = premiumHidden
+              ? 'Hazte Premium para ver recomendaciones exclusivas basadas en tus gustos.'
+              : 'No encontramos recetas relacionadas en este momento.';
+            relatedEmpty.classList.remove('hidden');
+          }
+          relatedSection.classList.remove('hidden');
+          return;
+        }
+
+        const frag = document.createDocumentFragment();
+        filteredList.forEach((entry) => {
+          const card = createRelatedRecipeCard(entry);
+          if (card) frag.appendChild(card);
+        });
+
+        relatedGrid.appendChild(frag);
+        relatedSection.classList.remove('hidden');
+        if (relatedEmpty) relatedEmpty.classList.add('hidden');
+        if (relatedHint) {
+          relatedHint.textContent = hintMessage || defaultRelatedHint;
+          relatedHint.classList.remove('hidden');
+        }
+      };
+
+      const loadRelatedRecipes = async () => {
+        if (!Number.isFinite(recipeId) || !relatedGrid) return;
+        try {
+          const response = await fetch(`/api/recetas/${recipeId}/relacionadas`, { credentials: 'include' });
+          if (!response.ok) throw new Error(`Estado ${response.status}`);
+          const data = await response.json();
+          const items = Array.isArray(data) ? data : Array.isArray(data.related) ? data.related : [];
+          relatedState.items = items.filter(Boolean);
+          relatedState.loaded = true;
+          renderRelatedRecipes(relatedState.items);
+        } catch (error) {
+          console.error('Error cargando recetas relacionadas:', error);
+          relatedState.items = [];
+          relatedState.loaded = true;
+          if (relatedEmpty) {
+            relatedEmpty.textContent = 'No pudimos cargar las recetas relacionadas. Intenta nuevamente más tarde.';
+            relatedEmpty.classList.remove('hidden');
+          }
+          if (relatedSection) relatedSection.classList.remove('hidden');
+        }
+      };
+
+      const updateFavoriteButton = () => {
+        if (!saveRecipeBtn) return;
+        if (!isLoggedIn) {
+          saveRecipeBtn.disabled = true;
+          saveRecipeBtn.classList.add('opacity-60', 'cursor-not-allowed');
+          if (saveRecipeBtnIcon) saveRecipeBtnIcon.textContent = 'lock';
+          if (saveRecipeBtnLabel) saveRecipeBtnLabel.textContent = 'Inicia sesión para guardar';
+          return;
+        }
+        saveRecipeBtn.disabled = false;
+        saveRecipeBtn.classList.remove('opacity-60', 'cursor-not-allowed');
+        if (saveRecipeBtnIcon) saveRecipeBtnIcon.textContent = state.isFavorite ? 'bookmark_added' : 'bookmark_add';
+        if (saveRecipeBtnLabel) saveRecipeBtnLabel.textContent = state.isFavorite ? 'Receta guardada' : 'Guardar receta';
+      };
+
+      const updateRatingDisplay = () => {
+        if (recipeAvgRating) {
+          if (state.avgRating != null && !Number.isNaN(state.avgRating)) {
+            recipeAvgRating.textContent = Number(state.avgRating).toFixed(1);
+          } else {
+            recipeAvgRating.textContent = '--';
+          }
+        }
+        if (recipeRatingCount) {
+          recipeRatingCount.textContent = formatPlural(Number(state.totalRatings || 0), 'calificación', 'calificaciones');
+        }
+        if (ratingInput) {
+          ratingInput.disabled = !isLoggedIn;
+          if (isLoggedIn && state.userRating != null) {
+            ratingInput.value = state.userRating;
+          } else if (!isLoggedIn) {
+            ratingInput.value = '';
+          }
+        }
+        if (submitRatingBtn) submitRatingBtn.disabled = !isLoggedIn;
+        if (ratingHelpText) {
+          if (!isLoggedIn) ratingHelpText.textContent = 'Inicia sesión para calificar.';
+          else if (state.userRating != null) ratingHelpText.textContent = `Tu calificación actual: ${state.userRating}/10.`;
+          else ratingHelpText.textContent = 'Elige un valor del 1 al 10 y comparte tu opinión.';
+        }
+      };
+
+      const updateCommentFormState = () => {
+        if (!commentInput || !commentButton) return;
+        if (!isLoggedIn) {
+          commentInput.disabled = true;
+          commentButton.disabled = true;
+          if (commentFormNotice) commentFormNotice.textContent = 'Inicia sesión para compartir tu experiencia.';
+        } else {
+          commentInput.disabled = false;
+          commentButton.disabled = false;
+          if (commentFormNotice) commentFormNotice.textContent = 'Tu comentario se mostrará públicamente.';
+        }
+      };
+
+      const updateReportControls = () => {
+        if (!reportRecipeBtn) return;
+        if (!isLoggedIn) {
+          reportRecipeBtn.classList.add('opacity-60', 'cursor-not-allowed');
+          reportRecipeBtn.setAttribute('aria-disabled', 'true');
+          reportRecipeBtn.title = 'Inicia sesión para reportar recetas';
+        } else {
+          reportRecipeBtn.classList.remove('opacity-60', 'cursor-not-allowed');
+          reportRecipeBtn.removeAttribute('aria-disabled');
+          reportRecipeBtn.removeAttribute('title');
+        }
+      };
+
+      const resetReportModalView = () => {
+        if (reportModalTextarea) reportModalTextarea.value = '';
+        if (reportModalError) {
+          reportModalError.textContent = '';
+          reportModalError.classList.add('hidden');
+        }
+        if (reportModalSubmit) {
+          reportModalSubmit.disabled = false;
+          reportModalSubmit.classList.remove('cursor-not-allowed', 'opacity-60');
+        }
+        if (reportModalSubmitLabel) reportModalSubmitLabel.textContent = 'Enviar reporte';
+      };
+
+      const closeReportModal = ({ restoreFocus = false } = {}) => {
+        if (!reportModal) return;
+        reportModal.classList.add('hidden');
+        reportModal.classList.remove('flex');
+        if (document.body) document.body.classList.remove('overflow-hidden');
+        reportSubmissionInFlight = false;
+
+        const focusTarget = restoreFocus ? reportModalState.triggerButton : null;
+        reportModalState.type = null;
+        reportModalState.targetId = null;
+        reportModalState.targetLabel = '';
+        reportModalState.triggerButton = null;
+        resetReportModalView();
+
+        if (focusTarget) {
+          try {
+            focusTarget.focus();
+          } catch (err) {
+            /* noop */
+          }
+        }
+      };
+
+      const openReportModal = ({ type, targetId, targetLabel, triggerButton }) => {
+        if (!reportModal) return;
+        reportModalState.type = type;
+        reportModalState.targetId = targetId;
+        reportModalState.targetLabel = targetLabel;
+        reportModalState.triggerButton = triggerButton || null;
+        resetReportModalView();
+
+        if (reportModalTitle) {
+          const typeLabel = type === 'comentario' ? 'comentario' : type === 'usuario' ? 'usuario' : 'receta';
+          reportModalTitle.textContent = `Reportar ${typeLabel}`;
+        }
+        if (reportModalSubtitle) {
+          reportModalSubtitle.textContent = `Describe el motivo para reportar ${targetLabel}.`;
+        }
+
+        reportModal.classList.remove('hidden');
+        reportModal.classList.add('flex');
+        if (document.body) document.body.classList.add('overflow-hidden');
+
+        window.requestAnimationFrame(() => {
+          if (reportModalTextarea) reportModalTextarea.focus();
+        });
+      };
+
+      const showReportModalError = (message) => {
+        if (!reportModalError) return;
+        reportModalError.textContent = message;
+        reportModalError.classList.remove('hidden');
+      };
+
+      const submitReport = async ({ type, targetId, motivo }) => {
+        let response;
+        try {
+          response = await fetch('/api/reportes', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type, targetId, motivo })
+          });
+        } catch (err) {
+          const networkError = new Error('network_error');
+          networkError.code = 'network_error';
+          throw networkError;
+        }
+
+        if (response.status === 401) {
+          window.location.href = '/iniciar-sesion';
+          return { aborted: true };
+        }
+
+        let data = null;
+        try {
+          data = await response.json();
+        } catch (err) {
+          data = null;
+        }
+
+        if (!response.ok) {
+          const error = new Error('report_failed');
+          error.code = data && data.error ? data.error : 'report_failed';
+          throw error;
+        }
+
+        return data || {};
+      };
+
+      const handleReport = (type, targetId, targetLabel, buttonEl = null) => {
+        if (!isLoggedIn) {
+          window.location.href = '/iniciar-sesion';
+          return;
+        }
+
+        const numericId = Number(targetId);
+        if (!Number.isFinite(numericId) || numericId <= 0) {
+          window.alert('No se pudo identificar el elemento que deseas reportar.');
+          return;
+        }
+
+        if (reportSubmissionInFlight) return;
+
+        openReportModal({ type, targetId: numericId, targetLabel, triggerButton: buttonEl || null });
+      };
+
+      const handleReportSubmit = async () => {
+        if (reportSubmissionInFlight) return;
+        const { type, targetId, targetLabel, triggerButton } = reportModalState;
+        if (!type || !Number.isFinite(targetId) || targetId <= 0) {
+          closeReportModal();
+          return;
+        }
+        if (!reportModalTextarea) return;
+
+        const motivo = reportModalTextarea.value.trim();
+        if (motivo.length < 10) {
+          showReportModalError('El motivo debe tener al menos 10 caracteres.');
+          reportModalTextarea.focus();
+          return;
+        }
+
+        reportSubmissionInFlight = true;
+        if (reportModalError) reportModalError.classList.add('hidden');
+        if (reportModalSubmit) {
+          reportModalSubmit.disabled = true;
+          reportModalSubmit.classList.add('cursor-not-allowed', 'opacity-60');
+        }
+        if (reportModalSubmitLabel) reportModalSubmitLabel.textContent = 'Enviando...';
+        if (triggerButton) {
+          triggerButton.disabled = true;
+          triggerButton.classList.add('cursor-wait');
+        }
+
+        let shouldClose = false;
+        let alertMessage = '';
+
+        try {
+          const result = await submitReport({ type, targetId, motivo });
+          if (result && result.aborted) return;
+          if (result && result.status === 'duplicate') {
+            alertMessage = `Ya habías enviado un reporte para ${targetLabel}.`;
+          } else {
+            alertMessage = `Gracias por reportar ${targetLabel}. Nuestro equipo lo revisará pronto.`;
+          }
+          shouldClose = true;
+        } catch (error) {
+          console.error('Error al enviar reporte:', error);
+          const code = error && error.code ? error.code : 'report_failed';
+          if (code === 'motivo_too_short') {
+            showReportModalError('El motivo debe tener al menos 10 caracteres.');
+          } else if (code === 'target_not_found') {
+            showReportModalError('El elemento reportado ya no está disponible.');
+          } else if (code === 'invalid_type' || code === 'invalid_target') {
+            showReportModalError('No se pudo procesar el reporte por datos inválidos.');
+          } else if (code === 'network_error') {
+            showReportModalError('No se pudo enviar el reporte por un problema de conexión. Intenta más tarde.');
+          } else {
+            showReportModalError('No se pudo enviar el reporte. Intenta nuevamente más tarde.');
+          }
+          if (reportModalTextarea) reportModalTextarea.focus();
+        } finally {
+          if (triggerButton) {
+            triggerButton.disabled = false;
+            triggerButton.classList.remove('cursor-wait');
+          }
+          reportSubmissionInFlight = false;
+          if (reportModalSubmit) {
+            reportModalSubmit.disabled = false;
+            reportModalSubmit.classList.remove('cursor-not-allowed', 'opacity-60');
+          }
+          if (reportModalSubmitLabel) reportModalSubmitLabel.textContent = 'Enviar reporte';
+          updateReportControls();
+        }
+
+        if (shouldClose) {
+          closeReportModal({ restoreFocus: true });
+          window.alert(alertMessage);
+        }
+      };
+
+      const handleCommentReport = (commentId, buttonEl) => {
+        handleReport('comentario', commentId, 'este comentario', buttonEl);
+      };
+
+      const handleRecipeReport = () => {
+        handleReport('receta', recipeId, 'esta receta', reportRecipeBtn);
+      };
+
+      const handleCommentDelete = async (commentId) => {
+        if (!isLoggedIn) {
+          window.location.href = '/iniciar-sesion';
+          return;
+        }
+        const numericId = Number(commentId);
+        if (!Number.isFinite(numericId) || numericId <= 0) return;
+        const confirmDeletion = await showPopupConfirm('¿Deseas eliminar este comentario?', {
+          title: 'Eliminar comentario',
+          subtitle: 'Tu actividad',
+          confirmText: 'Eliminar',
+          cancelText: 'Cancelar'
+        });
+        if (!confirmDeletion) return;
+
+        const wasOwnComment = state.comments.some(
+          (entry) => Number(entry.id) === numericId && Number(entry.userId) === (currentUser ? currentUser.id : null)
+        );
+
+        try {
+          const response = await fetch(`/api/recetas/${recipeId}/comentarios/${numericId}`, {
+            method: 'DELETE',
+            credentials: 'include',
+          });
+
+          let payload = null;
+          try {
+            payload = await response.json();
+          } catch (parseErr) {
+            payload = null;
+          }
+
+          if (response.status === 401) {
+            window.location.href = '/iniciar-sesion';
+            return;
+          }
+
+          if (!response.ok) {
+            const errorCode = payload && payload.error ? payload.error : 'failed_to_delete_comment';
+            if (commentFormNotice) {
+              if (errorCode === 'forbidden') {
+                commentFormNotice.textContent = 'No tienes permiso para eliminar este comentario.';
+              } else if (errorCode === 'comment_not_found') {
+                commentFormNotice.textContent = 'El comentario ya no existe.';
+              } else {
+                commentFormNotice.textContent = 'No se pudo eliminar el comentario. Intenta de nuevo.';
+              }
+            }
+            return;
+          }
+
+          state.comments = state.comments.filter((entry) => Number(entry.id) !== numericId);
+          if (wasOwnComment && commentInput) commentInput.value = '';
+          renderComments();
+          if (commentFormNotice) commentFormNotice.textContent = 'Comentario eliminado correctamente.';
+        } catch (error) {
+          console.error('Error al eliminar comentario:', error);
+          if (commentFormNotice) commentFormNotice.textContent = 'No se pudo eliminar el comentario. Intenta de nuevo.';
+        }
+      };
+
+      const renderComments = () => {
+        if (!commentsContainer) return;
+        const items = Array.isArray(state.comments) ? state.comments : [];
+        commentsContainer.innerHTML = '';
+        if (!items.length) {
+          if (commentsEmpty) {
+            commentsEmpty.classList.remove('hidden');
+            commentsEmpty.textContent = 'Sé el primero en comentar esta receta.';
+          }
+          if (commentsCount) commentsCount.textContent = '0 comentarios';
+          return;
+        }
+        if (commentsEmpty) commentsEmpty.classList.add('hidden');
+        if (commentsCount) commentsCount.textContent = formatPlural(items.length, 'comentario', 'comentarios');
+
+        const frag = document.createDocumentFragment();
+        items.forEach((entry) => {
+          const article = document.createElement('article');
+          article.className = 'bg-white rounded-lg shadow p-4';
+
+          const header = document.createElement('div');
+          header.className = 'flex items-start justify-between gap-3';
+
+          const headerMain = document.createElement('div');
+          headerMain.className = 'flex items-center gap-3';
+
+          const displayName = entry.userName || 'Usuario';
+          const aliasValue = entry.userAlias ? String(entry.userAlias).trim() : '';
+
+          const avatar = document.createElement('img');
+          avatar.className = 'w-10 h-10 rounded-full object-cover bg-gray-200';
+          avatar.src = normalizePhotoPath(entry.userPhoto);
+          avatar.alt = aliasValue ? `Foto de ${aliasValue.startsWith('@') ? aliasValue : `@${aliasValue}`}` : `Foto de ${displayName}`;
+          headerMain.appendChild(avatar);
+
+          const info = document.createElement('div');
+          info.className = 'flex flex-col';
+
+          const profileHref = aliasValue ? `/perfil/${encodeURIComponent(aliasValue)}` : null;
+          const nameEl = document.createElement(profileHref ? 'a' : 'span');
+          nameEl.className = 'font-semibold text-gray-800';
+          nameEl.textContent = displayName;
+          if (profileHref) {
+            nameEl.href = profileHref;
+            nameEl.classList.add('hover:text-orange-600', 'transition');
+            nameEl.setAttribute('aria-label', `Ver perfil de ${displayName}`);
+          }
+          info.appendChild(nameEl);
+
+          if (aliasValue) {
+            const aliasEl = document.createElement('span');
+            aliasEl.className = 'text-xs text-gray-500';
+            aliasEl.textContent = aliasValue.startsWith('@') ? aliasValue : `@${aliasValue}`;
+            info.appendChild(aliasEl);
+          }
+
+          if (isLoggedIn && Number(entry.userId) === currentUser.id) {
+            const selfBadge = document.createElement('span');
+            selfBadge.className = 'inline-block text-xs text-orange-600 bg-orange-100 px-2 py-0.5 rounded mt-1';
+            selfBadge.textContent = 'Tu comentario';
+            info.appendChild(selfBadge);
+          }
+
+          headerMain.appendChild(info);
+          header.appendChild(headerMain);
+
+          const actions = document.createElement('div');
+          actions.className = 'flex items-start gap-2';
+          let hasActions = false;
+
+          const commentId = Number(entry.id);
+          const isOwnComment = isLoggedIn && Number(entry.userId) === currentUser.id;
+          const canReport = Number.isFinite(commentId) && commentId > 0 && !isOwnComment;
+          if (canReport) {
+            const reportBtn = document.createElement('button');
+            reportBtn.type = 'button';
+            reportBtn.className = 'inline-flex items-center gap-1 text-xs font-semibold text-amber-600 hover:text-amber-700 transition';
+            reportBtn.setAttribute('aria-label', 'Reportar comentario');
+            if (!isLoggedIn) reportBtn.title = 'Inicia sesión para reportar comentarios';
+
+            const reportIcon = document.createElement('span');
+            reportIcon.className = 'material-symbols-outlined text-sm';
+            reportIcon.textContent = 'flag';
+            reportBtn.appendChild(reportIcon);
+
+            const reportLabel = document.createElement('span');
+            reportLabel.textContent = 'Reportar';
+            reportBtn.appendChild(reportLabel);
+
+            reportBtn.addEventListener('click', () => handleCommentReport(commentId, reportBtn));
+
+            actions.appendChild(reportBtn);
+            hasActions = true;
+          }
+
+          const canDelete = Number(state.userTipo) === 1 || isOwnComment;
+          if (canDelete) {
+            const deleteBtn = document.createElement('button');
+            deleteBtn.type = 'button';
+            deleteBtn.className = 'inline-flex items-center gap-1 text-xs font-semibold text-red-600 hover:text-red-700 transition';
+            deleteBtn.setAttribute('aria-label', 'Eliminar comentario');
+
+            const deleteIcon = document.createElement('span');
+            deleteIcon.className = 'material-symbols-outlined text-sm';
+            deleteIcon.textContent = 'delete';
+            deleteBtn.appendChild(deleteIcon);
+
+            const deleteLabel = document.createElement('span');
+            deleteLabel.textContent = 'Eliminar';
+            deleteBtn.appendChild(deleteLabel);
+
+            deleteBtn.addEventListener('click', () => handleCommentDelete(commentId));
+
+            actions.appendChild(deleteBtn);
+            hasActions = true;
+          }
+
+          if (hasActions) header.appendChild(actions);
+
+          article.appendChild(header);
+
+          const message = document.createElement('p');
+          message.className = 'mt-3 text-gray-700 whitespace-pre-wrap';
+          message.textContent = entry.comment || '';
+          article.appendChild(message);
+
+          frag.appendChild(article);
+        });
+
+        commentsContainer.appendChild(frag);
+      };
+
+      const loadRecipeMeta = async () => {
+        if (!Number.isFinite(recipeId)) return;
+        try {
+          const response = await fetch(`/api/recetas/${recipeId}/resumen`, { credentials: 'include' });
+          if (!response.ok) throw new Error(`Estado ${response.status}`);
+          const data = await response.json();
+          state.avgRating = data && data.avgRating != null ? Number(data.avgRating) : null;
+          state.totalRatings = data && data.totalRatings != null ? Number(data.totalRatings) : 0;
+          state.userRating = data && data.userRating != null ? Number(data.userRating) : null;
+          state.isFavorite = Boolean(data && data.isFavorite);
+          state.userTipo = data && data.userTipo != null ? Number(data.userTipo) : null;
+          if (relatedState.loaded) renderRelatedRecipes(relatedState.items);
+          renderComments();
+        } catch (error) {
+          console.error('Error cargando resumen de receta:', error);
+        } finally {
+          updateFavoriteButton();
+          updateRatingDisplay();
+        }
+      };
+
+      const loadComments = async () => {
+        if (!Number.isFinite(recipeId) || !commentsContainer) return;
+        try {
+          const response = await fetch(`/api/recetas/${recipeId}/comentarios`, { credentials: 'include' });
+          if (!response.ok) throw new Error(`Estado ${response.status}`);
+          const data = await response.json();
+          const list = Array.isArray(data) ? data : Array.isArray(data.comments) ? data.comments : [];
+          const scoped = list.filter((item) => Number(item.recipeId) === recipeId);
+          const normalized = scoped.map((item) => ({
+            ...item,
+            userId: Number(item.userId),
+            id: Number(item.id || item.Com_ID || item.commentId || item.userId),
+            userAlias: item.userAlias || item.alias || item.Usu_Alias || null,
+          }));
+          state.comments = normalized;
+          renderComments();
+        } catch (error) {
+          console.error('Error cargando comentarios:', error);
+          if (commentsEmpty) {
+            commentsEmpty.classList.remove('hidden');
+            commentsEmpty.textContent = 'No se pudieron cargar los comentarios.';
+          }
+          if (commentsCount) commentsCount.textContent = '0 comentarios';
+        }
+      };
+
+      const handleSaveToggle = async () => {
+        if (!isLoggedIn) {
+          window.location.href = '/iniciar-sesion';
+          return;
+        }
+        if (!Number.isFinite(recipeId) || !saveRecipeBtn) return;
+        try {
+          const method = state.isFavorite ? 'DELETE' : 'POST';
+          const options = { method, credentials: 'include' };
+          if (method === 'POST') options.headers = { 'Content-Type': 'application/json' };
+          const response = await fetch(`/api/recetas/${recipeId}/favorita`, options);
+          if (response.status === 401) {
+            window.location.href = '/iniciar-sesion';
+            return;
+          }
+          if (!response.ok) throw new Error(`Estado ${response.status}`);
+          const data = await response.json();
+          if (data && typeof data.isFavorite === 'boolean') {
+            state.isFavorite = data.isFavorite;
+          } else {
+            state.isFavorite = !state.isFavorite;
+          }
+        } catch (error) {
+          console.error('Error al guardar la receta:', error);
+        } finally {
+          updateFavoriteButton();
+        }
+      };
+
+      const handleRatingSubmit = async () => {
+        if (!isLoggedIn) {
+          window.location.href = '/iniciar-sesion';
+          return;
+        }
+        if (!Number.isFinite(recipeId) || !ratingInput) return;
+        const value = Number(ratingInput.value);
+        if (!Number.isInteger(value) || value < 1 || value > 10) {
+          if (ratingHelpText) ratingHelpText.textContent = 'Ingresa un número entero entre 1 y 10.';
+          return;
+        }
+        try {
+          const response = await fetch(`/api/recetas/${recipeId}/calificacion`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ score: value })
+          });
+          if (response.status === 401) {
+            window.location.href = '/iniciar-sesion';
+            return;
+          }
+          if (!response.ok) throw new Error(`Estado ${response.status}`);
+          const data = await response.json();
+          state.avgRating = data && data.avgRating != null ? Number(data.avgRating) : state.avgRating;
+          state.totalRatings = data && data.totalRatings != null ? Number(data.totalRatings) : state.totalRatings;
+          state.userRating = data && data.userRating != null ? Number(data.userRating) : value;
+          if (ratingHelpText) ratingHelpText.textContent = '¡Gracias por calificar!';
+        } catch (error) {
+          console.error('Error al calificar la receta:', error);
+          if (ratingHelpText) ratingHelpText.textContent = 'No se pudo guardar tu calificación. Intenta más tarde.';
+        } finally {
+          updateRatingDisplay();
+        }
+      };
+
+      const handleCommentSubmit = async () => {
+        if (!isLoggedIn) {
+          window.location.href = '/iniciar-sesion';
+          return;
+        }
+        if (!Number.isFinite(recipeId) || !commentInput || !commentButton) return;
+        const message = commentInput.value.trim();
+        if (!message) {
+          if (commentFormNotice) commentFormNotice.textContent = 'Escribe un comentario antes de publicarlo.';
+          return;
+        }
+        if (message.length > 255) {
+          if (commentFormNotice) commentFormNotice.textContent = 'El comentario no puede superar los 255 caracteres.';
+          return;
+        }
+        commentButton.disabled = true;
+        commentButton.textContent = 'Publicando...';
+        try {
+          const response = await fetch(`/api/recetas/${recipeId}/comentarios`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ comment: message })
+          });
+          if (response.status === 401) {
+            window.location.href = '/iniciar-sesion';
+            return;
+          }
+          if (!response.ok) throw new Error(`Estado ${response.status}`);
+          const data = await response.json();
+          if (data && data.comment) {
+            const entry = {
+              ...data.comment,
+              userId: Number(data.comment.userId),
+              id: Number(data.comment.id || data.comment.Com_ID || data.comment.userId),
+              userAlias: data.comment.userAlias || data.comment.alias || data.comment.Usu_Alias || null,
+            };
+            state.comments = [entry, ...state.comments];
+            if (commentFormNotice) commentFormNotice.textContent = 'Comentario publicado correctamente.';
+            if (commentInput) {
+              commentInput.value = '';
+              commentInput.focus();
+            }
+            renderComments();
+          }
+        } catch (error) {
+          console.error('Error al publicar comentario:', error);
+          if (commentFormNotice) commentFormNotice.textContent = 'No se pudo publicar el comentario. Intenta de nuevo.';
+        } finally {
+          commentButton.disabled = false;
+          commentButton.textContent = 'Publicar comentario';
+        }
+      };
+
+      updateFavoriteButton();
+      updateRatingDisplay();
+      updateCommentFormState();
+      updateReportControls();
+      updateAuthorDisplay();
+      updateRecipeMeta();
+      loadRecipeMeta();
+      loadComments();
+      loadRelatedRecipes();
+
+      if (saveRecipeBtn) saveRecipeBtn.addEventListener('click', handleSaveToggle);
+      if (shareRecipeBtn) shareRecipeBtn.addEventListener('click', handleShareRecipe);
+      if (reportRecipeBtn) reportRecipeBtn.addEventListener('click', handleRecipeReport);
+      if (submitRatingBtn) submitRatingBtn.addEventListener('click', handleRatingSubmit);
+      if (commentButton) commentButton.addEventListener('click', handleCommentSubmit);
+      if (reportModalSubmit) reportModalSubmit.addEventListener('click', handleReportSubmit);
+      if (reportModalCancel) reportModalCancel.addEventListener('click', () => {
+        if (!reportSubmissionInFlight) closeReportModal({ restoreFocus: true });
+      });
+      if (reportModalClose) reportModalClose.addEventListener('click', () => {
+        if (!reportSubmissionInFlight) closeReportModal({ restoreFocus: true });
+      });
+      if (reportModalTextarea) {
+        reportModalTextarea.addEventListener('input', () => {
+          if (!reportModalError) return;
+          if (!reportModalError.classList.contains('hidden')) {
+            reportModalError.classList.add('hidden');
+            reportModalError.textContent = '';
+          }
+        });
+      }
+      if (reportModal) {
+        reportModal.addEventListener('click', (event) => {
+          if (event.target === reportModal && !reportSubmissionInFlight) {
+            closeReportModal({ restoreFocus: true });
+          }
+        });
+      }
+      if (difficultyInfoBtn) {
+        difficultyInfoBtn.addEventListener('click', (event) => {
+          event.stopPropagation();
+          toggleDifficultyTooltip();
+        });
+      }
+
+      document.addEventListener('click', (event) => {
+        if (!difficultyInfoTooltip || difficultyInfoTooltip.classList.contains('hidden')) return;
+        const isBtn = difficultyInfoBtn && (difficultyInfoBtn === event.target || difficultyInfoBtn.contains(event.target));
+        const isTooltip = difficultyInfoTooltip === event.target || difficultyInfoTooltip.contains(event.target);
+        if (!isBtn && !isTooltip) toggleDifficultyTooltip(false);
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return;
+        const modalOpen = reportModal && !reportModal.classList.contains('hidden');
+        if (modalOpen) {
+          if (!reportSubmissionInFlight) closeReportModal({ restoreFocus: true });
+          return;
+        }
+        toggleDifficultyTooltip(false);
+      });
+    });
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggle = document.getElementById('mobileMenuToggle');
+      const menu = document.getElementById('mobileMenu');
+      if (!toggle || !menu) return;
+
+      const icon = toggle.querySelector('.material-symbols-outlined');
+      const closeMenu = () => {
+        if (!menu.classList.contains('hidden')) {
+          menu.classList.add('hidden');
+          toggle.setAttribute('aria-expanded', 'false');
+          if (icon) icon.textContent = 'menu';
+        }
+      };
+
+      toggle.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const willOpen = menu.classList.contains('hidden');
+        menu.classList.toggle('hidden');
+        toggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        if (icon) icon.textContent = willOpen ? 'close' : 'menu';
+      });
+
+      document.addEventListener('click', (event) => {
+        if (!menu.contains(event.target) && event.target !== toggle && !toggle.contains(event.target)) {
+          closeMenu();
+        }
+      });
+    });
+  </script>
+  <script>
+    // --- Función auxiliar para obtener cookies ---
+    function getCookie(name) {
+      const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+      return match ? decodeURIComponent(match[1]) : null;
+    }
+
+    let currentUserMenu = null;
+    let currentUserMenuToggle = null;
+    let userMenuListenersAttached = false;
+
+    function closeUserMenu() {
+      if (currentUserMenu) currentUserMenu.classList.add('hidden');
+      if (currentUserMenuToggle) currentUserMenuToggle.setAttribute('aria-expanded', 'false');
+    }
+
+    function openUserMenu(menu, toggle) {
+      document.querySelectorAll('[data-user-menu]').forEach(el => {
+        if (el !== menu) el.classList.add('hidden');
+      });
+      document.querySelectorAll('[data-user-menu-toggle]').forEach(btn => {
+        if (btn !== toggle) btn.setAttribute('aria-expanded', 'false');
+      });
+      menu.classList.remove('hidden');
+      toggle.setAttribute('aria-expanded', 'true');
+      currentUserMenu = menu;
+      currentUserMenuToggle = toggle;
+    }
+
+    function setupUserMenuToggle(container) {
+      if (!container) return;
+      const toggle = container.querySelector('[data-user-menu-toggle]');
+      const menu = container.querySelector('[data-user-menu]');
+      if (!toggle || !menu) return;
+
+      currentUserMenu = menu;
+      currentUserMenuToggle = toggle;
+
+      if (toggle.dataset.bound === 'true') return;
+      toggle.dataset.bound = 'true';
+      menu.dataset.bound = 'true';
+
+      toggle.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const willOpen = menu.classList.contains('hidden');
+        if (willOpen) {
+          openUserMenu(menu, toggle);
+        } else {
+          closeUserMenu();
+        }
+      });
+
+      menu.addEventListener('click', (event) => {
+        event.stopPropagation();
+      });
+
+      if (!userMenuListenersAttached) {
+        document.addEventListener('click', () => {
+          closeUserMenu();
+        });
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape') closeUserMenu();
+        });
+        userMenuListenersAttached = true;
+      }
+    }
+
+    // --- Manejo del usuario autenticado ---
+    function updateUserSection() {
+      const desktopSection = document.getElementById('userSectionDesktop');
+      const mobileSection = document.getElementById('mobileUserSection');
+      if (!desktopSection && !mobileSection) return;
+
+      const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[char] || char);
+
+      try {
+        const rawUserInfo = getCookie('userInfo');
+        const userInfo = rawUserInfo ? JSON.parse(rawUserInfo) : null;
+        const userName = userInfo?.nombre || getCookie('userName');
+
+        if (userName) {
+          const safeName = escapeHtml(userName);
+          const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}`;
+
+          if (desktopSection) {
+            desktopSection.innerHTML = `
+        <div class="relative">
+          <button type="button" data-user-menu-toggle class="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition" aria-expanded="false">
+            <img src="${avatarUrl}" alt="${safeName}" class="w-8 h-8 rounded-full">
+            <span class="text-sm font-medium">${safeName}</span>
+            <span class="material-symbols-outlined text-sm">expand_more</span>
+          </button>
+          <div data-user-menu class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg py-2 hidden z-50" role="menu">
+            <a href="/perfil" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" role="menuitem">
+              <span class="material-symbols-outlined align-middle mr-2">person</span>Mi Perfil
+            </a>
+            <a href="/recetas-guardadas" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" role="menuitem">
+              <span class="material-symbols-outlined align-middle mr-2">bookmark</span>Guardados
+            </a>
+            <a href="/configuracion" class="block px-4 py-2 text-gray-700 hover:bg-gray-100" role="menuitem">
+              <span class="material-symbols-outlined align-middle mr-2">settings</span>Configuración
+            </a>
+          </div>
+        </div>`;
+            setupUserMenuToggle(desktopSection);
+          }
+
+          if (mobileSection) {
+            mobileSection.innerHTML = `
+        <div class="flex items-center gap-3 bg-orange-50 rounded-xl px-3 py-3">
+          <img src="${avatarUrl}" alt="${safeName}" class="w-10 h-10 rounded-full">
+          <div class="text-left">
+            <p class="text-sm font-semibold text-gray-800">${safeName}</p>
+            <p class="text-xs text-gray-500">Tu cuenta</p>
+          </div>
+        </div>
+        <div class="flex flex-col text-sm text-gray-700 font-medium gap-2">
+          <a href="/perfil" class="flex items-center gap-2 hover:text-orange-500 transition">
+            <span class="material-symbols-outlined text-base">person</span>
+            Mi Perfil
+          </a>
+          <a href="/recetas-guardadas" class="flex items-center gap-2 hover:text-orange-500 transition">
+            <span class="material-symbols-outlined text-base">bookmark</span>
+            Guardados
+          </a>
+          <a href="/configuracion" class="flex items-center gap-2 hover:text-orange-500 transition">
+            <span class="material-symbols-outlined text-base">settings</span>
+            Configuración
+          </a>
+        </div>`;
+          }
+        } else {
+          if (desktopSection) {
+            desktopSection.innerHTML = `
+        <a href="/iniciar-sesion" class="text-gray-600 hover:text-purple-600 transition flex items-center gap-1">
+          <span class="material-symbols-outlined">person</span>Iniciar Sesión
+        </a>
+        <a href="/registro" class="px-6 py-3 text-sm rounded-md bg-orange-500 text-white font-semibold hover:bg-orange-600">
+          Regístrate
+        </a>`;
+          }
+          if (mobileSection) {
+            mobileSection.innerHTML = `
+        <a href="/iniciar-sesion" class="text-sm font-medium text-gray-700 hover:text-orange-500 transition">Inicia sesión</a>
+        <a href="/registro" class="text-sm font-semibold text-white bg-orange-500 hover:bg-orange-600 transition px-3 py-2 rounded-lg text-center">Regístrate</a>`;
+          }
+          currentUserMenu = null;
+          currentUserMenuToggle = null;
+        }
+      } catch (error) {
+        console.error('Error al actualizar la sección de usuario:', error);
+      }
+    }
+
+
+    // --- Sincroniza plan seleccionado con input oculto ---
+    function setupPlanSync() {
+      const radios = document.querySelectorAll('input[name="plan"]');
+      const hidden = document.getElementById('price_id_input');
+      const label = document.getElementById('selectedPlanLabel');
+      const form = document.getElementById('checkoutForm');
+
+      if (!radios.length || !hidden) return;
+
+      const updateSelection = () => {
+        const checked = [...radios].find(r => r.checked) || radios[0];
+        if (!checked) return;
+        hidden.value = checked.value;
+        if (label) label.textContent = checked.dataset.label || checked.value;
+      };
+
+      radios.forEach(r => r.addEventListener('change', updateSelection));
+      if (form) form.addEventListener('submit', updateSelection);
+      updateSelection();
+    }
+
+    // --- Inicialización general ---
+    document.addEventListener('DOMContentLoaded', () => {
+      updateUserSection();
+      setupPlanSync();
+      setupUserMenuToggle(document.getElementById('userSectionDesktop'));
+    });
+  </script>
+
+  <!-- Script: Mostrar/Ocultar sidebar -->
+  <script>
+    const toggleBtn = document.getElementById('toggleFilters');
+    const closeBtn = document.getElementById('closeFilters');
+    const sidebar = document.getElementById('sidebarFilters');
+    const overlay = document.getElementById('overlay');
+    const headerEl = document.querySelector('header');
+    const breadcrumbNav = document.getElementById('breadcrumbNav');
+
+    const updateFilterOffset = () => {
+      if (!sidebar) return;
+      if (window.matchMedia('(min-width: 768px)').matches) {
+        sidebar.style.top = '';
+        if (overlay) overlay.style.top = '';
+        return;
+      }
+
+      const headerHeight = headerEl ? headerEl.offsetHeight : 0;
+      const breadcrumbHeight = breadcrumbNav ? breadcrumbNav.offsetHeight : 0;
+      const offset = Math.max(headerHeight + breadcrumbHeight, 0);
+
+      sidebar.style.top = `${offset}px`;
+      if (overlay) overlay.style.top = `${offset}px`;
+    };
+
+    updateFilterOffset();
+    window.addEventListener('resize', updateFilterOffset);
+
+    toggleBtn.addEventListener('click', () => {
+      updateFilterOffset();
+      sidebar.classList.remove('-translate-x-full');
+      overlay.classList.remove('hidden');
+    });
+
+    closeBtn.addEventListener('click', () => {
+      sidebar.classList.add('-translate-x-full');
+      overlay.classList.add('hidden');
+    });
+
+    overlay.addEventListener('click', () => {
+      sidebar.classList.add('-translate-x-full');
+      overlay.classList.add('hidden');
+    });
+  </script>
+</body>
+
+</html>

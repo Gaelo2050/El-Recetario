@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estadísticas - El Recetario®</title>
+  <link rel="shortcut icon" href="../Imagenes/Logo/favicon.ico">
+  <link href="./css/output.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <script src="/js/userSession.js"></script>
+  <script>
+
+    (() => {
+      'use strict';
+
+      const selectors = {};
+
+      const assignSelectors = () => {
+        selectors.alert = document.getElementById('statsAlert');
+        selectors.alertMessage = document.getElementById('statsAlertMessage');
+        selectors.profileCard = document.getElementById('profileCard');
+        selectors.panels = document.getElementById('statsPanels');
+        selectors.userName = document.getElementById('statsUserName');
+        selectors.userAlias = document.getElementById('statsUserAlias');
+        selectors.userEmail = document.getElementById('statsUserEmail');
+        selectors.userAvatar = document.getElementById('statsUserAvatar');
+        selectors.userRating = document.getElementById('statsUserRating');
+        selectors.userReviews = document.getElementById('statsUserReviews');
+        selectors.avgRating = document.getElementById('avgRating');
+        selectors.totalRecipes = document.getElementById('totalRecipes');
+        selectors.savedRecipes = document.getElementById('savedRecipes');
+        selectors.totalComments = document.getElementById('totalComments');
+        selectors.popularRecipes = document.getElementById('popularRecipes');
+        selectors.ratingDistribution = document.getElementById('ratingDistribution');
+        selectors.monthlyActivity = document.getElementById('monthlyActivity');
+        selectors.refreshPopular = document.getElementById('refreshPopular');
+      };
+
+      const state = {
+        monthlyChart: null,
+      };
+
+      const formatNumber = (value) => {
+        const numeric = Number(value) || 0;
+        if (numeric >= 1_000_000) return `${(numeric / 1_000_000).toFixed(1)}M`;
+        if (numeric >= 1_000) return `${(numeric / 1_000).toFixed(1)}K`;
+        return numeric.toLocaleString('es-MX');
+      };
+
+      const escapeHtml = (text) => {
+        if (text === null || text === undefined) return '';
+        return String(text)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      };
+
+      const resolveUserContext = () => {
+        try {
+          const info = window.UserSession && typeof window.UserSession.obtenerInfoUsuario === 'function'
+            ? window.UserSession.obtenerInfoUsuario()
+            : null;
+          const tipo = window.UserSession && typeof window.UserSession.obtenerTipoUsuario === 'function'
+            ? window.UserSession.obtenerTipoUsuario(info)
+            : null;
+          return { info, tipo, autenticado: Boolean(info) };
+        } catch (error) {
+          console.warn('[stats] No se pudo determinar la sesión del usuario:', error);
+          return { info: null, tipo: null, autenticado: false };
+        }
+      };
+
+      const alertStyles = {
+        info: ['border-blue-200', 'bg-blue-50', 'text-blue-800'],
+        success: ['border-green-200', 'bg-green-50', 'text-green-800'],
+        warning: ['border-yellow-200', 'bg-yellow-50', 'text-yellow-800'],
+        error: ['border-red-200', 'bg-red-50', 'text-red-800'],
+      };
+
+      const resetAlertClasses = (element) => {
+        if (!element) return;
+        element.classList.remove(
+          'border-blue-200', 'bg-blue-50', 'text-blue-800',
+          'border-green-200', 'bg-green-50', 'text-green-800',
+          'border-yellow-200', 'bg-yellow-50', 'text-yellow-800',
+          'border-red-200', 'bg-red-50', 'text-red-800'
+        );
+      };
+
+      const showAlert = ({ message, type = 'info', actionText, actionHref } = {}) => {
+        const { alert, alertMessage } = selectors;
+        if (!alert || !alertMessage) return;
+        resetAlertClasses(alert);
+        const classes = alertStyles[type] || alertStyles.info;
+        alert.classList.add(...classes);
+        alert.classList.remove('hidden');
+        alert.classList.add('flex');
+
+        alertMessage.textContent = '';
+        alertMessage.append(document.createTextNode(message || ''));
+
+        if (actionText && actionHref) {
+          const link = document.createElement('a');
+          link.href = actionHref;
+          link.className = 'font-semibold underline ml-1';
+          link.textContent = actionText;
+          alertMessage.appendChild(link);
+        }
+      };
+
+      const hideAlert = () => {
+        if (selectors.alert) selectors.alert.classList.add('hidden');
+      };
+
+      const togglePanels = (shouldShow) => {
+        if (selectors.panels) selectors.panels.classList.toggle('hidden', !shouldShow);
+      };
+
+      const fetchJson = async (url) => {
+        const response = await fetch(url, { credentials: 'include' });
+        if (!response.ok) {
+          const error = new Error(`Solicitud fallida (${response.status})`);
+          error.status = response.status;
+          throw error;
+        }
+        return response.json();
+      };
+
+      const updateProfileCard = (profile) => {
+        if (!profile || !selectors.profileCard) return;
+        const nombre = profile.nombre || 'Usuario';
+        const alias = profile.username || profile.alias || '';
+        const correo = profile.email || '';
+        const avatar = profile.foto || `https://ui-avatars.com/api/?name=${encodeURIComponent(nombre)}`;
+        selectors.userName.textContent = nombre;
+        selectors.userAlias.textContent = alias ? `@${alias}` : 'Alias no definido';
+        selectors.userEmail.textContent = correo || 'Correo no disponible';
+        selectors.userAvatar.src = avatar;
+        selectors.userAvatar.alt = nombre;
+
+        const rating = Number(profile.avg_rating || profile.avgRating || 0);
+        selectors.userRating.textContent = rating.toFixed(1);
+        const reviews = Number(profile.ratings_count || profile.reviews || 0);
+        selectors.userReviews.textContent = `${reviews.toLocaleString('es-MX')} reseñas`;
+
+        selectors.profileCard.classList.remove('hidden');
+        selectors.profileCard.classList.add('flex');
+      };
+
+      const loadGeneralStats = async () => {
+        try {
+          const stats = await fetchJson('/api/usuario/estadisticas');
+          selectors.avgRating.textContent = (Number(stats.avgRating) || 0).toFixed(1);
+          selectors.totalRecipes.textContent = formatNumber(stats.totalRecipes);
+          selectors.savedRecipes.textContent = formatNumber(stats.savedRecipes);
+          selectors.totalComments.textContent = formatNumber(stats.totalComments);
+        } catch (error) {
+          console.error('[stats] No se pudieron cargar las estadísticas generales:', error);
+        }
+      };
+
+      const renderPopularRecipes = (recipes) => {
+        const container = selectors.popularRecipes;
+        if (!container) return;
+
+        if (!Array.isArray(recipes) || recipes.length === 0) {
+          container.innerHTML = '<p class="text-gray-500 text-center py-8">No tienes recetas publicadas aún.</p>';
+          return;
+        }
+
+        container.innerHTML = recipes.map((recipe) => {
+          const rating = Number(recipe.calificacion) || 0;
+          const fullStars = Math.floor(rating);
+          const starIcons = Array.from({ length: 5 }, (_, index) => {
+            const klass = index < fullStars ? 'text-yellow-500' : 'text-gray-300';
+            return `<span class="${klass}">★</span>`;
+          }).join('');
+          const recipeUrl = recipe.id ? `/receta/${encodeURIComponent(recipe.id)}` : null;
+          const linkAttrs = recipeUrl ? `data-recipe-url="${recipeUrl}" tabindex="0" role="link"` : '';
+
+          return `
+            <article class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-400" ${linkAttrs}>
+              <img src="${escapeHtml(recipe.imagen || '/Imagenes/Recetas/1.png')}" alt="${escapeHtml(recipe.titulo)}" class="w-16 h-16 rounded-lg object-cover">
+              <div class="flex-grow">
+                <h3 class="font-semibold text-gray-900 line-clamp-1">${escapeHtml(recipe.titulo)}</h3>
+                <div class="flex items-center gap-2 text-sm text-gray-600">
+                  <div class="flex items-center">${starIcons}</div>
+                  <span>(${(Number(recipe.totalCalificaciones) || 0).toLocaleString('es-MX')} calificaciones)</span>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="font-semibold text-gray-900">${formatNumber(recipe.totalCalificaciones)}</div>
+                <div class="text-sm text-gray-500">calificaciones</div>
+              </div>
+            </article>
+          `;
+        }).join('');
+
+        container.querySelectorAll('[data-recipe-url]').forEach((card) => {
+          const url = card.getAttribute('data-recipe-url');
+          if (!url) return;
+          card.addEventListener('click', () => {
+            window.location.href = url;
+          });
+          card.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              window.location.href = url;
+            }
+          });
+        });
+      };
+
+      const loadPopularRecipes = async () => {
+        try {
+          const recipes = await fetchJson('/api/usuario/recetas-populares');
+          renderPopularRecipes(recipes);
+        } catch (error) {
+          console.error('[stats] No se pudieron cargar las recetas populares:', error);
+          if (selectors.popularRecipes) {
+            selectors.popularRecipes.innerHTML = '<p class="text-gray-500 text-center py-8">Error al cargar las recetas populares.</p>';
+          }
+        }
+      };
+
+      const renderRatingDistribution = (distribution) => {
+        const container = selectors.ratingDistribution;
+        if (!container) return;
+        const normalized = Array.isArray(distribution) ? distribution : [];
+        const total = normalized.reduce((acc, entry) => acc + (Number(entry.count) || 0), 0);
+
+        container.innerHTML = [5, 4, 3, 2, 1].map((stars) => {
+          const entry = normalized.find((item) => Number(item.stars) === stars);
+          const count = entry ? Number(entry.count) || 0 : 0;
+          const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
+          return `
+            <div class="flex items-center gap-4">
+              <div class="w-16 text-right font-medium text-gray-700">${stars} ★</div>
+              <div class="flex-grow bg-gray-200 rounded-full h-3 overflow-hidden">
+                <div class="bg-gradient-to-r from-yellow-400 to-yellow-500 h-3 rounded-full transition-all duration-700" style="width: ${percentage}%;"></div>
+              </div>
+              <div class="w-16 text-right font-medium text-gray-700">${percentage}%</div>
+            </div>
+          `;
+        }).join('');
+      };
+
+      const loadRatingDistribution = async () => {
+        try {
+          const distribution = await fetchJson('/api/usuario/distribucion-calificaciones');
+          renderRatingDistribution(distribution);
+        } catch (error) {
+          console.error('[stats] No se pudo cargar la distribución de calificaciones:', error);
+          if (selectors.ratingDistribution) {
+            selectors.ratingDistribution.innerHTML = '<p class="text-gray-500 text-center py-8">No se pudo cargar la distribución de calificaciones.</p>';
+          }
+        }
+      };
+
+      const formatMonthLabel = (value) => {
+        if (!value) return '';
+        const [year, month] = value.split('-').map(Number);
+        if (!year || !month) return value;
+        return new Intl.DateTimeFormat('es-MX', { month: 'short', year: 'numeric' }).format(new Date(year, month - 1, 1));
+      };
+
+      const renderMonthlyActivity = (activity) => {
+        const container = selectors.monthlyActivity;
+        if (!container) return;
+
+        const series = Array.isArray(activity) ? [...activity] : [];
+        if (series.length === 0) {
+          container.innerHTML = '<p class="text-center text-gray-500">Aún no registramos actividad reciente.</p>';
+          return;
+        }
+
+        if (typeof Chart === 'undefined') {
+          container.innerHTML = '<p class="text-center text-gray-500">Chart.js no está disponible.</p>';
+          return;
+        }
+
+        const sorted = series
+          .map((item) => ({
+            label: formatMonthLabel(item.month),
+            value: Number(item.activity) || 0,
+            sortKey: item.month || '',
+          }))
+          .sort((a, b) => a.sortKey.localeCompare(b.sortKey));
+
+        const canvas = document.createElement('canvas');
+        container.innerHTML = '';
+        container.appendChild(canvas);
+
+        if (state.monthlyChart) {
+          state.monthlyChart.destroy();
+        }
+
+        state.monthlyChart = new Chart(canvas, {
+          type: 'line',
+          data: {
+            labels: sorted.map((entry) => entry.label),
+            datasets: [{
+              label: 'Actividad',
+              data: sorted.map((entry) => entry.value),
+              borderColor: 'rgba(249, 115, 22, 1)',
+              backgroundColor: 'rgba(249, 115, 22, 0.15)',
+              tension: 0.35,
+              fill: true,
+              pointRadius: 4,
+              pointBackgroundColor: 'rgba(249, 115, 22, 1)',
+            }],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  precision: 0,
+                },
+                grid: {
+                  color: 'rgba(0, 0, 0, 0.08)',
+                  drawBorder: false,
+                },
+              },
+              x: {
+                grid: {
+                  display: false,
+                },
+              },
+            },
+          },
+        });
+      };
+
+      const loadMonthlyActivity = async () => {
+        try {
+          const activity = await fetchJson('/api/usuario/actividad-mensual');
+          renderMonthlyActivity(activity);
+        } catch (error) {
+          console.error('[stats] No se pudo cargar la actividad mensual:', error);
+          if (selectors.monthlyActivity) {
+            selectors.monthlyActivity.innerHTML = `
+              <div class="text-center text-gray-400">
+                <span class="material-symbols-outlined text-6xl mb-4">error</span>
+                <p class="text-lg font-medium">Error al cargar el gráfico</p>
+                <p class="text-sm">Inténtalo de nuevo más tarde</p>
+              </div>
+            `;
+          }
+        }
+      };
+
+      const loadUserProfile = async () => {
+        try {
+          const profile = await fetchJson('/api/usuario');
+          updateProfileCard(profile);
+        } catch (error) {
+          console.error('[stats] No se pudo cargar el perfil del usuario:', error);
+          showAlert({
+            type: 'error',
+            message: 'No pudimos cargar tus datos de perfil en este momento.',
+          });
+        }
+      };
+
+      const setLoadingPopular = () => {
+        if (!selectors.popularRecipes) return;
+        selectors.popularRecipes.innerHTML = `
+          <div class="animate-pulse space-y-4">
+            <div class="flex items-center gap-4">
+              <div class="w-16 h-16 bg-gray-200 rounded-lg"></div>
+              <div class="flex-grow space-y-2">
+                <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+                <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+              </div>
+              <div class="space-y-1">
+                <div class="h-4 bg-gray-200 rounded w-12"></div>
+                <div class="h-3 bg-gray-200 rounded w-16"></div>
+              </div>
+            </div>
+          </div>
+        `;
+      };
+
+      const init = async () => {
+        const contexto = resolveUserContext();
+        if (!contexto.autenticado) {
+          togglePanels(false);
+          showAlert({
+            type: 'warning',
+            message: 'Para consultar tus estadísticas inicia sesión con tu cuenta.',
+            actionText: 'Iniciar sesión',
+            actionHref: '/iniciar-sesion',
+          });
+          return;
+        }
+
+        hideAlert();
+        togglePanels(true);
+        setLoadingPopular();
+
+        await Promise.all([
+          loadUserProfile(),
+          loadGeneralStats(),
+          loadPopularRecipes(),
+          loadRatingDistribution(),
+          loadMonthlyActivity(),
+        ]);
+      };
+
+      document.addEventListener('DOMContentLoaded', () => {
+        assignSelectors();
+
+        if (selectors.refreshPopular) {
+          selectors.refreshPopular.addEventListener('click', () => {
+            setLoadingPopular();
+            loadPopularRecipes();
+          });
+        }
+
+        init();
+      });
+    })();
+  </script>
+</head>
+
+<body class="bg-slate-100 text-slate-900">
+  <script src="/js/loadHeader.js" defer></script>
+  <div id="headerContainer"></div>
+
+        <!-- Breadcrumbs -->
+  <!-- Breadcrumbs -->
+  <nav class="bg-white border-b border-gray-200">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center gap-2 text-sm text-gray-500">
+      <ol class="flex items-center gap-2">
+        <li><a href="/inicio" class="hover:text-purple-600">Inicio</a></li>
+        <li class="text-gray-400">/</li>
+        <li><a href="/perfil" class="hover:text-purple-600">Perfil</a></li>
+        <li class="text-gray-400">/</li>
+        <li class="text-gray-700 font-medium">Estadisticas</li>
+      </ol>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-4 py-10 space-y-8">
+    <div id="statsAlert"
+      class="hidden border-l-4 border-blue-200 bg-blue-50 text-blue-800 rounded-2xl px-4 py-3 items-start gap-3">
+      <span class="material-symbols-outlined text-2xl mt-0.5">info</span>
+      <p id="statsAlertMessage" class="text-sm leading-6">Estamos cargando tus estadísticas...</p>
+    </div>
+
+    <section id="profileCard"
+      class="hidden bg-white rounded-3xl shadow-xl p-6 md:p-8 flex-col md:flex-row md:items-center gap-6">
+      <div class="flex items-center gap-4 flex-1">
+        <img id="statsUserAvatar" src="/Imagenes/Usuarios/default.png" alt="Avatar del usuario"
+          class="w-24 h-24 rounded-full object-cover border-4 border-orange-200 shadow-md" />
+        <div class="space-y-1">
+          <h1 id="statsUserName" class="text-2xl font-bold text-slate-900">Nombre del usuario</h1>
+          <p id="statsUserAlias" class="text-slate-500">@alias</p>
+          <p id="statsUserEmail" class="text-slate-400 text-sm">correo@ejemplo.com</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="text-4xl font-bold text-orange-500" id="statsUserRating">0.0</div>
+        <div class="text-sm text-slate-500 leading-5">
+          <span class="block font-semibold text-slate-700">Calificación promedio</span>
+          <span id="statsUserReviews">0 reseñas</span>
+        </div>
+      </div>
+    </section>
+
+    <div id="statsPanels" class="space-y-8 hidden">
+      <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <article class="bg-gradient-to-br from-orange-500 to-amber-400 text-white rounded-3xl shadow-lg p-6 flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-semibold uppercase tracking-wide text-white/70">Calificación promedio</span>
+            <span class="material-symbols-outlined text-white/70">star</span>
+          </div>
+          <div class="text-4xl font-bold" id="avgRating">0.0</div>
+          <p class="text-sm text-white/80">Promedio global de tus recetas.</p>
+        </article>
+
+        <article class="bg-gradient-to-br from-slate-900 to-slate-700 text-white rounded-3xl shadow-lg p-6 flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-semibold uppercase tracking-wide text-white/70">Recetas publicadas</span>
+            <span class="material-symbols-outlined text-white/70">restaurant_menu</span>
+          </div>
+          <div class="text-4xl font-bold" id="totalRecipes">0</div>
+          <p class="text-sm text-white/80">Recetas que has compartido.</p>
+        </article>
+
+        <article class="bg-gradient-to-br from-purple-600 to-purple-400 text-white rounded-3xl shadow-lg p-6 flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-semibold uppercase tracking-wide text-white/70">Recetas guardadas</span>
+            <span class="material-symbols-outlined text-white/70">bookmark</span>
+          </div>
+          <div class="text-4xl font-bold" id="savedRecipes">0</div>
+          <p class="text-sm text-white/80">Recetas que te gustaron.</p>
+        </article>
+
+        <article class="bg-gradient-to-br from-rose-500 to-rose-400 text-white rounded-3xl shadow-lg p-6 flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-semibold uppercase tracking-wide text-white/70">Comentarios enviados</span>
+            <span class="material-symbols-outlined text-white/70">chat</span>
+          </div>
+          <div class="text-4xl font-bold" id="totalComments">0</div>
+          <p class="text-sm text-white/80">Interacciones realizadas en recetas.</p>
+        </article>
+      </section>
+
+      <section class="bg-white rounded-3xl shadow-lg p-6">
+        <header class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+          <div>
+            <h2 class="text-xl font-semibold text-slate-900">Recetas más populares</h2>
+            <p class="text-sm text-slate-500">Tus recetas con mayor interacción reciente.</p>
+          </div>
+          <button id="refreshPopular" type="button"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 transition">
+            <span class="material-symbols-outlined text-base">refresh</span>
+            <span class="text-sm font-medium">Actualizar</span>
+          </button>
+        </header>
+        <div id="popularRecipes" class="space-y-4">
+          <p class="text-slate-400 text-center py-6">Cargando información...</p>
+        </div>
+      </section>
+
+      <section class="grid gap-6 lg:grid-cols-2">
+        <article class="bg-white rounded-3xl shadow-lg p-6">
+          <h2 class="text-xl font-semibold text-slate-900">Distribución de calificaciones</h2>
+          <p class="text-sm text-slate-500">Observa cómo califican tus recetas los demás usuarios.</p>
+          <div id="ratingDistribution" class="mt-6 space-y-4"></div>
+        </article>
+
+        <article class="bg-white rounded-3xl shadow-lg p-6">
+          <h2 class="text-xl font-semibold text-slate-900">Actividad mensual</h2>
+          <p class="text-sm text-slate-500">Tus publicaciones, guardados y otras interacciones recientes.</p>
+          <div id="monthlyActivity" class="mt-6 h-72 flex items-center justify-center">
+            <p class="text-slate-400">Cargando gráfico...</p>
+          </div>
+        </article>
+      </section>
+    </div>
+  </main>
+
+  <script src="/js/loadFooter.js" defer></script>
+  <div id="footerContainer"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" defer></script>
+</body>
+
+</html>

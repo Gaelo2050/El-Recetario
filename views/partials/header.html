@@ -1,0 +1,54 @@
+<header class="bg-white shadow-sm sticky top-0 z-50">
+  <div class="relative flex items-center justify-between px-6 py-4">
+
+    <!-- LOGO IZQUIERDA -->
+    <div class="flex items-center gap-2">
+      <a href="/inicio">
+        <img src="/Imagenes/Logo/logo  (2).png" alt="Logo El Recetario" class="h-10 w-auto">
+      </a>
+      <span class="text-xl font-bold">El Recetario®</span>
+    </div>
+
+    <!-- MENÚ CENTRADO ABSOLUTO -->
+    <nav class="absolute left-1/2 -translate-x-1/2 hidden md:flex gap-10 text-sm">
+      <a href="/" class="hover:text-orange-500">Inicio</a>
+      <a href="/recetas" class="hover:text-orange-500">Recetas</a>
+      <a href="/comunidad" class="hover:text-orange-500">Comunidad</a>
+    </nav>
+
+    <button id="mobileMenuToggle" type="button"
+      class="md:hidden flex items-center gap-1 text-gray-600 hover:text-orange-500 transition" aria-label="Abrir menú"
+      aria-expanded="false">
+      <span class="material-symbols-outlined text-2xl">menu</span>
+    </button>
+
+    <!-- BOTONES DERECHA / SECCIÓN USUARIO -->
+    <div id="userSectionDesktop" class="hidden md:flex items-center gap-4">
+      <a href="/iniciar-sesion" class="text-sm hover:text-orange-500">Inicia sesión</a>
+      <a href="/registro"
+        class="px-6 py-3 text-sm rounded-md bg-orange-500 text-white font-semibold hover:bg-orange-600">
+        Regístrate
+      </a>
+    </div>
+  </div>
+
+  <div id="mobileMenu" class="md:hidden px-4 pb-4 hidden">
+    <div id="mobileUserSection" class="flex flex-col gap-3 bg-white rounded-xl shadow-lg p-4 mb-4">
+      <a href="/iniciar-sesion" class="text-sm font-medium text-gray-700 hover:text-orange-500 transition">Inicia sesión</a>
+      <a href="/registro"
+        class="text-sm font-semibold text-white bg-orange-500 hover:bg-orange-600 transition px-3 py-2 rounded-lg text-center">Regístrate</a>
+    </div>
+    <nav class="flex flex-col gap-3 text-gray-700 font-medium bg-white rounded-xl shadow-lg p-4">
+      <a href="/" class="hover:text-orange-500">Inicio</a>
+      <a href="/recetas" class="hover:text-orange-500">Recetas</a>
+      <a href="/comunidad" class="hover:text-orange-500">Comunidad</a>
+      <a href="/crear-receta"
+        class="flex items-center justify-center gap-2 text-sm text-white bg-orange-500 hover:bg-orange-600 transition px-3 py-2 rounded-lg">
+        <span class="material-symbols-outlined text-base">restaurant</span>
+        Compartir receta
+      </a>
+    </nav>
+  </div>
+
+  </div>
+</header>
